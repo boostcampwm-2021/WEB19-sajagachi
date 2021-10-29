@@ -1,10 +1,8 @@
-/** @jsxImportSource @emotion/react */
-
 import React from "react";
 import { css } from "@emotion/react";
 
 const testStyle = css`
-    color: red;
+    color: blue;
 `;
 
 const App = () => {
