@@ -1,7 +1,8 @@
-import React, { useState, ChangeEvent } from 'react';
+import React from 'react';
 import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
 
 const btn = css`
 	width: 48px;
@@ -14,49 +15,18 @@ const btnIcon = css`
 	color: white;
 `;
 
-const searchForm = css`
-	position: relative;
-	width: 50%;
-`;
-
 const inputText = css`
-	width: calc(100% - 50px);
-	height: 20px;
 	color: white;
-	input: {
-		color: white;
-	}
-`;
-
-const InputMsg = css`
-	border: 2px solid white;
-	border-radius: 16px;
-	box-sizing: border-box;
-	box-shadow: none;
-	width: calc(100% - 50px);
-	height: 40px;
-	background: transparent;
-	outline: none;
-	color: #fff;
-	font-size: 16px;
-	overflow: hidden;
-	padding: 10px 20px;
 `;
 
 function SearchInput() {
-	const [searchValue, setSearchValue] = useState('');
-
-	function onChangeHandle(e: ChangeEvent<HTMLInputElement>) {
-		setSearchValue(e.target.value);
-	}
-
 	return (
-		<form css={searchForm} onSubmit={e => e.preventDefault()}>
-			<input
-				type="text"
-				css={InputMsg}
-				onChange={onChangeHandle}
-				value={searchValue}
+		<form>
+			<TextField
+				id="outlined-basic"
+				label="search"
+				variant="outlined"
+				css={inputText}
 			/>
 			<IconButton css={btn}>
 				<SearchIcon css={btnIcon} />

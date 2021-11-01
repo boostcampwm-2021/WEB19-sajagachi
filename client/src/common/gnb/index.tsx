@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -7,9 +7,8 @@ import SearchInput from './component/SearchInput';
 const gnbBackground = css`
 	width: 100%;
 	height: 4.4rem;
+
 	position: absolute;
-	padding-left: 10px;
-	padding-right: 10px;
 	background-color: #ebabab;
 `;
 
@@ -44,14 +43,6 @@ const btnIcon = css`
 `;
 
 function Gnb() {
-	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(function (pos) {
-			const latitude = pos.coords.latitude;
-			const longitude = pos.coords.longitude;
-			alert('현재 위치는 : ' + latitude + ', ' + longitude);
-		});
-	}, []);
-
 	return (
 		<div css={gnbBackground}>
 			<div css={gnbContainer}>
