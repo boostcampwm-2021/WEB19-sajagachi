@@ -1,12 +1,12 @@
 import React from 'react';
-import { css } from '@emotion/react';
-
-const testStyle = css`
-	color: blue;
-`;
+import Gnb from './common/gnb';
 
 const App = () => {
-	return <div css={testStyle}>client 개발환경 세팅</div>;
+	return (
+		<>
+			<Gnb />;
+		</>
+	);
 };
 
 export default App;
