@@ -5,12 +5,17 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchInput from './component/SearchInput';
 
 const gnbBackground = css`
+	z-index: 1;
 	width: 100%;
 	height: 4.4rem;
-	position: absolute;
-	padding-left: 10px;
-	padding-right: 10px;
+	position: fixed;
+	right: 0;
+	top: 0;
+	left: 0;
 	background-color: #ebabab;
+	& + * {
+		margin-top: 4.4rem;
+	}
 `;
 
 const gnbContainer = css`
@@ -48,7 +53,7 @@ function Gnb() {
 		navigator.geolocation.getCurrentPosition(function (pos) {
 			const latitude = pos.coords.latitude;
 			const longitude = pos.coords.longitude;
-			alert('현재 위치는 : ' + latitude + ', ' + longitude);
+			// alert('현재 위치는 : ' + latitude + ', ' + longitude);
 		});
 	}, []);
 
