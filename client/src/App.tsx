@@ -1,7 +1,6 @@
 import React from 'react';
 import Gnb from './common/gnb';
 import { Global, css } from '@emotion/react';
-import PostList from './common/post-list';
 import {
 	BrowserRouter,
 	BrowserRouter as Router,
@@ -32,13 +31,12 @@ const App = () => {
 		<>
 			<Global styles={globalStyle} />
 			<Gnb />
-      <PostList />
 			<Router>
 				<Switch>
 					<Route path="/" component={Main} />
 				</Switch>
 			</Router>
-    </>
+		</>
 	);
 };
 

@@ -11,7 +11,6 @@ const ListStyle = css`
 	padding: 0 20px;
 	max-width: 800px;
 	margin: 0 auto;
-	margin-top: 75px;
 `;
 
 export default function PostList() {
@@ -56,6 +55,48 @@ export default function PostList() {
 			category: '쿠팡',
 			title: '탕수육',
 			capacity: 3,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
+			deadline: '2021-11-1'
+		},
+		{
+			post_id: 7,
+			category: '파닭',
+			title: '교촌치킨3',
+			capacity: 8,
 			deadline: '2021-11-1'
 		},
 		{
