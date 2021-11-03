@@ -7,13 +7,15 @@ import PostList from '../../common/post-list';
 import FAB from './component/FAB';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
-import { Alert } from '@mui/material';
+import { Alert, Grow } from '@mui/material';
 
 const mainContainer = css`
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 700px;
 `;
+
+const alertStyle = css``;
 
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
@@ -24,10 +26,7 @@ function Main() {
 		const initialQuery = { offset: 0, limit: 10 };
 		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
 			.then(result => setItems(result))
-			.catch(e => {
-				setAlert(true);
-				setTimeout(() => setAlert(false), 2000);
-			});
+			.catch(e => setAlert(true));
 	}, []);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
@@ -40,18 +39,13 @@ function Main() {
 				<FilterAltIcon />
 			</IconButton>
 			{isModalOn && <FilteringModal />}
-			<PostList items={items} />
-			<FAB />
-			{alert && (
-				<Alert
-					severity="error"
-					onClick={() => {
-						setAlert(false);
-					}}
-				>
+			<Grow in={alert} style={{ transformOrigin: '0 0 0' }}>
+				<Alert severity="error" css={alertStyle}>
 					게시글을 불러오는 중 문제가 발생했어요.
 				</Alert>
-			)}
+			</Grow>
+			<PostList items={items} />
+			<FAB />
 		</div>
 	);
 }
