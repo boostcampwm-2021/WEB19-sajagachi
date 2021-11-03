@@ -6,7 +6,7 @@ const queryExtract = (query: any) => {
 	return queryStrings.join('&');
 };
 
-export const fetchGet = async (url: string, query: any) => {
+export const fetchGet = async (url: string | undefined, query: any) => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {

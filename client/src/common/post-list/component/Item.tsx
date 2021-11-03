@@ -34,11 +34,12 @@ const DescStyle = css`
 
 export default function Item(props: { item: ItemType }) {
 	return (
-		<li css={ItemStyle} key={props.item.post_id}>
+		<li css={ItemStyle}>
 			<div css={TopicStyle}>{props.item.title}</div>
 			<div css={DescStyle}>
 				<GroupIcon sx={{ fontSize: 16 }} />
-				{props.item.capacity} | {props.item.deadline}
+				{props.item.participantCnt}/{props.item.capacity} |{' '}
+				{props.item.deadline}
 			</div>
 			<Tag content={props.item.category} color="grey" />
 		</li>

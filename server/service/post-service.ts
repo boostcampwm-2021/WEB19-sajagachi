@@ -19,7 +19,7 @@ const getPosts = async ({
 
 	const db = await getDB().get();
 	let sql = `
-	SELECT post.id, post.title, post.capacity, post.deadline, category.name
+	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category
 	FROM post
 	INNER JOIN category
 	ON post.categoryId = category.id 

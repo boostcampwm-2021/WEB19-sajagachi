@@ -1,8 +1,9 @@
 export interface ItemType {
-	post_id: number;
+	id: number;
 	category: string;
 	title: string;
 	capacity: number;
+	participantCnt: number;
 	deadline: string;
 }
 
