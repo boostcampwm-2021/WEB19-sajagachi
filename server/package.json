@@ -6,7 +6,8 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "npm run build:live",
-		"build:live": "nodemon --watch '*.ts' --exec ts-node app.ts"
+		"build:live": "nodemon --watch '*.ts' --exec ts-node app.ts",
+		"build": "tsc -p ./"
 	},
 	"keywords": [],
 	"author": "",
