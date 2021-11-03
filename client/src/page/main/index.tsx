@@ -7,6 +7,7 @@ import PostList from '../../common/post-list';
 import FAB from './component/FAB';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
+import { Alert } from '@mui/material';
 
 const mainContainer = css`
 	margin-left: auto;
@@ -17,12 +18,16 @@ const mainContainer = css`
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
 	const [items, setItems] = useState([]);
+	const [alert, setAlert] = useState(false);
 
 	useEffect(() => {
 		const initialQuery = { offset: 0, limit: 10 };
-		fetchGet(`${process.env.REACT_APP_SERVER_URL}/post`, initialQuery).then(
-			result => setItems(result)
-		);
+		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
+			.then(result => setItems(result))
+			.catch(e => {
+				setAlert(true);
+				setTimeout(() => setAlert(false), 2000);
+			});
 	}, []);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
@@ -37,6 +42,16 @@ function Main() {
 			{isModalOn && <FilteringModal />}
 			<PostList items={items} />
 			<FAB />
+			{alert && (
+				<Alert
+					severity="error"
+					onClick={() => {
+						setAlert(false);
+					}}
+				>
+					게시글을 불러오는 중 문제가 발생했어요.
+				</Alert>
+			)}
 		</div>
 	);
 }
