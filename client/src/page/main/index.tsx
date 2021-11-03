@@ -1,10 +1,12 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent, useEffect } from 'react';
 import FilteringModal from './component/FilteringModal';
 import IconButton from '@mui/material/IconButton';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
+import { fetchGet } from '../../util/util';
+import 'dotenv/config';
 
 const mainContainer = css`
 	margin-left: auto;
@@ -12,10 +14,16 @@ const mainContainer = css`
 	max-width: 700px;
 `;
 
-const nothing = css``;
-
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
+	const [items, setItems] = useState([]);
+
+	useEffect(() => {
+		const initialQuery = { offset: 0, limit: 10 };
+		fetchGet(`${process.env.REACT_APP_SERVER_URL}/post`, initialQuery).then(
+			result => setItems(result)
+		);
+	}, []);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
 		setIsModalOn(!isModalOn);
@@ -27,7 +35,7 @@ function Main() {
 				<FilterAltIcon />
 			</IconButton>
 			{isModalOn && <FilteringModal />}
-			<PostList />
+			<PostList items={items} />
 			<FAB />
 		</div>
 	);

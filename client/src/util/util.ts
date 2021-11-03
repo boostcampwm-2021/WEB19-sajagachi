@@ -6,7 +6,7 @@ const queryExtract = (query: any) => {
 	return queryStrings.join('&');
 };
 
-export const fetchGet = async (url: string, query: any) => {
+export const fetchGet = async (url: string | undefined, query: any) => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {
@@ -38,4 +38,12 @@ export const fetchPost = async (url: string, body: any, query: any) => {
 
 	const res = await fetch(`${url}${queryStr}`, options);
 	return await res.json();
+};
+
+export const dateFormat = (dateStr: string) => {
+	const date = new Date(dateStr);
+	const year = date.getFullYear();
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	return year + '년 ' + month + '월 ' + day + '일';
 };

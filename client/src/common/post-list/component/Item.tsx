@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import GroupIcon from '@mui/icons-material/Group';
 import { ItemType } from '../../../type/types';
 import Tag from '../../tag';
+import { dateFormat } from '../../../util/util';
 
 const ItemStyle = css`
 	margin: 3px 0;
@@ -34,11 +35,12 @@ const DescStyle = css`
 
 export default function Item(props: { item: ItemType }) {
 	return (
-		<li css={ItemStyle} key={props.item.post_id}>
+		<li css={ItemStyle}>
 			<div css={TopicStyle}>{props.item.title}</div>
 			<div css={DescStyle}>
 				<GroupIcon sx={{ fontSize: 16 }} />
-				{props.item.capacity} | {props.item.deadline}
+				{props.item.participantCnt}/{props.item.capacity} |{' '}
+				{dateFormat(props.item.deadline)}까지
 			</div>
 			<Tag content={props.item.category} color="grey" />
 		</li>
