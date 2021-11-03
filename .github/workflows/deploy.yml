@@ -28,4 +28,5 @@ jobs:
             npm run build
             cd ../server
             npm install
-            pm2 start ./bin/www
+            npm run build
+            pm2 start ./dist/app.js
