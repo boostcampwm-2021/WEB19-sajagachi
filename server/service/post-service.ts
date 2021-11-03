@@ -30,6 +30,7 @@ const getPosts = async ({
 	if (search) condition.push(`post.title LIKE "%${search}%"`);
 	if (category) condition.push(`post.categoryId = ${category}`);
 	sql += condition.length ? 'WHERE ' + condition.join(' AND ') : '';
+	sql += ' ORDER BY post.id DESC';
 	sql += ` LIMIT ${offset}, ${limit}`;
 
 	const result = await db.manager.query(sql);

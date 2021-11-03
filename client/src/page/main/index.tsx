@@ -19,7 +19,7 @@ function Main() {
 	const [items, setItems] = useState([]);
 
 	useEffect(() => {
-		const initialQuery = { offset: 0, limit: 5 };
+		const initialQuery = { offset: 0, limit: 10 };
 		fetchGet(`${process.env.REACT_APP_SERVER_URL}/post`, initialQuery).then(
 			result => setItems(result)
 		);
