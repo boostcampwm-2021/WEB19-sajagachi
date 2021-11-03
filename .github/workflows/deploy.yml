@@ -26,6 +26,9 @@ jobs:
             cd ./client
             npm install
             npm run build
+            rm -rf /var/www/build
+            mkdir /var/www/build
+            cp -r build/* /var/www/build/
             cd ../server
             npm install
             npm run build
