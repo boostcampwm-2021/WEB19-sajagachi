@@ -6,7 +6,7 @@ import { css } from '@emotion/react';
 const FabStyle = css`
 	position: fixed;
 	right: 30px;
-	bottom: 30px;
+	bottom: 50px;
 `;
 
 export default function FAB() {
