@@ -13,7 +13,13 @@ const mapContainer = css`
 	border: 0px solid;
 `;
 
-function MapModal({ setLocation }: { setLocation: any }) {
+function MapModal({
+	setLocation,
+	location
+}: {
+	setLocation: any;
+	location: any;
+}) {
 	const [isMapOn, setIsMapOn] = useState(false);
 
 	function handleMapBtnClick(e: MouseEvent<HTMLElement>) {
@@ -29,6 +35,7 @@ function MapModal({ setLocation }: { setLocation: any }) {
 					<NaverMapAPI
 						setIsMapOn={setIsMapOn}
 						setLocation={setLocation}
+						location={location}
 					/>
 				</div>
 			)}
