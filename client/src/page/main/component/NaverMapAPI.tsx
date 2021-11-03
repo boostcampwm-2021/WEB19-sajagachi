@@ -41,14 +41,15 @@ const locationButton = css`
 type mapState = {
 	setIsMapOn: any;
 	setLocation: any;
+	location: any;
 };
 
-function NaverMapAPI({ setIsMapOn, setLocation }: mapState) {
+function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 	let map: any = null;
 	useEffect(() => {
 		const initMap = () => {
 			map = new naver.maps.Map('map', {
-				center: new naver.maps.LatLng(37.5171877, 127.041255),
+				center: new naver.maps.LatLng(location.lat, location.lng),
 				zoom: 13
 			});
 		};

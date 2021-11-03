@@ -3,6 +3,8 @@ import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchInput from './component/SearchInput';
+import { locationState } from '../../store/loction';
+import { useRecoilState } from 'recoil';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -48,13 +50,26 @@ const btnIcon = css`
 	color: white;
 `;
 
+const DEFAULT_LOCATION_LAT = 37.5642135;
+const DEFAULT_LOCATION_LNG = 127.0016985;
+
 function Gnb() {
+	const [location, setLocation] = useRecoilState(locationState);
 	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(function (pos) {
-			const latitude = pos.coords.latitude;
-			const longitude = pos.coords.longitude;
-			// alert('현재 위치는 : ' + latitude + ', ' + longitude);
-		});
+		navigator.geolocation.getCurrentPosition(
+			function (pos) {
+				setLocation({
+					lat: pos.coords.latitude,
+					lng: pos.coords.longitude
+				});
+			},
+			function () {
+				setLocation({
+					lat: DEFAULT_LOCATION_LAT,
+					lng: DEFAULT_LOCATION_LNG
+				});
+			}
+		);
 	}, []);
 
 	return (
