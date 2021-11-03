@@ -16,7 +16,7 @@ export const fetchGet = async (url: string | undefined, query: any) => {
 		},
 		credentials: 'include'
 	};
-	console.log(`${url}?${queryExtract(query)}`);
+
 	const res = await fetch(`${url}?${queryExtract(query)}`, options);
 	return await res.json();
 };
