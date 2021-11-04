@@ -27,15 +27,7 @@ export const createQueryString = (query: QueryStringType) => {
 	return queryStrings.join('&');
 };
 
-const queryExtract = (query: any) => {
-	let queryStrings: string[] = [];
-	Object.entries(query).forEach(([key, val]) => {
-		queryStrings.push(`${key}=${val}`);
-	});
-	return queryStrings.join('&');
-};
-
-export const fetchGet = async (url: string | undefined, query: any) => {
+export const fetchGet = async (url: string | undefined, query: string) => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {
@@ -46,7 +38,7 @@ export const fetchGet = async (url: string | undefined, query: any) => {
 		credentials: 'include'
 	};
 
-	const res = await fetch(`${url}?${queryExtract(query)}`, options);
+	const res = await fetch(`${url}?${query}`, options);
 	return await res.json();
 };
 
@@ -62,10 +54,7 @@ export const fetchPost = async (url: string, body: any, query: any) => {
 		body: JSON.stringify(body)
 	};
 
-	let queryStr = '';
-	if (query) queryStr = '?' + queryExtract(query);
-
-	const res = await fetch(`${url}${queryStr}`, options);
+	const res = await fetch(`${url}?${query}`, options);
 	return await res.json();
 };
 

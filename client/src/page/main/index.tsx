@@ -24,8 +24,11 @@ function Main() {
 	const [alert, setAlert] = useState(false);
 	const [isFetch, setIsFetch] = useState(false);
 	useEffect(() => {
-		const initialQuery = { offset: 0, limit: 10 };
-		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
+		const initialQuery = { offset: 0, liimit: 10 };
+		fetchGet(
+			`${process.env.REACT_APP_SERVER_URL}/api/post`,
+			'offset=0&limit=15'
+		)
 			.then(result => {
 				setIsFetch(true);
 				setItems(result);
