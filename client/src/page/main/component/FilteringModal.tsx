@@ -1,9 +1,9 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
-import MapModal from './MapModal';
 import { locationState } from '../../../store/loction';
 import { useRecoilValue } from 'recoil';
+import MapDrawer from './MapDrawer';
 
 const filteringModal = css`
 	position: fixed;
@@ -28,7 +28,7 @@ function FilteringModal() {
 		<div css={filteringModal}>
 			<div>
 				<h3>위치</h3>
-				<MapModal setLocation={setLocation} location={location} />
+				<MapDrawer setLocation={setLocation} location={location} />
 			</div>
 			<div>
 				<h3>카테고리</h3>

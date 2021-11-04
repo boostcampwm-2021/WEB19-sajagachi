@@ -3,15 +3,15 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
+import NaverMapAPI from './NaverMapAPI';
 
-const mapContainer = css`
-	position: absolute;
-	width: 12rem;
-	height: 12rem;
-	background-color: blue;
-`;
-
-export default function MapDrawer() {
+export default function MapDrawer({
+	setLocation,
+	location
+}: {
+	setLocation: any;
+	location: any;
+}) {
 	const [isMapOn, setIsMapOn] = useState(false);
 
 	const toggleDrawer =
@@ -27,15 +27,20 @@ export default function MapDrawer() {
 			setIsMapOn(!isMapOn);
 		};
 
-	const map = () => (
+	const list = () => (
 		<div>
 			<Box
-				css={mapContainer}
 				sx={{
 					width: 'auto',
-					height: `auto`
+					height: 'auto'
 				}}
-			></Box>
+			>
+				<NaverMapAPI
+					setIsMapOn={setIsMapOn}
+					setLocation={setLocation}
+					location={location}
+				/>
+			</Box>
 		</div>
 	);
 
@@ -44,7 +49,7 @@ export default function MapDrawer() {
 			<Button onClick={toggleDrawer()}>지도에서 선택</Button>
 			<div>
 				<Drawer anchor="bottom" open={isMapOn} onClose={toggleDrawer()}>
-					{map()}
+					{list()}
 				</Drawer>
 			</div>
 		</div>
