@@ -6,7 +6,6 @@ import React, {
 	useCallback
 } from 'react';
 import FilteringModal from './component/FilteringModal';
-import IconButton from '@mui/material/IconButton';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
@@ -16,6 +15,16 @@ import 'dotenv/config';
 import { ItemType } from '../../type/types';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
+import { IconButton, CircularProgress, Box } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/system';
+
+const theme = createTheme({
+	palette: {
+		primary: {
+			main: '#ebabab'
+		}
+	}
+});
 
 const mainContainer = css`
 	margin-left: auto;
@@ -25,6 +34,12 @@ const mainContainer = css`
 const ImageStyle = css`
 	width: 100%;
 `;
+
+const loadingSpinner = css`
+	margin-left: auto;
+	margin-right: auto;
+`;
+
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
 	const [items, setItems] = useState<ItemType[]>([]);
@@ -36,6 +51,7 @@ function Main() {
 	const handleObserver = useCallback(entry => {
 		const target = entry[0];
 		if (target.isIntersecting) {
+			setIsFetch(false);
 			fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
 				offset: offset.current,
 				limit: 8
@@ -75,6 +91,13 @@ function Main() {
 			{alert && <ErrorAlert alert={alert} />}
 			<PostList items={items} />
 			<div ref={loader} />
+			{!isFetch && (
+				<ThemeProvider theme={theme}>
+					<Box sx={{ display: 'flex' }}>
+						<CircularProgress css={loadingSpinner} />
+					</Box>
+				</ThemeProvider>
+			)}
 			{isFetch && items.length === 0 && (
 				<img src={noItemImg} css={ImageStyle} alt={'noItem'} />
 			)}
