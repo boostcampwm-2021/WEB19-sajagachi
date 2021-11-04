@@ -1,8 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { css } from '@emotion/react';
-import { NumberLiteralType } from 'typescript';
-import GroupIcon from '@mui/icons-material/Group';
-import { ItemType } from '../../type/types';
 import Item from './component/Item';
 
 const ListStyle = css`

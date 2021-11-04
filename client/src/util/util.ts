@@ -1,12 +1,33 @@
-const queryExtract = (query: any) => {
+import { QueryStringType } from '../type';
+
+export const finishedToBool = (finished: boolean[]) => {
+	return finished[0] === finished[1] ? undefined : finished[1];
+};
+
+export const boolToNum = (categories: boolean[]) => {
+	const result: number[] = [];
+	categories.forEach((category, idx) => {
+		if (category) result.push(idx + 1);
+	});
+	return result;
+};
+
+export const createQueryString = (query: QueryStringType) => {
 	let queryStrings: string[] = [];
 	Object.entries(query).forEach(([key, val]) => {
-		queryStrings.push(`${key}=${val}`);
+		if (Array.isArray(val)) {
+			if (val.length !== 0) queryStrings.push(`${key}=${val.join(',')}`);
+		} else if (typeof val === 'object') {
+			queryStrings.push(`lat=${val.lat}`);
+			queryStrings.push(`long=${val.lng}`);
+		} else {
+			if (val !== undefined) queryStrings.push(`${key}=${val}`);
+		}
 	});
 	return queryStrings.join('&');
 };
 
-export const fetchGet = async (url: string | undefined, query: any) => {
+export const fetchGet = async (url: string | undefined, query: string) => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {
@@ -17,7 +38,7 @@ export const fetchGet = async (url: string | undefined, query: any) => {
 		credentials: 'include'
 	};
 
-	const res = await fetch(`${url}?${queryExtract(query)}`, options);
+	const res = await fetch(`${url}?${query}`, options);
 	return await res.json();
 };
 
@@ -33,10 +54,7 @@ export const fetchPost = async (url: string, body: any, query: any) => {
 		body: JSON.stringify(body)
 	};
 
-	let queryStr = '';
-	if (query) queryStr = '?' + queryExtract(query);
-
-	const res = await fetch(`${url}${queryStr}`, options);
+	const res = await fetch(`${url}?${query}`, options);
 	return await res.json();
 };
 

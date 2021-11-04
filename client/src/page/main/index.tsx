@@ -45,6 +45,7 @@ function Main() {
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
 	const [isFetch, setIsFetch] = useState(false);
+
 	let offset = useRef(0);
 	const loader = useRef(null);
 

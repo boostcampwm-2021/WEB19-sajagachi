@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { css } from '@emotion/react';
 import GroupIcon from '@mui/icons-material/Group';
-import { ItemType } from '../../../type/types';
+import { ItemType } from '../../../type';
 import { dateFormat } from '../../../util/util';
 import { Chip } from '@mui/material';
 
