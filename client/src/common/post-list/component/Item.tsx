@@ -9,7 +9,7 @@ const ItemStyle = css`
 	margin: 3px 0;
 	padding: 10px 0;
 	width: 100%;
-	height: 90px;
+	height: 95px;
 	border-radius: 10px;
 	padding-left: 20px;
 	box-sizing: border-box;
