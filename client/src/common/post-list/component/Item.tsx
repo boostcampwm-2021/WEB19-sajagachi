@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { css } from '@emotion/react';
 import GroupIcon from '@mui/icons-material/Group';
 import { ItemType } from '../../../type/types';
-import Tag from '../../tag';
 import { dateFormat } from '../../../util/util';
+import { Chip } from '@mui/material';
 
 const ItemStyle = css`
 	margin: 3px 0;
 	padding: 10px 0;
 	width: 100%;
-	height: 90px;
+	height: 95px;
 	border-radius: 10px;
 	padding-left: 20px;
 	box-sizing: border-box;
@@ -42,7 +42,7 @@ export default function Item(props: { item: ItemType }) {
 				{props.item.participantCnt}/{props.item.capacity} |{' '}
 				{dateFormat(props.item.deadline)}까지
 			</div>
-			<Tag content={props.item.category} color="grey" />
+			<Chip label={props.item.category} sx={{ color: 'grey' }} />
 		</li>
 	);
 }
