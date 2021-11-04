@@ -3,16 +3,6 @@ import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
 
-const naverMapDiv = css`
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-
-	z-index: 3;
-`;
-
 const centerMarker = css`
 	position: absolute;
 	top: 50%;
@@ -57,21 +47,20 @@ function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 	}, []);
 
 	function handleLocationButtonClick(e: MouseEvent<HTMLElement>) {
-		const location = map.getCenter();
-		console.log(location);
-		setLocation({ lat: location._Lat, lng: location._Lng });
+		const center = map.getCenter();
+		setLocation({ lat: center.lat(), lng: center.lng() });
 		setIsMapOn(false);
 	}
 
 	//지도 사이즈 관련 스타일
 	const mapStyle = {
-		width: '100%',
-		height: '100%'
+		width: '100vw',
+		height: 'calc(100vh - 4.4rem)'
 	};
 
 	return (
 		<React.Fragment>
-			<div id="map" css={naverMapDiv} style={mapStyle}>
+			<div id="map" style={mapStyle}>
 				<RoomIcon css={centerMarker} />
 				<Button
 					css={locationButton}
