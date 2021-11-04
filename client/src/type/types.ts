@@ -6,8 +6,3 @@ export interface ItemType {
 	participantCnt: number;
 	deadline: string;
 }
-
-export type TagType = {
-	content: string;
-	color: string;
-};
