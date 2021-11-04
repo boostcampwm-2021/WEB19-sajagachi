@@ -33,9 +33,10 @@ const ChipStyle = (checked: boolean) => {
 	return css`
 		width: 80px;
 		margin: 3px 3px;
-		${checked ? 'background-color: #ebabab;' : ''}
+		${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
 		&:hover {
-			background-color: #ffe7e7;
+			background-color: #ebe4e4;
+			${checked ? 'background-color: #ebabab;' : ''}
 		}
 	`;
 };
