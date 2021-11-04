@@ -10,9 +10,9 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import { fetchGet } from '../../util/util';
+import { createQueryString, fetchGet } from '../../util/util';
 import 'dotenv/config';
-import { ItemType } from '../../type/types';
+import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { IconButton, CircularProgress, Box } from '@mui/material';
@@ -53,10 +53,13 @@ function Main() {
 		const target = entry[0];
 		if (target.isIntersecting) {
 			setIsFetch(false);
-			fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
-				offset: offset.current,
-				limit: 8
-			})
+			fetchGet(
+				`${process.env.REACT_APP_SERVER_URL}/api/post`,
+				createQueryString({
+					offset: offset.current,
+					limit: 8
+				})
+			)
 				.then(result => {
 					setIsFetch(true);
 					setItems(prev => [...prev, ...result]);
