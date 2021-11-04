@@ -22,7 +22,6 @@ export default function SearchModalDrawer() {
 
 	const toggleDrawer =
 		() => (event: React.KeyboardEvent | React.MouseEvent) => {
-			console.log('toggle');
 			if (
 				event.type === 'keydown' &&
 				((event as React.KeyboardEvent).key === 'Tab' ||

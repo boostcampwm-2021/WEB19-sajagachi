@@ -102,7 +102,6 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 			finished: finishedToBool(checkedFinished),
 			location: location
 		};
-		console.log(createQueryString(query));
 	};
 
 	return (
