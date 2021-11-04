@@ -1,4 +1,10 @@
-import React, { useState, MouseEvent, useEffect, useRef } from 'react';
+import React, {
+	useState,
+	MouseEvent,
+	useEffect,
+	useRef,
+	useCallback
+} from 'react';
 import FilteringModal from './component/FilteringModal';
 import IconButton from '@mui/material/IconButton';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -24,8 +30,27 @@ function Main() {
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
 	const [isFetch, setIsFetch] = useState(false);
-	const [offset, setOffset] = useState(0);
+	let offset = useRef(0);
 	const loader = useRef(null);
+
+	const handleObserver = useCallback(entry => {
+		const target = entry[0];
+		if (target.isIntersecting) {
+			fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
+				offset: offset.current,
+				limit: 8
+			})
+				.then(result => {
+					setIsFetch(true);
+					setItems(prev => [...prev, ...result]);
+					offset.current += result.length;
+				})
+				.catch(e => {
+					setIsFetch(true);
+					setAlert(true);
+				});
+		}
+	}, []);
 
 	useEffect(() => {
 		const option = {
@@ -33,34 +58,9 @@ function Main() {
 			rootMargin: '20px',
 			threshold: 0
 		};
-		const observer = new IntersectionObserver((entry, obs) => {
-			const target = entry[0];
-			if (target.isIntersecting) {
-				console.log('보임');
-				setOffset(prev => prev);
-				fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
-					offset: offset,
-					limit: 8
-				})
-					.then(result => {
-						setIsFetch(true);
-						setItems(prev => [...prev, ...result]);
-						console.log('플러스 전:', offset);
-						console.log('aksfjkdjfkdjfkjdkfj:', result.length);
-						setOffset(prev => {
-							console.log('제발:', prev + result.length);
-							return prev + result.length;
-						});
-						console.log('플러스 후:', offset);
-					})
-					.catch(e => {
-						setIsFetch(true);
-						setAlert(true);
-					});
-			}
-		}, option);
+		const observer = new IntersectionObserver(handleObserver, option);
 		if (loader.current) observer.observe(loader.current);
-	}, []);
+	}, [handleObserver]);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
 		setIsModalOn(!isModalOn);
@@ -78,7 +78,6 @@ function Main() {
 			{isFetch && items.length === 0 && (
 				<img src={noItemImg} css={ImageStyle} alt={'noItem'} />
 			)}
-
 			<FAB />
 		</div>
 	);
