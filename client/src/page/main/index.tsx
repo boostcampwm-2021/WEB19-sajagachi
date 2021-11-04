@@ -7,21 +7,23 @@ import PostList from '../../common/post-list';
 import FAB from './component/FAB';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
-import { Alert, Grow } from '@mui/material';
 import { ItemType } from '../../type/types';
+import ErrorAlert from './component/ErrorAlert';
+import noItemImg from '../../asset/noitem.png';
 
 const mainContainer = css`
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 700px;
 `;
-
-const alertStyle = css``;
-
+const ImageStyle = css`
+	width: 100%;
+`;
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
+	const [isFetch, setIsFetch] = useState(false);
 	const [offset, setOffset] = useState(0);
 	const loader = useRef(null);
 
@@ -33,20 +35,28 @@ function Main() {
 		};
 		const observer = new IntersectionObserver((entry, obs) => {
 			const target = entry[0];
-			console.log('보임');
 			if (target.isIntersecting) {
+				console.log('보임');
+				setOffset(prev => prev);
 				fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
-					offset,
+					offset: offset,
 					limit: 8
 				})
-					.then(async result => {
+					.then(result => {
+						setIsFetch(true);
 						setItems(prev => [...prev, ...result]);
 						console.log('플러스 전:', offset);
 						console.log('aksfjkdjfkdjfkjdkfj:', result.length);
-						await setOffset(prev => prev + result.length);
+						setOffset(prev => {
+							console.log('제발:', prev + result.length);
+							return prev + result.length;
+						});
 						console.log('플러스 후:', offset);
 					})
-					.catch(e => setAlert(true));
+					.catch(e => {
+						setIsFetch(true);
+						setAlert(true);
+					});
 			}
 		}, option);
 		if (loader.current) observer.observe(loader.current);
@@ -62,13 +72,13 @@ function Main() {
 				<FilterAltIcon />
 			</IconButton>
 			{isModalOn && <FilteringModal />}
-			<Grow in={alert} style={{ transformOrigin: '0 0 0' }}>
-				<Alert severity="error" css={alertStyle}>
-					게시글을 불러오는 중 문제가 발생했어요.
-				</Alert>
-			</Grow>
+			{alert && <ErrorAlert alert={alert} />}
 			<PostList items={items} />
 			<div ref={loader} />
+			{isFetch && items.length === 0 && (
+				<img src={noItemImg} css={ImageStyle} alt={'noItem'} />
+			)}
+
 			<FAB />
 		</div>
 	);
