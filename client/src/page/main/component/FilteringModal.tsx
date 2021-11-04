@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
-import { locationState } from '../../../store/loction';
+import { locationState } from '../../../store/location';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './MapDrawer';
 import { Chip, Stack } from '@mui/material';
@@ -75,7 +75,7 @@ function FilteringModal() {
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
 	const [location, setLocation] = useState({});
 	const currentLocation = useRecoilValue(locationState);
-
+	console.log(location);
 	useEffect(() => {
 		setLocation(currentLocation);
 	}, []);
@@ -94,6 +94,7 @@ function FilteringModal() {
 			return arr;
 		});
 	};
+
 	return (
 		<div css={filteringModal}>
 			<div css={CategoryStyle}>

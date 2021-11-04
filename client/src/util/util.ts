@@ -1,3 +1,32 @@
+import { QueryStringType } from '../type';
+
+// arr = [true, false, true];
+// arr.map((x, i) => {if(x) return i+1}).join(','); => 1,,3
+// [1, 2, 3].toString -> 1,2,3
+
+export const finishedToBool = (finished: boolean[]) => {
+	return finished[0] === finished[1] ? undefined : finished[1];
+};
+
+export const boolToNum = (categories: boolean[]) => {
+	const result: number[] = [];
+	categories.forEach((category, idx) => {
+		if (category) result.push(idx + 1);
+	});
+	return result;
+};
+
+export const createQueryString = (query: QueryStringType) => {
+	let queryStrings: string[] = [];
+	Object.entries(query).forEach(([key, val]) => {
+		if (Array.isArray(val)) queryStrings.push(`${key}=${val.join(',')}`);
+		else if (typeof val === 'object') {
+			queryStrings.push(`lat=${val.lat}`);
+			queryStrings.push(`long=${val.lng}`);
+		} else queryStrings.push(`${key}=${val}`);
+	});
+};
+
 const queryExtract = (query: any) => {
 	let queryStrings: string[] = [];
 	Object.entries(query).forEach(([key, val]) => {

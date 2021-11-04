@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchInput from './component/SearchInput';
-import { locationState } from '../../store/loction';
+import { locationState } from '../../store/location';
 import { useRecoilState } from 'recoil';
 
 const gnbBackground = css`
