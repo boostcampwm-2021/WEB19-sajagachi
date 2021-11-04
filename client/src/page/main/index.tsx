@@ -5,8 +5,6 @@ import React, {
 	useRef,
 	useCallback
 } from 'react';
-import FilteringModal from './component/FilteringModal';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
@@ -15,7 +13,7 @@ import 'dotenv/config';
 import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
-import { IconButton, CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
 
 const theme = createTheme({
@@ -41,7 +39,6 @@ const loadingSpinner = css`
 `;
 
 function Main() {
-	const [isModalOn, setIsModalOn] = useState(false);
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
 	const [isFetch, setIsFetch] = useState(false);
@@ -82,16 +79,8 @@ function Main() {
 		if (loader.current) observer.observe(loader.current);
 	}, [handleObserver]);
 
-	function handleFilterClick(e: MouseEvent<HTMLElement>) {
-		setIsModalOn(!isModalOn);
-	}
-
 	return (
 		<div css={mainContainer}>
-			<IconButton onClick={handleFilterClick}>
-				<FilterAltIcon />
-			</IconButton>
-			{isModalOn && <FilteringModal />}
 			{alert && <ErrorAlert alert={alert} />}
 			<PostList items={items} />
 			<div ref={loader} />

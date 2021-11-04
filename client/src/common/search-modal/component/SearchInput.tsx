@@ -16,22 +16,23 @@ const btnIcon = css`
 
 const searchForm = css`
 	position: relative;
-	width: 50%;
+	width: 100%;
+	padding: 0;
 `;
 
 const InputText = css`
-	border: 2px solid white;
+	border: 2px solid #f97d63;
 	border-radius: 16px;
 	box-sizing: border-box;
 	box-shadow: none;
-	width: calc(100% - 50px);
+	width: 100%;
 	height: 40px;
 	background: transparent;
 	outline: none;
-	color: #fff;
+	color: #000000;
 	font-size: 16px;
 	overflow: hidden;
-	padding: 10px 20px;
+	padding: 10px;
 `;
 
 function SearchInput() {
@@ -49,9 +50,6 @@ function SearchInput() {
 				onChange={onChangeHandle}
 				value={searchValue}
 			/>
-			<IconButton css={btn}>
-				<SearchIcon css={btnIcon} />
-			</IconButton>
 		</form>
 	);
 }
