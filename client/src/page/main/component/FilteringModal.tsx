@@ -5,6 +5,11 @@ import { locationState } from '../../../store/location';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './MapDrawer';
 import { Chip, Stack } from '@mui/material';
+import {
+	boolToNum,
+	createQueryString,
+	finishedToBool
+} from '../../../util/util';
 
 const filteringModal = css`
 	position: fixed;
@@ -72,10 +77,10 @@ function FilteringModal() {
 	const [checkedCategories, setCheckedCategories] = useState(
 		new Array(CATEGORY_LIST.length).fill(false)
 	);
+
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
 	const [location, setLocation] = useState({});
 	const currentLocation = useRecoilValue(locationState);
-	console.log(location);
 	useEffect(() => {
 		setLocation(currentLocation);
 	}, []);
@@ -93,6 +98,17 @@ function FilteringModal() {
 			arr[idx] = !arr[idx];
 			return arr;
 		});
+	};
+
+	const handleSubmitClick = () => {
+		const query = {
+			offset: 0,
+			limit: 10,
+			category: boolToNum(checkedCategories),
+			finished: finishedToBool(checkedFinished),
+			location: location
+		};
+		console.log(createQueryString(query));
 	};
 
 	return (
@@ -135,6 +151,9 @@ function FilteringModal() {
 				<Button
 					variant="contained"
 					style={{ backgroundColor: '#ebabab' }}
+					onClick={() => {
+						handleSubmitClick();
+					}}
 				>
 					완료
 				</Button>

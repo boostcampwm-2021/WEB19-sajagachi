@@ -15,7 +15,7 @@ export interface LocationType {
 export interface QueryStringType {
 	offset: number;
 	limit: number;
-	category: boolean[];
-	finished: boolean[];
-	location: LocationType;
+	category?: number[];
+	finished?: boolean | undefined;
+	location?: any;
 }
