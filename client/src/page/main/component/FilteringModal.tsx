@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import { locationState } from '../../../store/loction';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './MapDrawer';
+import { Chip, Stack } from '@mui/material';
 
 const filteringModal = css`
 	position: fixed;
@@ -16,7 +17,24 @@ const filteringModal = css`
 	border: 1px solid;
 	border-color: black;
 	border-radius: 20px;
+	z-index: 1;
+	padding: 0 10px;
 `;
+
+const CategoryStyle = css`
+	& > div {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+`;
+
+const CategoryChipStyle = css`
+	width: 80px;
+	margin: 3px 3px;
+`;
+
+const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
 
 function FilteringModal() {
 	const [location, setLocation] = useState({});
@@ -26,15 +44,24 @@ function FilteringModal() {
 	}, []);
 	return (
 		<div css={filteringModal}>
-			<div>
-				<h3>위치</h3>
-				<MapDrawer setLocation={setLocation} location={location} />
-			</div>
-			<div>
+			<div css={CategoryStyle}>
 				<h3>카테고리</h3>
+				<div>
+					{CATEGORY_LIST.map(category => (
+						<Chip
+							label={category}
+							variant="outlined"
+							css={CategoryChipStyle}
+						/>
+					))}
+				</div>
 			</div>
 			<div>
 				<h3>거래상태</h3>
+			</div>
+			<div>
+				<h3>위치</h3>
+				<MapDrawer setLocation={setLocation} location={location} />
 			</div>
 			<Button>완료</Button>
 		</div>
