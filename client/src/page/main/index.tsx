@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent, useEffect } from 'react';
+import React, { useState, MouseEvent, useEffect, useRef } from 'react';
 import FilteringModal from './component/FilteringModal';
 import IconButton from '@mui/material/IconButton';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -8,6 +8,7 @@ import FAB from './component/FAB';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
 import { Alert, Grow } from '@mui/material';
+import { ItemType } from '../../type/types';
 
 const mainContainer = css`
 	margin-left: auto;
@@ -19,14 +20,36 @@ const alertStyle = css``;
 
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
-	const [items, setItems] = useState([]);
+	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
+	const [offset, setOffset] = useState(0);
+	const loader = useRef(null);
 
 	useEffect(() => {
-		const initialQuery = { offset: 0, limit: 10 };
-		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
-			.then(result => setItems(result))
-			.catch(e => setAlert(true));
+		const option = {
+			root: null,
+			rootMargin: '20px',
+			threshold: 0
+		};
+		const observer = new IntersectionObserver((entry, obs) => {
+			const target = entry[0];
+			console.log('보임');
+			if (target.isIntersecting) {
+				fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, {
+					offset,
+					limit: 8
+				})
+					.then(async result => {
+						setItems(prev => [...prev, ...result]);
+						console.log('플러스 전:', offset);
+						console.log('aksfjkdjfkdjfkjdkfj:', result.length);
+						await setOffset(prev => prev + result.length);
+						console.log('플러스 후:', offset);
+					})
+					.catch(e => setAlert(true));
+			}
+		}, option);
+		if (loader.current) observer.observe(loader.current);
 	}, []);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
@@ -45,6 +68,7 @@ function Main() {
 				</Alert>
 			</Grow>
 			<PostList items={items} />
+			<div ref={loader} />
 			<FAB />
 		</div>
 	);
