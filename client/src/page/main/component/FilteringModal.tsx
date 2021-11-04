@@ -5,7 +5,6 @@ import { locationState } from '../../../store/loction';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './MapDrawer';
 import { Chip, Stack } from '@mui/material';
-import { borderRight } from '@mui/system';
 
 const filteringModal = css`
 	position: fixed;
@@ -31,11 +30,14 @@ const CategoryStyle = css`
 	}
 `;
 
-const CategoryChipStyle = (checked: boolean) => {
+const ChipStyle = (checked: boolean) => {
 	return css`
 		width: 80px;
 		margin: 3px 3px;
-		${checked ? 'background-color: red;' : ''}
+		${checked ? 'background-color: #ebabab;' : ''}
+		&:hover {
+			background-color: #ffe7e7;
+		}
 	`;
 };
 
@@ -47,11 +49,6 @@ const StateStyle = css`
 		display: flex;
 		flex-wrap: wrap;
 	}
-`;
-
-const StateChipStyle = css`
-	width: 80px;
-	margin: 3px 3px;
 `;
 
 const LocationStyle = css`
@@ -69,11 +66,13 @@ const buttonContainerStyle = css`
 `;
 
 const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
+const FINISHED_LIST = ['공구중', '공구완료'];
 
 function FilteringModal() {
 	const [checkedCategories, setCheckedCategories] = useState(
 		new Array(CATEGORY_LIST.length).fill(false)
 	);
+	const [checkedFinished, setCheckedFinished] = useState([false, false]);
 	const [location, setLocation] = useState({});
 	const currentLocation = useRecoilValue(locationState);
 
@@ -88,7 +87,13 @@ function FilteringModal() {
 			return arr;
 		});
 	};
-
+	const handleFinishedClick = (idx: number) => {
+		setCheckedFinished(checkedFinished => {
+			const arr = [...checkedFinished];
+			arr[idx] = !arr[idx];
+			return arr;
+		});
+	};
 	return (
 		<div css={filteringModal}>
 			<div css={CategoryStyle}>
@@ -97,7 +102,7 @@ function FilteringModal() {
 					{CATEGORY_LIST.map((category, i) => (
 						<Chip
 							label={category}
-							css={CategoryChipStyle(checkedCategories[i])}
+							css={ChipStyle(checkedCategories[i])}
 							onClick={() => {
 								handleCategoryClick(i);
 							}}
@@ -109,8 +114,16 @@ function FilteringModal() {
 			<div css={StateStyle}>
 				<h3>공구 상태</h3>
 				<div>
-					<Chip label="공구중" css={StateChipStyle} />
-					<Chip label="공구완료" css={StateChipStyle} />
+					{FINISHED_LIST.map((finished, i) => (
+						<Chip
+							label={finished}
+							css={ChipStyle(checkedFinished[i])}
+							onClick={() => {
+								handleFinishedClick(i);
+							}}
+							data-idx={i}
+						/>
+					))}
 				</div>
 			</div>
 			<div css={LocationStyle}>
