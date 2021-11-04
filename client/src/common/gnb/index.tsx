@@ -8,12 +8,11 @@ import { useRecoilState } from 'recoil';
 
 const gnbBackground = css`
 	z-index: 1;
-	width: 100%;
 	height: 4.4rem;
 	position: fixed;
-	right: 0;
 	top: 0;
 	left: 0;
+	right: 0;
 	background-color: #ebabab;
 	& + * {
 		margin-top: 4.4rem;

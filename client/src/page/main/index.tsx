@@ -7,26 +7,33 @@ import PostList from '../../common/post-list';
 import FAB from './component/FAB';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
-import { Alert, Grow } from '@mui/material';
+import ErrorAlert from './component/ErrorAlert';
+import noItemImg from '../../asset/noitem.png';
 
 const mainContainer = css`
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 700px;
 `;
-
-const alertStyle = css``;
-
+const ImageStyle = css`
+	width: 100%;
+`;
 function Main() {
 	const [isModalOn, setIsModalOn] = useState(false);
 	const [items, setItems] = useState([]);
 	const [alert, setAlert] = useState(false);
-
+	const [isFetch, setIsFetch] = useState(false);
 	useEffect(() => {
 		const initialQuery = { offset: 0, limit: 10 };
 		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
-			.then(result => setItems(result))
-			.catch(e => setAlert(true));
+			.then(result => {
+				setIsFetch(true);
+				setItems(result);
+			})
+			.catch(e => {
+				setIsFetch(true);
+				setAlert(true);
+			});
 	}, []);
 
 	function handleFilterClick(e: MouseEvent<HTMLElement>) {
@@ -39,12 +46,11 @@ function Main() {
 				<FilterAltIcon />
 			</IconButton>
 			{isModalOn && <FilteringModal />}
-			<Grow in={alert} style={{ transformOrigin: '0 0 0' }}>
-				<Alert severity="error" css={alertStyle}>
-					게시글을 불러오는 중 문제가 발생했어요.
-				</Alert>
-			</Grow>
+			{alert && <ErrorAlert alert={alert} />}
 			<PostList items={items} />
+			{isFetch && items.length === 0 && (
+				<img src={noItemImg} css={ImageStyle} alt={'noItem'} />
+			)}
 			<FAB />
 		</div>
 	);
