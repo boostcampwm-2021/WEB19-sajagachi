@@ -26,9 +26,17 @@ const getPosts = async ({
 	`;
 
 	const condition = [];
-	if (finished) condition.push(`post.finished = ${finished}`);
+
+	if (finished !== undefined) condition.push(`post.finished = ${finished}`);
 	if (search) condition.push(`post.title LIKE "%${search}%"`);
-	if (category) condition.push(`post.categoryId = ${category}`);
+
+	let categories: string[] = [];
+	if (category) categories = category.split(',');
+	categories = categories.map(category => {
+		return `post.categoryId = ${category}`;
+	});
+	if (categories.length !== 0) condition.push(categories.join(' OR '));
+
 	sql += condition.length ? 'WHERE ' + condition.join(' AND ') : '';
 	sql += ' ORDER BY post.id DESC';
 	sql += ` LIMIT ${offset}, ${limit}`;

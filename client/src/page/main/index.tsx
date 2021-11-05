@@ -1,50 +1,99 @@
-import React, { useState, MouseEvent, useEffect } from 'react';
-import FilteringModal from './component/FilteringModal';
-import IconButton from '@mui/material/IconButton';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import React, {
+	useState,
+	MouseEvent,
+	useEffect,
+	useRef,
+	useCallback
+} from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import { fetchGet } from '../../util/util';
+import { createQueryString, fetchGet } from '../../util/util';
 import 'dotenv/config';
-import { Alert, Grow } from '@mui/material';
+import { ItemType } from '../../type';
+import ErrorAlert from './component/ErrorAlert';
+import noItemImg from '../../asset/noitem.png';
+import { CircularProgress, Box } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/system';
+
+const theme = createTheme({
+	palette: {
+		primary: {
+			main: '#ebabab'
+		}
+	}
+});
 
 const mainContainer = css`
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 700px;
 `;
+const ImageStyle = css`
+	width: 100%;
+`;
 
-const alertStyle = css``;
+const loadingSpinner = css`
+	margin-left: auto;
+	margin-right: auto;
+`;
 
 function Main() {
-	const [isModalOn, setIsModalOn] = useState(false);
-	const [items, setItems] = useState([]);
+	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
+	const [isFetch, setIsFetch] = useState(false);
 
-	useEffect(() => {
-		const initialQuery = { offset: 0, limit: 10 };
-		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post`, initialQuery)
-			.then(result => setItems(result))
-			.catch(e => setAlert(true));
+	let offset = useRef(0);
+	const loader = useRef(null);
+
+	const handleObserver = useCallback(entry => {
+		const target = entry[0];
+		if (target.isIntersecting) {
+			setIsFetch(false);
+			fetchGet(
+				`${process.env.REACT_APP_SERVER_URL}/api/post`,
+				createQueryString({
+					offset: offset.current,
+					limit: 8
+				})
+			)
+				.then(result => {
+					setIsFetch(true);
+					setItems(prev => [...prev, ...result]);
+					offset.current += result.length;
+				})
+				.catch(e => {
+					setIsFetch(true);
+					setAlert(true);
+				});
+		}
 	}, []);
 
-	function handleFilterClick(e: MouseEvent<HTMLElement>) {
-		setIsModalOn(!isModalOn);
-	}
+	useEffect(() => {
+		const option = {
+			root: null,
+			rootMargin: '20px',
+			threshold: 0
+		};
+		const observer = new IntersectionObserver(handleObserver, option);
+		if (loader.current) observer.observe(loader.current);
+	}, [handleObserver]);
 
 	return (
 		<div css={mainContainer}>
-			<IconButton onClick={handleFilterClick}>
-				<FilterAltIcon />
-			</IconButton>
-			{isModalOn && <FilteringModal />}
-			<Grow in={alert} style={{ transformOrigin: '0 0 0' }}>
-				<Alert severity="error" css={alertStyle}>
-					게시글을 불러오는 중 문제가 발생했어요.
-				</Alert>
-			</Grow>
+			{alert && <ErrorAlert alert={alert} />}
 			<PostList items={items} />
+			<div ref={loader} />
+			{!isFetch && (
+				<ThemeProvider theme={theme}>
+					<Box sx={{ display: 'flex' }}>
+						<CircularProgress css={loadingSpinner} />
+					</Box>
+				</ThemeProvider>
+			)}
+			{isFetch && items.length === 0 && (
+				<img src={noItemImg} css={ImageStyle} alt={'noItem'} />
+			)}
 			<FAB />
 		</div>
 	);

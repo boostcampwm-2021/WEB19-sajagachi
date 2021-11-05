@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import SearchInput from './component/SearchInput';
-import { locationState } from '../../store/loction';
+import { locationState } from '../../store/location';
 import { useRecoilState } from 'recoil';
+import SearchModalDrawer from './component/SearchModalDrawer';
 
 const gnbBackground = css`
 	z-index: 1;
-	width: 100%;
 	height: 4.4rem;
 	position: fixed;
-	right: 0;
 	top: 0;
 	left: 0;
+	right: 0;
 	background-color: #ebabab;
 	& + * {
 		margin-top: 4.4rem;
@@ -55,6 +54,7 @@ const DEFAULT_LOCATION_LNG = 127.0016985;
 
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
+
 	useEffect(() => {
 		navigator.geolocation.getCurrentPosition(
 			function (pos) {
@@ -78,10 +78,12 @@ function Gnb() {
 				<a href="/" css={logo}>
 					🦁
 				</a>
-				<SearchInput />
-				<IconButton css={btn}>
-					<AccountCircleIcon css={btnIcon} />
-				</IconButton>
+				<div>
+					<SearchModalDrawer />
+					<IconButton css={btn}>
+						<AccountCircleIcon css={btnIcon} />
+					</IconButton>
+				</div>
 			</div>
 		</div>
 	);
