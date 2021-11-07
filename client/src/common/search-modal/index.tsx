@@ -93,9 +93,7 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 					if (status !== naver.maps.Service.Status.OK) {
 						// 에러 처리를 어떻게 해야하지?
 					}
-					const result = response.result;
-					const items = result.items;
-					setAddress(items[0].address);
+					setAddress(response.result.items[0].address);
 				}
 			);
 		}
@@ -163,7 +161,7 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 				<div css={LocationStyle}>
 					<h3>위치</h3>
 					<p>{address}</p>
-					<MapDrawer setLocation={setLocation} location={location} />
+					<MapDrawer />
 				</div>
 				<div css={buttonContainerStyle}>
 					<Button
