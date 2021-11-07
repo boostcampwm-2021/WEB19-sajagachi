@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect } from 'react';
+import React, { MouseEvent, useCallback, useEffect } from 'react';
 import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
@@ -34,9 +34,17 @@ type mapState = {
 	location: any;
 };
 
+const DEFAULT_LOCATION = {
+	lat: 37.5642135,
+	lng: 127.0016985
+};
+
 function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 	let map: any = null;
 	useEffect(() => {
+		if (JSON.stringify(location) === JSON.stringify({})) {
+			location = DEFAULT_LOCATION;
+		}
 		const initMap = () => {
 			map = new naver.maps.Map('map', {
 				center: new naver.maps.LatLng(location.lat, location.lng),
@@ -44,13 +52,16 @@ function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 			});
 		};
 		initMap();
-	}, []);
+	}, [location]);
 
-	function handleLocationButtonClick(e: MouseEvent<HTMLElement>) {
-		const center = map.getCenter();
-		setLocation({ lat: center.lat(), lng: center.lng() });
-		setIsMapOn(false);
-	}
+	const handleLocationButtonClick = useCallback(
+		(e: MouseEvent<HTMLElement>) => {
+			const center = map.getCenter();
+			setLocation({ lat: center.lat(), lng: center.lng() });
+			setIsMapOn(false);
+		},
+		[location]
+	);
 
 	//지도 사이즈 관련 스타일
 	const mapStyle = {

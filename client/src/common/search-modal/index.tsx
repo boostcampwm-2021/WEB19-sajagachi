@@ -2,11 +2,12 @@ import React, { MouseEvent, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
 import { locationState } from '../../store/location';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
 import { Chip, Stack } from '@mui/material';
 import { boolToNum, createQueryString, finishedToBool } from '../../util/util';
+import { addressState } from '../../store/address';
 
 const searchModal = css`
 	max-width: 700px;
@@ -74,11 +75,31 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState({});
-	const currentLocation = useRecoilValue(locationState);
+	const [location, setLocation] = useRecoilState(locationState);
+	const [address, setAddress] = useRecoilState(addressState);
+
 	useEffect(() => {
-		setLocation(currentLocation);
-	}, []);
+		if (JSON.stringify(location) !== JSON.stringify({}))
+			searchCoordinateToAddress(location);
+	}, [location]);
+
+	function searchCoordinateToAddress(latlng: any) {
+		if (naver.maps.Service) {
+			naver.maps.Service.reverseGeocode(
+				{
+					location: new naver.maps.LatLng(latlng.lat, latlng.lng)
+				},
+				function (status, response) {
+					if (status !== naver.maps.Service.Status.OK) {
+						// 에러 처리를 어떻게 해야하지?
+					}
+					const result = response.result;
+					const items = result.items;
+					setAddress(items[0].address);
+				}
+			);
+		}
+	}
 
 	const handleCategoryClick = (idx: number) => {
 		setCheckedCategories(checkedCategories => {
@@ -141,6 +162,7 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 				</div>
 				<div css={LocationStyle}>
 					<h3>위치</h3>
+					<p>{address}</p>
 					<MapDrawer setLocation={setLocation} location={location} />
 				</div>
 				<div css={buttonContainerStyle}>
