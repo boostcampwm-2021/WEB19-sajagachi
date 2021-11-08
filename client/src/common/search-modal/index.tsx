@@ -1,11 +1,11 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
 import { locationState } from '../../store/location';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
-import { Chip, Stack } from '@mui/material';
+import { Chip } from '@mui/material';
 import { boolToNum, createQueryString, finishedToBool } from '../../util/util';
 
 const searchModal = css`
@@ -65,7 +65,7 @@ const buttonContainerStyle = css`
 	text-align: right;
 `;
 
-const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
+const CATEGORY_LIST = ['배달음식', '로켓배송', '대용량', '정기권'];
 const FINISHED_LIST = ['공구중', '공구완료'];
 
 function SearchModal({
@@ -80,8 +80,9 @@ function SearchModal({
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState({});
+	const [location, setLocation] = useState({ lat: 0, lng: 0 });
 	const currentLocation = useRecoilValue(locationState);
+	const [search, setSearch] = useState('');
 
 	useEffect(() => {
 		setLocation(currentLocation);
@@ -105,10 +106,12 @@ function SearchModal({
 	const handleSubmitClick = () => {
 		const query = {
 			offset: 0,
-			limit: 10,
+			limit: 15,
 			category: boolToNum(checkedCategories),
 			finished: finishedToBool(checkedFinished),
-			location: location
+			lat: location.lat,
+			long: location.lng,
+			search: search ? search : undefined
 		};
 		const queryStr = createQueryString(query);
 		history.push('/?' + queryStr);
@@ -117,7 +120,7 @@ function SearchModal({
 	return (
 		<div>
 			<div css={searchModal}>
-				<SearchInput />
+				<SearchInput value={search} setSearch={setSearch} />
 				<div css={CategoryStyle}>
 					<h3>카테고리</h3>
 					<div>

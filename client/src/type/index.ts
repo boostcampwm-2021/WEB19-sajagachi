@@ -13,9 +13,11 @@ export interface LocationType {
 }
 
 export interface QueryStringType {
-	offset: number;
-	limit: number;
+	offset?: number;
+	limit?: number;
 	category?: number[];
 	finished?: boolean | undefined;
-	location?: any;
+	lat?: number;
+	long?: number;
+	search?: string;
 }
