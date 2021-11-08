@@ -8,6 +8,7 @@ import {
 	Switch
 } from 'react-router-dom';
 import Main from './page/main';
+import Post from './page/post';
 
 const globalStyle = css`
 	* {
@@ -16,7 +17,7 @@ const globalStyle = css`
 	}
 	body {
 		width: 100vw;
-		height: 100vh;
+		height: calc(100vh - 4.4rem);
 		padding: 0;
 		margin: 0;
 	}
@@ -33,7 +34,8 @@ const App = () => {
 			<Gnb />
 			<Router>
 				<Switch>
-					<Route path="/" component={Main} />
+					<Route path="/" component={Main} exact />
+					<Route path="/post" component={Post} exact />
 				</Switch>
 			</Router>
 		</>

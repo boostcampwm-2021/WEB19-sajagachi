@@ -1,10 +1,4 @@
-import React, {
-	useState,
-	MouseEvent,
-	useEffect,
-	useRef,
-	useCallback
-} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
@@ -15,6 +9,7 @@ import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
+import { Link, Redirect } from 'react-router-dom';
 
 const theme = createTheme({
 	palette: {
