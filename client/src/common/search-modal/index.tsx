@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
 import { Chip } from '@mui/material';
-import { boolToNum, finishedToBool } from '../../util/util';
+import { boolToNum, createQueryString, finishedToBool } from '../../util/util';
 import { LocationType } from '../../type';
 
 const searchModal = css`
@@ -66,21 +66,29 @@ const buttonContainerStyle = css`
 	text-align: right;
 `;
 
-const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
+const CATEGORY_LIST = ['배달음식', '로켓배송', '대용량', '정기권'];
 const FINISHED_LIST = ['공구중', '공구완료'];
 
-function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
+function SearchModal({
+	setIsSearchModalOn,
+	history
+}: {
+	setIsSearchModalOn: any;
+	history: any;
+}) {
 	const [checkedCategories, setCheckedCategories] = useState(
 		new Array(CATEGORY_LIST.length).fill(false)
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState<LocationType>({
+  const [location, setLocation] = useState<LocationType>({
 		lat: 0,
 		lng: 0
 	});
 	const currentLocation = useRecoilValue(locationState);
 	const [address, setAddress] = useState('위치 확인 중');
+  const [search, setSearch] = useState('');
+    
 	useEffect(() => {
 		setLocation(currentLocation);
 	}, [currentLocation]);
@@ -123,17 +131,21 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 	const handleSubmitClick = () => {
 		const query = {
 			offset: 0,
-			limit: 10,
+			limit: 15,
 			category: boolToNum(checkedCategories),
 			finished: finishedToBool(checkedFinished),
-			location: location
+			lat: location.lat,
+			long: location.lng,
+			search: search ? search : undefined
 		};
+		const queryStr = createQueryString(query);
+		history.push('/?' + queryStr);
 	};
 
 	return (
 		<div>
 			<div css={searchModal}>
-				<SearchInput />
+				<SearchInput value={search} setSearch={setSearch} />
 				<div css={CategoryStyle}>
 					<h3>카테고리</h3>
 					<div>

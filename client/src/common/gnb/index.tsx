@@ -5,6 +5,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { locationState } from '../../store/location';
 import { useRecoilState } from 'recoil';
 import SearchModalDrawer from './component/SearchModalDrawer';
+import { withRouter } from 'react-router-dom';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -48,6 +49,9 @@ const btnIcon = css`
 	height: 32px;
 	color: white;
 `;
+
+const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
+
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 
@@ -67,7 +71,7 @@ function Gnb() {
 					🦁
 				</a>
 				<div>
-					<SearchModalDrawer />
+					<SearchModalDrawerWithRouter />
 					<IconButton css={btn}>
 						<AccountCircleIcon css={btnIcon} />
 					</IconButton>
