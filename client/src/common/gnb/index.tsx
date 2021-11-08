@@ -48,27 +48,16 @@ const btnIcon = css`
 	height: 32px;
 	color: white;
 `;
-
-const DEFAULT_LOCATION = {
-	lat: 37.5642135,
-	lng: 127.0016985
-};
-
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 
 	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(
-			function (pos) {
-				setLocation({
-					lat: pos.coords.latitude,
-					lng: pos.coords.longitude
-				});
-			},
-			function () {
-				setLocation(DEFAULT_LOCATION);
-			}
-		);
+		navigator.geolocation.getCurrentPosition(function (pos) {
+			setLocation({
+				lat: pos.coords.latitude,
+				lng: pos.coords.longitude
+			});
+		});
 	}, []);
 
 	return (
