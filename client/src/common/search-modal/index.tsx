@@ -1,12 +1,13 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
 import { locationState } from '../../store/location';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
-import { Chip, Stack } from '@mui/material';
-import { boolToNum, createQueryString, finishedToBool } from '../../util/util';
+import { Chip } from '@mui/material';
+import { boolToNum, finishedToBool } from '../../util/util';
+import { LocationType } from '../../type';
 
 const searchModal = css`
 	max-width: 700px;
@@ -74,11 +75,35 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState({});
+	const [location, setLocation] = useState<LocationType>({
+		lat: 0,
+		lng: 0
+	});
 	const currentLocation = useRecoilValue(locationState);
+	const [address, setAddress] = useState('위치 확인 중');
 	useEffect(() => {
 		setLocation(currentLocation);
-	}, []);
+	}, [currentLocation]);
+	useEffect(() => {
+		if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
+			searchCoordinateToAddress(location);
+	}, [location]);
+
+	function searchCoordinateToAddress(latlng: any) {
+		if (naver.maps.Service) {
+			naver.maps.Service.reverseGeocode(
+				{
+					location: new naver.maps.LatLng(latlng.lat, latlng.lng)
+				},
+				function (status, response) {
+					if (status !== naver.maps.Service.Status.OK) {
+						// 에러 처리를 어떻게 해야하지?
+					}
+					setAddress(response.result.items[0].address);
+				}
+			);
+		}
+	}
 
 	const handleCategoryClick = (idx: number) => {
 		setCheckedCategories(checkedCategories => {
@@ -141,6 +166,7 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 				</div>
 				<div css={LocationStyle}>
 					<h3>위치</h3>
+					<p>{address}</p>
 					<MapDrawer setLocation={setLocation} location={location} />
 				</div>
 				<div css={buttonContainerStyle}>

@@ -49,8 +49,10 @@ const btnIcon = css`
 	color: white;
 `;
 
-const DEFAULT_LOCATION_LAT = 37.5642135;
-const DEFAULT_LOCATION_LNG = 127.0016985;
+const DEFAULT_LOCATION = {
+	lat: 37.5642135,
+	lng: 127.0016985
+};
 
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
@@ -64,10 +66,7 @@ function Gnb() {
 				});
 			},
 			function () {
-				setLocation({
-					lat: DEFAULT_LOCATION_LAT,
-					lng: DEFAULT_LOCATION_LNG
-				});
+				setLocation(DEFAULT_LOCATION);
 			}
 		);
 	}, []);

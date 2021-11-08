@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import { css } from '@emotion/react';
 import NaverMapAPI from './NaverMapAPI';
+import { LocationType } from '../../../type';
 
 export default function MapDrawer({
 	setLocation,
 	location
 }: {
-	setLocation: any;
-	location: any;
+	location: LocationType;
+	setLocation: (location: LocationType) => void;
 }) {
 	const [isMapOn, setIsMapOn] = useState(false);
 
