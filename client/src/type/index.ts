@@ -17,7 +17,7 @@ export interface QueryStringType {
 	limit?: number;
 	category?: number[];
 	finished?: boolean | undefined;
-	lat?: number;
-	long?: number;
+	lat: number;
+	long: number;
 	search?: string;
 }

@@ -64,14 +64,18 @@ export const dateFormat = (dateStr: string) => {
 };
 
 export const decomposeQueryString = (queryStr: string) => {
-	const result: QueryStringType = {};
+	const result: QueryStringType = {
+		lat: 0,
+		long: 0
+	};
 	const params = new URLSearchParams(queryStr);
 	result.category = params
 		.get('category')
 		?.split(',')
 		.map(x => Number(x));
+
 	result.finished = params.get('finished')
-		? Boolean(params.get('finished'))
+		? params.get('finished') === 'true'
 		: undefined;
 	result.lat = Number(params.get('lat'));
 	result.long = Number(params.get('long'));

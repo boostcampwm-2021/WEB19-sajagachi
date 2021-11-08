@@ -6,7 +6,12 @@ import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
 import { Chip } from '@mui/material';
-import { boolToNum, createQueryString, finishedToBool } from '../../util/util';
+import {
+	boolToNum,
+	createQueryString,
+	decomposeQueryString,
+	finishedToBool
+} from '../../util/util';
 import { LocationType } from '../../type';
 
 const searchModal = css`
@@ -81,21 +86,13 @@ function SearchModal({
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-  const [location, setLocation] = useState<LocationType>({
+	const [location, setLocation] = useState<LocationType>({
 		lat: 0,
 		lng: 0
 	});
 	const currentLocation = useRecoilValue(locationState);
 	const [address, setAddress] = useState('위치 확인 중');
-  const [search, setSearch] = useState('');
-    
-	useEffect(() => {
-		setLocation(currentLocation);
-	}, [currentLocation]);
-	useEffect(() => {
-		if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
-			searchCoordinateToAddress(location);
-	}, [location]);
+	const [search, setSearch] = useState('');
 
 	function searchCoordinateToAddress(latlng: any) {
 		if (naver.maps.Service) {
@@ -141,7 +138,29 @@ function SearchModal({
 		const queryStr = createQueryString(query);
 		history.push('/?' + queryStr);
 	};
-
+	useEffect(() => {
+		setLocation(currentLocation);
+	}, [currentLocation]);
+	useEffect(() => {
+		if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
+			searchCoordinateToAddress(location);
+	}, [location]);
+	useEffect(() => {
+		const query = decomposeQueryString(window.location.search);
+		setLocation({ lat: query.lat, lng: query.long });
+		setCheckedCategories(checkedCategories => {
+			query.category?.forEach(val => {
+				checkedCategories[val - 1] = true;
+			});
+			return checkedCategories;
+		});
+		if (query.search) setSearch(query.search);
+		setCheckedFinished(checkedFinished => {
+			if (query.finished === true) checkedFinished[1] = true;
+			else if (query.finished === false) checkedFinished[0] = true;
+			return checkedFinished;
+		});
+	}, []);
 	return (
 		<div>
 			<div css={searchModal}>
