@@ -1,7 +1,8 @@
-import React, { MouseEvent, useEffect } from 'react';
+import React, { MouseEvent, useCallback, useEffect } from 'react';
 import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
+import { LocationType } from '../../../type';
 
 const centerMarker = css`
 	position: absolute;
@@ -30,8 +31,8 @@ const locationButton = css`
 
 type mapState = {
 	setIsMapOn: any;
-	setLocation: any;
-	location: any;
+	setLocation: (location: LocationType) => void;
+	location: LocationType;
 };
 
 function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
@@ -44,13 +45,16 @@ function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 			});
 		};
 		initMap();
-	}, []);
+	}, [location]);
 
-	function handleLocationButtonClick(e: MouseEvent<HTMLElement>) {
-		const center = map.getCenter();
-		setLocation({ lat: center.lat(), lng: center.lng() });
-		setIsMapOn(false);
-	}
+	const handleLocationButtonClick = useCallback(
+		(e: MouseEvent<HTMLElement>) => {
+			const center = map.getCenter();
+			setLocation({ lat: center.lat(), lng: center.lng() });
+			setIsMapOn(false);
+		},
+		[location]
+	);
 
 	//지도 사이즈 관련 스타일
 	const mapStyle = {

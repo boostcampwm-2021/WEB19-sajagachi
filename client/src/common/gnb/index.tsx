@@ -50,29 +50,18 @@ const btnIcon = css`
 	color: white;
 `;
 
-const DEFAULT_LOCATION_LAT = 37.5642135;
-const DEFAULT_LOCATION_LNG = 127.0016985;
-
 const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 
 	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(
-			function (pos) {
-				setLocation({
-					lat: pos.coords.latitude,
-					lng: pos.coords.longitude
-				});
-			},
-			function () {
-				setLocation({
-					lat: DEFAULT_LOCATION_LAT,
-					lng: DEFAULT_LOCATION_LNG
-				});
-			}
-		);
+		navigator.geolocation.getCurrentPosition(function (pos) {
+			setLocation({
+				lat: pos.coords.latitude,
+				lng: pos.coords.longitude
+			});
+		});
 	}, []);
 
 	return (
