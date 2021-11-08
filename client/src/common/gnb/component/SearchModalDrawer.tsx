@@ -5,6 +5,7 @@ import { css } from '@emotion/react';
 import SearchModal from '../../search-modal';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import { RouteComponentProps } from 'react-router';
 
 const btn = css`
 	width: 48px;
@@ -17,7 +18,7 @@ const btnIcon = css`
 	color: white;
 `;
 
-export default function SearchModalDrawer() {
+export default function SearchModalDrawer({ history }: RouteComponentProps) {
 	const [isSearchModalOn, setIsSearchModalOn] = useState(false);
 
 	const toggleDrawer =
@@ -41,7 +42,10 @@ export default function SearchModalDrawer() {
 					height: 'auto'
 				}}
 			>
-				<SearchModal setIsSearchModalOn={setIsSearchModalOn} />
+				<SearchModal
+					setIsSearchModalOn={setIsSearchModalOn}
+					history={history}
+				/>
 			</Box>
 		</div>
 	);

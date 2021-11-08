@@ -30,8 +30,8 @@ const App = () => {
 	return (
 		<>
 			<Global styles={globalStyle} />
-			<Gnb />
 			<Router>
+				<Gnb />
 				<Switch>
 					<Route path="/" component={Main} />
 				</Switch>

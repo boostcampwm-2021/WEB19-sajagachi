@@ -68,7 +68,13 @@ const buttonContainerStyle = css`
 const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
 const FINISHED_LIST = ['공구중', '공구완료'];
 
-function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
+function SearchModal({
+	setIsSearchModalOn,
+	history
+}: {
+	setIsSearchModalOn: any;
+	history: any;
+}) {
 	const [checkedCategories, setCheckedCategories] = useState(
 		new Array(CATEGORY_LIST.length).fill(false)
 	);
@@ -76,6 +82,7 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
 	const [location, setLocation] = useState({});
 	const currentLocation = useRecoilValue(locationState);
+
 	useEffect(() => {
 		setLocation(currentLocation);
 	}, []);
@@ -103,6 +110,8 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 			finished: finishedToBool(checkedFinished),
 			location: location
 		};
+		const queryStr = createQueryString(query);
+		history.push('/?' + queryStr);
 	};
 
 	return (
