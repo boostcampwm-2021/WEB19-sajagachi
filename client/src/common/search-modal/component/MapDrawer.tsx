@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import { css } from '@emotion/react';
 import NaverMapAPI from './NaverMapAPI';
+import { LocationType } from '../../../type';
 
-export default function MapDrawer() {
+export default function MapDrawer({
+	setLocation,
+	location
+}: {
+	location: LocationType;
+	setLocation: (location: LocationType) => void;
+}) {
 	const [isMapOn, setIsMapOn] = useState(false);
 
 	const toggleDrawer =
@@ -29,7 +35,11 @@ export default function MapDrawer() {
 					height: 'auto'
 				}}
 			>
-				<NaverMapAPI setIsMapOn={setIsMapOn} />
+				<NaverMapAPI
+					setIsMapOn={setIsMapOn}
+					setLocation={setLocation}
+					location={location}
+				/>
 			</Box>
 		</div>
 	);

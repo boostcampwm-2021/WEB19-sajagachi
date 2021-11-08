@@ -2,8 +2,7 @@ import React, { MouseEvent, useCallback, useEffect } from 'react';
 import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
-import { locationState } from '../../../store/location';
-import { useRecoilState } from 'recoil';
+import { LocationType } from '../../../type';
 
 const centerMarker = css`
 	position: absolute;
@@ -32,26 +31,16 @@ const locationButton = css`
 
 type mapState = {
 	setIsMapOn: any;
+	setLocation: (location: LocationType) => void;
+	location: LocationType;
 };
 
-const DEFAULT_LOCATION = {
-	lat: 37.5642135,
-	lng: 127.0016985
-};
-
-function NaverMapAPI({ setIsMapOn }: mapState) {
-	const [location, setLocation] = useRecoilState(locationState);
+function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 	let map: any = null;
 	useEffect(() => {
-		let center: { lat: number; lng: number };
-		if (JSON.stringify(location) === JSON.stringify({})) {
-			center = DEFAULT_LOCATION;
-		} else {
-			center = location;
-		}
 		const initMap = () => {
 			map = new naver.maps.Map('map', {
-				center: new naver.maps.LatLng(center.lat, center.lng),
+				center: new naver.maps.LatLng(location.lat, location.lng),
 				zoom: 13
 			});
 		};
