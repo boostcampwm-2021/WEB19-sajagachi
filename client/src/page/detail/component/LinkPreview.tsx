@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { css } from '@emotion/react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 
