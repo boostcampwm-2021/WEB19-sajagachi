@@ -48,4 +48,4 @@ function SelectCapacity({ capacity, setCapacity }: CapacityState) {
 	);
 }
 
-export default SelectCapacity;
+export default React.memo(SelectCapacity);

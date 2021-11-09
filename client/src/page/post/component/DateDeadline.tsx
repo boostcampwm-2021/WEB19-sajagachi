@@ -32,4 +32,4 @@ function DateDeadline({ deadline, setDeadline }: deadlineState) {
 	);
 }
 
-export default DateDeadline;
+export default React.memo(DateDeadline);
