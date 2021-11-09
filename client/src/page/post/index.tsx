@@ -3,13 +3,15 @@ import { css } from '@emotion/react';
 import InputTitle from './component/InputTitle';
 import InputContent from './component/InputContent';
 import InputUrl from './component/InputUrl';
+import CheckCategory from './component/CheckCategory';
+import SelectCapacity from './component/SelectCapacity';
+import DateDeadline from './component/DateDeadline';
 import IconButton from '@mui/material/IconButton';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
-import SelectCapacity from './component/SelectCapacity';
-import DateDeadline from './component/DateDeadline';
 
-const URL_REGX = `/^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/`;
+const URL_REGX: RegExp =
+	/^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
 const postContainer = css`
 	display: flex;
@@ -78,15 +80,29 @@ function Post() {
 	const [title, setTitle] = useState<string>('');
 	const [content, setContent] = useState<string>('');
 	const [urls, setUrls] = useState<string[]>(['']);
+	const [category, setCategory] = useState<boolean[]>([]);
 	const [capacity, setCapacity] = useState<number>(0);
 	const [deadline, setDeadline] = useState<Date | null>(null);
 
-	function Line() {
+	const Line = React.memo(() => {
 		return <div css={horizonLine}></div>;
-	}
+	});
 
 	function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
 		setUrls([...urls, '']);
+	}
+
+	const checkUrlValid = (urls: string[]): boolean => {
+		return urls.some(url => {
+			return url ? !URL_REGX.test(url) : false;
+		});
+	};
+
+	function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
+		if (checkUrlValid(urls)) {
+			alert('올바르지 않은 url 형식입니다');
+			return;
+		}
 	}
 
 	return (
@@ -103,14 +119,15 @@ function Post() {
 			>
 				<AddBoxIcon css={urlAddIcon} />
 			</IconButton>
+			<CheckCategory category={category} setCategory={setCategory} />
 			<div css={capacityDeadline}>
 				<SelectCapacity capacity={capacity} setCapacity={setCapacity} />
 				<DateDeadline deadline={deadline} setDeadline={setDeadline} />
 			</div>
-
 			<Button
 				style={{ backgroundColor: '#ebabab', color: 'white' }}
 				css={finishButton}
+				onClick={handleFinishClick}
 			>
 				등록
 			</Button>
