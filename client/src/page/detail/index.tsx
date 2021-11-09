@@ -19,7 +19,6 @@ import {
 } from '../../util/util';
 import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
-import LinkPreview from './component/LinkPreview';
 
 interface MatchParams {
 	postId: string;
