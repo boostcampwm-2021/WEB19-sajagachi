@@ -40,4 +40,4 @@ function InputTitle({ title, setTitle }: TitleState) {
 	);
 }
 
-export default InputTitle;
+export default React.memo(InputTitle);

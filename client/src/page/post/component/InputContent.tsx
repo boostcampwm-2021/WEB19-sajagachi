@@ -45,4 +45,4 @@ function InputContent({ content, setContent }: ContentState) {
 	);
 }
 
-export default InputContent;
+export default React.memo(InputContent);

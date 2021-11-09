@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
-import { Link } from 'react-router-dom';
 import InputTitle from './component/InputTitle';
 import InputContent from './component/InputContent';
 import InputUrl from './component/InputUrl';

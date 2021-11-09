@@ -31,4 +31,4 @@ function InputUrl({ urls, setUrls }: UrlState) {
 	);
 }
 
-export default InputUrl;
+export default React.memo(InputUrl);
