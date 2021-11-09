@@ -3,6 +3,7 @@ import Gnb from './common/gnb';
 import { Global, css } from '@emotion/react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Main from './page/main';
+import Post from './page/post';
 import Detail from './page/detail';
 
 const globalStyle = css`
@@ -12,7 +13,7 @@ const globalStyle = css`
 	}
 	body {
 		width: 100vw;
-		height: 100vh;
+		height: calc(100vh - 4.4rem);
 		padding: 0;
 		margin: 0;
 	}
@@ -30,6 +31,7 @@ const App = () => {
 				<Gnb />
 				<Switch>
 					<Route exact path="/" component={Main} />
+					<Route exact path="/post" component={Post} />
 					<Route path="/post/:postId" component={Detail} />
 				</Switch>
 			</Router>
