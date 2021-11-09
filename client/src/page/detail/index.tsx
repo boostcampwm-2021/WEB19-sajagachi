@@ -19,7 +19,6 @@ import {
 } from '../../util/util';
 import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
-import LinkPreview from './component/LinkPreview';
 
 interface MatchParams {
 	postId: string;
@@ -99,7 +98,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 					</Card>
 				</CardContent>
 			</Card>
-			<LinkPreview url="https://github.com/boostcampwm-2021/WEB19-sajagachi" />
+
 			<StyledBox
 				sx={{
 					position: 'fixed',
