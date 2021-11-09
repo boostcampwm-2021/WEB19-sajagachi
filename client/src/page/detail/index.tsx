@@ -24,6 +24,21 @@ import LinkPreview from './component/LinkPreview';
 interface MatchParams {
 	postId: string;
 }
+interface PostType {
+	userId: number;
+	categoryId: number;
+	title: string;
+	content: string;
+
+	category: { id: number; name: string };
+	previewData: {
+		title: string;
+		description: string;
+		domain: string;
+		img: string;
+		url: string;
+	};
+}
 
 const StyledBox = styled(Box)(() => ({
 	backgroundColor: '#ffe7e7',
@@ -31,19 +46,26 @@ const StyledBox = styled(Box)(() => ({
 }));
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
-	const [host, setHost] = useState('');
-	const [title, setTitle] = useState('');
-	const [content, setContent] = useState('');
-	const [category, setCategory] = useState('');
+	const [post, setPost] = useState<PostType>({
+		userId: 0,
+		categoryId: 0,
+		title: '',
+		content: '',
+		category: { id: 0, name: '' },
+		previewData: {
+			title: '',
+			description: '',
+			domain: '',
+			img: '',
+			url: ''
+		}
+	});
 
 	useEffect(() => {
 		fetchGet(
 			`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
 		).then(post => {
-			setHost(post.userId);
-			setTitle(post.title);
-			setContent(post.content);
-			setCategory(post.category.name);
+			setPost({ ...post });
 		});
 	}, []);
 	return (
@@ -67,8 +89,11 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							justifyContent: 'space-between'
 						}}
 					>
-						<Typography variant="h5">{title}</Typography>
-						<Chip label={category} sx={{ color: 'grey' }} />
+						<Typography variant="h5">{post.title}</Typography>
+						<Chip
+							label={post.category.name}
+							sx={{ color: 'grey' }}
+						/>
 					</Box>
 					<Box
 						sx={{
@@ -77,7 +102,9 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							mt: 2
 						}}
 					>
-						<Typography variant="body1">작성자| {host}</Typography>
+						<Typography variant="body1">
+							작성자| {post.userId}
+						</Typography>
 						<Typography variant="body2">
 							마감시간| 11 : 00
 						</Typography>
@@ -94,12 +121,14 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						variant="outlined"
 					>
 						<CardContent>
-							<Typography variant="body2">{content}</Typography>
+							<Typography variant="body2">
+								{post.content}
+							</Typography>
 						</CardContent>
 					</Card>
 				</CardContent>
 			</Card>
-			<LinkPreview url="https://github.com/boostcampwm-2021/WEB19-sajagachi" />
+			<LinkPreview previewData={post.previewData} />
 			<StyledBox
 				sx={{
 					position: 'fixed',

@@ -1,6 +1,8 @@
 import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
 import { getPostsOption } from '../type';
+import linkPreviewGenerator from 'link-preview-generator';
+
 const savePost = async () => {
 	const db = await getDB().get();
 	const newPost = db.manager.create(Post, { title: 'hello world' });
@@ -51,7 +53,18 @@ const getPost = async (postId: string) => {
 	const post = await db
 		.getRepository(Post)
 		.findOne({ where: { id: Number(postId) }, relations: ['category'] });
-	return post;
+	const previewData = await linkPreviewGenerator(
+		'https://github.com/boostcampwm-2021/WEB19-sajagachi',
+		[],
+		'',
+		''
+	);
+	const manufacturedPreviewData = {
+		...previewData,
+		url: 'https://github.com/boostcampwm-2021/WEB19-sajagachi'
+	};
+	const res = { ...post, previewData: manufacturedPreviewData };
+	return res;
 };
 
 export default { savePost, getPosts, getPost };
