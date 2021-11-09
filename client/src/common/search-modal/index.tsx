@@ -86,11 +86,8 @@ function SearchModal({
 	);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState<LocationType>({
-		lat: 0,
-		lng: 0
-	});
 	const currentLocation = useRecoilValue(locationState);
+	const [location, setLocation] = useState<LocationType>(currentLocation);
 	const [address, setAddress] = useState('위치 확인 중');
 	const [search, setSearch] = useState('');
 
