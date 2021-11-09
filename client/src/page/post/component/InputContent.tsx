@@ -37,9 +37,8 @@ function InputContent({ content, setContent }: ContentState) {
 			placeholder="Content"
 			rows={15}
 			onChange={handleContentChange}
-		>
-			{content}
-		</textarea>
+			value={content}
+		></textarea>
 	);
 }
 
