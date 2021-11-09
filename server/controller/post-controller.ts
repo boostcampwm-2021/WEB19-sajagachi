@@ -19,3 +19,12 @@ export const getPosts = async (req: Request, res: Response, next: Function) => {
 		next({ statusCode: 500, message: err.message });
 	}
 };
+
+export const getPost = async (req: Request, res: Response, next: Function) => {
+	try {
+		const post = await postService.getPost(req.params.postId);
+		res.json(post);
+	} catch (err: any) {
+		next({ statusCode: 500, message: err.message });
+	}
+};
