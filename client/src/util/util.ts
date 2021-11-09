@@ -24,7 +24,7 @@ export const createQueryString = (query: QueryStringType) => {
 	return queryStrings.join('&');
 };
 
-export const fetchGet = async (url: string | undefined, query: string) => {
+export const fetchGet = async (url: string | undefined, query: string = '') => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {

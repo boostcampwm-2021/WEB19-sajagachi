@@ -35,12 +35,13 @@ const getPosts = async ({
 	categories = categories.map(category => {
 		return `post.categoryId = ${category}`;
 	});
-	if (categories.length !== 0) condition.push(categories.join(' OR '));
+	if (categories.length !== 0)
+		condition.push(' (' + categories.join(' OR ') + ') ');
 
 	sql += condition.length ? 'WHERE ' + condition.join(' AND ') : '';
 	sql += ' ORDER BY post.id DESC';
 	sql += ` LIMIT ${offset}, ${limit}`;
-
+	console.log(sql);
 	const result = await db.manager.query(sql);
 	return result;
 };
