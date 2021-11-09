@@ -46,4 +46,12 @@ const getPosts = async ({
 	return result;
 };
 
-export default { savePost, getPosts };
+const getPost = async (postId: string) => {
+	const db = await getDB().get();
+	const post = await db
+		.getRepository(Post)
+		.findOne({ where: { id: Number(postId) }, relations: ['category'] });
+	return post;
+};
+
+export default { savePost, getPosts, getPost };

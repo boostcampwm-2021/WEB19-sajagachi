@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Card,
 	CardContent,
@@ -6,26 +6,46 @@ import {
 	Button,
 	IconButton
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Chip } from '@mui/material';
+import {
+	boolToNum,
+	createQueryString,
+	decomposeQueryString,
+	fetchGet,
+	finishedToBool
+} from '../../util/util';
+import 'dotenv/config';
+import { RouteComponentProps } from 'react-router-dom';
+import LinkPreview from './component/LinkPreview';
+
+interface MatchParams {
+	postId: string;
+}
 
 const StyledBox = styled(Box)(() => ({
 	backgroundColor: '#ffe7e7',
 	border: '1px solid #fefafa'
 }));
-const Puller = styled(Box)(() => ({
-	width: 30,
-	height: 6,
-	backgroundColor: grey[900],
-	borderRadius: 3,
-	position: 'absolute',
-	top: 8,
-	left: 'calc(50% - 15px)'
-}));
-export default function Detail() {
+
+export default function Detail({ match }: RouteComponentProps<MatchParams>) {
+	const [host, setHost] = useState('');
+	const [title, setTitle] = useState('');
+	const [content, setContent] = useState('');
+	const [category, setCategory] = useState('');
+
+	useEffect(() => {
+		fetchGet(
+			`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
+		).then(post => {
+			setHost(post.userId);
+			setTitle(post.title);
+			setContent(post.content);
+			setCategory(post.category.name);
+		});
+	}, []);
 	return (
 		<div>
 			<Card
@@ -47,8 +67,8 @@ export default function Detail() {
 							justifyContent: 'space-between'
 						}}
 					>
-						<Typography variant="h5">Word of the Day</Typography>
-						<Chip label={'해외배송'} sx={{ color: 'grey' }} />
+						<Typography variant="h5">{title}</Typography>
+						<Chip label={category} sx={{ color: 'grey' }} />
 					</Box>
 					<Box
 						sx={{
@@ -57,9 +77,7 @@ export default function Detail() {
 							mt: 2
 						}}
 					>
-						<Typography variant="body1">
-							작성자| {111111}
-						</Typography>
+						<Typography variant="body1">작성자| {host}</Typography>
 						<Typography variant="body2">
 							마감시간| 11 : 00
 						</Typography>
@@ -76,14 +94,12 @@ export default function Detail() {
 						variant="outlined"
 					>
 						<CardContent>
-							<Typography variant="body2">
-								Word of the Day
-							</Typography>
+							<Typography variant="body2">{content}</Typography>
 						</CardContent>
 					</Card>
 				</CardContent>
 			</Card>
-
+			<LinkPreview url="https://github.com/boostcampwm-2021/WEB19-sajagachi" />
 			<StyledBox
 				sx={{
 					position: 'fixed',
