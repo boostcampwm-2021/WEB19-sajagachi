@@ -1,14 +1,10 @@
 import React from 'react';
 import Gnb from './common/gnb';
 import { Global, css } from '@emotion/react';
-import {
-	BrowserRouter,
-	BrowserRouter as Router,
-	Route,
-	Switch
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Main from './page/main';
 import Post from './page/post';
+import Detail from './page/detail';
 
 const globalStyle = css`
 	* {
@@ -31,11 +27,12 @@ const App = () => {
 	return (
 		<>
 			<Global styles={globalStyle} />
-			<Gnb />
 			<Router>
+				<Gnb />
 				<Switch>
-					<Route path="/" component={Main} exact />
-					<Route path="/post" component={Post} exact />
+					<Route exact path="/" component={Main} />
+					<Route exact path="/post" component={Post} />
+					<Route path="/post/:postId" component={Detail} />
 				</Switch>
 			</Router>
 		</>

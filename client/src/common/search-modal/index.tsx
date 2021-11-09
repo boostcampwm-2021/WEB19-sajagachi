@@ -6,8 +6,15 @@ import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
 import { Chip } from '@mui/material';
-import { boolToNum, finishedToBool } from '../../util/util';
+import {
+	boolToNum,
+	createQueryString,
+	decomposeQueryString,
+	fetchGet,
+	finishedToBool
+} from '../../util/util';
 import { LocationType } from '../../type';
+import 'dotenv/config';
 
 const searchModal = css`
 	max-width: 700px;
@@ -66,28 +73,23 @@ const buttonContainerStyle = css`
 	text-align: right;
 `;
 
-const CATEGORY_LIST = ['로켓배송', '배달음식', '해외배송', '대용량', '정기권'];
 const FINISHED_LIST = ['공구중', '공구완료'];
 
-function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
-	const [checkedCategories, setCheckedCategories] = useState(
-		new Array(CATEGORY_LIST.length).fill(false)
-	);
+function SearchModal({
+	setIsSearchModalOn,
+	history
+}: {
+	setIsSearchModalOn: any;
+	history: any;
+}) {
+	const [categories, setCategories] = useState([]);
+	const [checkedCategories, setCheckedCategories] = useState([] as boolean[]);
 
 	const [checkedFinished, setCheckedFinished] = useState([false, false]);
-	const [location, setLocation] = useState<LocationType>({
-		lat: 0,
-		lng: 0
-	});
 	const currentLocation = useRecoilValue(locationState);
+	const [location, setLocation] = useState<LocationType>(currentLocation);
 	const [address, setAddress] = useState('위치 확인 중');
-	useEffect(() => {
-		setLocation(currentLocation);
-	}, [currentLocation]);
-	useEffect(() => {
-		if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
-			searchCoordinateToAddress(location);
-	}, [location]);
+	const [search, setSearch] = useState('');
 
 	function searchCoordinateToAddress(latlng: any) {
 		if (naver.maps.Service) {
@@ -123,21 +125,60 @@ function SearchModal({ setIsSearchModalOn }: { setIsSearchModalOn: any }) {
 	const handleSubmitClick = () => {
 		const query = {
 			offset: 0,
-			limit: 10,
+			limit: 15,
 			category: boolToNum(checkedCategories),
 			finished: finishedToBool(checkedFinished),
-			location: location
+			lat: location.lat,
+			long: location.lng,
+			search: search ? search : undefined
 		};
+		const queryStr = createQueryString(query);
+		history.push('/?' + queryStr);
 	};
+	useEffect(() => {
+		setLocation(currentLocation);
+	}, [currentLocation]);
+	useEffect(() => {
+		if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
+			searchCoordinateToAddress(location);
+	}, [location]);
+	useEffect(() => {
+		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(
+			result => {
+				setCategories(result.map((x: any) => x.name));
+
+				const query = decomposeQueryString(window.location.search);
+				setCheckedCategories(checkedCategories => {
+					const arr = new Array(result.length).fill(false);
+					query.category?.forEach(val => {
+						arr[val - 1] = true;
+					});
+					return arr;
+				});
+				setLocation({ lat: query.lat, lng: query.long });
+				if (query.search) setSearch(query.search);
+				setCheckedFinished(checkedFinished => {
+					if (query.finished === true) checkedFinished[1] = true;
+					else if (query.finished === false)
+						checkedFinished[0] = true;
+					return checkedFinished;
+				});
+			}
+		);
+	}, []);
+	// useEffect(() => {
+	// 	console.log(checkedCategories);
+	// 	const query = decomposeQueryString(window.location.search);
+	// }, [checkedCategories]);
 
 	return (
 		<div>
 			<div css={searchModal}>
-				<SearchInput />
+				<SearchInput value={search} setSearch={setSearch} />
 				<div css={CategoryStyle}>
 					<h3>카테고리</h3>
 					<div>
-						{CATEGORY_LIST.map((category, i) => (
+						{categories.map((category, i) => (
 							<Chip
 								label={category}
 								css={ChipStyle(checkedCategories[i])}

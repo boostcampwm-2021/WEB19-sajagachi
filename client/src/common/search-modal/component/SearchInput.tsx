@@ -1,7 +1,5 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import { css } from '@emotion/react';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 
 const btn = css`
 	width: 48px;
@@ -35,11 +33,15 @@ const InputText = css`
 	padding: 10px;
 `;
 
-function SearchInput() {
-	const [searchValue, setSearchValue] = useState('');
-
+function SearchInput({
+	value,
+	setSearch
+}: {
+	value: string;
+	setSearch: Function;
+}) {
 	function onChangeHandle(e: ChangeEvent<HTMLInputElement>) {
-		setSearchValue(e.target.value);
+		setSearch(e.target.value);
 	}
 
 	return (
@@ -48,7 +50,7 @@ function SearchInput() {
 				type="text"
 				css={InputText}
 				onChange={onChangeHandle}
-				value={searchValue}
+				value={value}
 			/>
 		</form>
 	);

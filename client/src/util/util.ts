@@ -17,9 +17,6 @@ export const createQueryString = (query: QueryStringType) => {
 	Object.entries(query).forEach(([key, val]) => {
 		if (Array.isArray(val)) {
 			if (val.length !== 0) queryStrings.push(`${key}=${val.join(',')}`);
-		} else if (typeof val === 'object') {
-			queryStrings.push(`lat=${val.lat}`);
-			queryStrings.push(`long=${val.lng}`);
 		} else {
 			if (val !== undefined) queryStrings.push(`${key}=${val}`);
 		}
@@ -27,7 +24,7 @@ export const createQueryString = (query: QueryStringType) => {
 	return queryStrings.join('&');
 };
 
-export const fetchGet = async (url: string | undefined, query: string) => {
+export const fetchGet = async (url: string | undefined, query: string = '') => {
 	const options: RequestInit = {
 		method: 'GET',
 		headers: {
@@ -64,4 +61,27 @@ export const dateFormat = (dateStr: string) => {
 	const month = date.getMonth() + 1;
 	const day = date.getDate();
 	return year + '년 ' + month + '월 ' + day + '일';
+};
+
+export const decomposeQueryString = (queryStr: string) => {
+	const DEFAULT_LOCATION = {
+		lat: 37.5642135,
+		long: 127.0016985
+	};
+	const result: QueryStringType = DEFAULT_LOCATION;
+	const params = new URLSearchParams(queryStr);
+	result.category = params
+		.get('category')
+		?.split(',')
+		.map(x => Number(x));
+
+	result.finished = params.get('finished')
+		? params.get('finished') === 'true'
+		: undefined;
+	result.lat = Number(params.get('lat') ?? DEFAULT_LOCATION.lat);
+	result.long = Number(params.get('long') ?? DEFAULT_LOCATION.long);
+	result.search = params.get('search')
+		? params.get('search') + ''
+		: undefined;
+	return result;
 };

@@ -1,9 +1,8 @@
-import express, { Request, Response, Router } from 'express';
-import { getPosts, getPost } from '../controller/post-controller';
+import express from 'express';
+import { getCategories } from '../controller/category-controller';
 
 const router = express.Router();
-router.get('/', getPosts);
-router.get('/:postId', getPost);
+router.get('/', getCategories);
 
 const errorHandler = (err: any, req: any, res: any, next: any) => {
 	res.status(err.statusCode).json(err.message);
