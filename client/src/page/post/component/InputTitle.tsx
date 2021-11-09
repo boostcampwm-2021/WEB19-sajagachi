@@ -5,7 +5,7 @@ const inputTitle = css`
 	border: 0px solid;
 	box-sizing: border-box;
 	box-shadow: none;
-	width: 80%;
+	width: 90%;
 	height: 40px;
 	background: transparent;
 	outline: none;
