@@ -1,20 +1,19 @@
-import React, {
-	useState,
-	MouseEvent,
-	useEffect,
-	useRef,
-	useCallback
-} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import { createQueryString, fetchGet } from '../../util/util';
+import {
+	createQueryString,
+	decomposeQueryString,
+	fetchGet
+} from '../../util/util';
 import 'dotenv/config';
 import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
+import { Link, Redirect } from 'react-router-dom';
 
 const theme = createTheme({
 	palette: {
@@ -46,28 +45,38 @@ function Main() {
 	let offset = useRef(0);
 	const loader = useRef(null);
 
-	const handleObserver = useCallback(entry => {
-		const target = entry[0];
-		if (target.isIntersecting) {
-			setIsFetch(false);
-			fetchGet(
-				`${process.env.REACT_APP_SERVER_URL}/api/post`,
-				createQueryString({
-					offset: offset.current,
-					limit: 8
-				})
-			)
-				.then(result => {
-					setIsFetch(true);
-					setItems(prev => [...prev, ...result]);
-					offset.current += result.length;
-				})
-				.catch(e => {
-					setIsFetch(true);
-					setAlert(true);
-				});
-		}
-	}, []);
+	useEffect(() => {
+		setItems([]);
+		offset.current = 0;
+	}, [window.location.search]);
+
+	const handleObserver = useCallback(
+		entry => {
+			const target = entry[0];
+			const filter = decomposeQueryString(window.location.search);
+			if (target.isIntersecting) {
+				setIsFetch(false);
+				fetchGet(
+					`${process.env.REACT_APP_SERVER_URL}/api/post`,
+					createQueryString({
+						offset: offset.current,
+						limit: 15,
+						...filter
+					})
+				)
+					.then(result => {
+						setIsFetch(true);
+						setItems(prev => [...prev, ...result]);
+						offset.current += result.length;
+					})
+					.catch(e => {
+						setIsFetch(true);
+						setAlert(true);
+					});
+			}
+		},
+		[window.location.search]
+	);
 
 	useEffect(() => {
 		const option = {
@@ -77,6 +86,9 @@ function Main() {
 		};
 		const observer = new IntersectionObserver(handleObserver, option);
 		if (loader.current) observer.observe(loader.current);
+		return () => {
+			if (loader.current) observer.unobserve(loader.current);
+		};
 	}, [handleObserver]);
 
 	return (

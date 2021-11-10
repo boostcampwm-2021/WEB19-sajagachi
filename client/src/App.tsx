@@ -1,41 +1,30 @@
 import React from 'react';
 import Gnb from './common/gnb';
-import { Global, css } from '@emotion/react';
-import {
-	BrowserRouter,
-	BrowserRouter as Router,
-	Route,
-	Switch
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Main from './page/main';
+import Post from './page/post';
+import Detail from './page/detail';
+import { createTheme, ThemeProvider } from '@mui/material';
 
-const globalStyle = css`
-	* {
-		box-sizing: border-box;
-		padding: 0;
+const theme = createTheme({
+	typography: {
+		fontFamily: "'Noto Sans KR', sans-serif"
 	}
-	body {
-		width: 100vw;
-		height: 100vh;
-		padding: 0;
-		margin: 0;
-	}
-	#root {
-		width: 100%;
-		height: 100%;
-	}
-`;
+});
 
 const App = () => {
 	return (
 		<>
-			<Global styles={globalStyle} />
-			<Gnb />
-			<Router>
-				<Switch>
-					<Route path="/" component={Main} />
-				</Switch>
-			</Router>
+			<ThemeProvider theme={theme}>
+				<Router>
+					<Gnb />
+					<Switch>
+						<Route exact path="/" component={Main} />
+						<Route exact path="/post" component={Post} />
+						<Route path="/post/:postId" component={Detail} />
+					</Switch>
+				</Router>
+			</ThemeProvider>
 		</>
 	);
 };

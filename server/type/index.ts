@@ -4,4 +4,6 @@ export type getPostsOption = {
 	category: string | undefined;
 	finished: boolean | undefined;
 	search: string | undefined;
+	lat: number | undefined;
+	long: number | undefined;
 };
