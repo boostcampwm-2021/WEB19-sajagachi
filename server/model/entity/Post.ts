@@ -37,7 +37,7 @@ export class Post {
 	@Column('datetime', { nullable: true })
 	deadline!: Date;
 
-	@Column('bool', { nullable: true })
+	@Column('bool', { default: false })
 	finished!: boolean;
 
 	@Column('double', { nullable: true })

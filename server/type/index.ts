@@ -7,3 +7,14 @@ export type getPostsOption = {
 	lat: number | undefined;
 	long: number | undefined;
 };
+
+export type PostColumn = {
+	userId: number;
+	categoryId: number;
+	title: string;
+	content: string;
+	capacity: number;
+	deadline: string;
+	lat: number;
+	long: number;
+};

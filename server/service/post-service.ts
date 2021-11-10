@@ -1,11 +1,17 @@
+import { Request } from 'express';
 import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
-import { getPostsOption } from '../type';
+import { Url } from '../model/entity/Url';
+import { PostColumn, getPostsOption } from '../type';
 
-const savePost = async () => {
+const savePost = async (body: Request['body']): Promise<void> => {
 	const db = await getDB().get();
-	const newPost = db.manager.create(Post, { title: 'hello world' });
-	return await db.manager.save(newPost);
+	const postBody: PostColumn = body;
+	const newPost = db.manager.create(Post, postBody);
+	const { id } = await db.manager.save(newPost);
+	const { urls } = body;
+	const urlValues = urls.map((url: string) => `(${id}, ${url})`).join(',');
+	await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
 };
 
 const getPosts = async ({
@@ -24,7 +30,7 @@ const getPosts = async ({
 	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category, (6371*acos(cos(radians(${lat}))*cos(radians(post.lat))*cos(radians(post.long)-radians(${long}))+sin(radians(${lat}))*sin(radians(post.lat)))) AS distance
 	FROM post
 	INNER JOIN category
-	ON post.categoryId = category.id 
+	ON post.categoryId = category.id
 	`;
 	const condition = [];
 
