@@ -23,7 +23,11 @@ export const getPosts = async (req: Request, res: Response, next: Function) => {
 export const getPost = async (req: Request, res: Response, next: Function) => {
 	try {
 		const post = await postService.getPost(req.params.postId);
-		res.json(post);
+		const [participant, participantCnt] =
+			await participantService.getParticipantNum(
+				Number(req.params.postId)
+			);
+		res.json({ ...post, participantCnt });
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });
 	}
