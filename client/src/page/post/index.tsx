@@ -80,7 +80,7 @@ function Post() {
 	const [title, setTitle] = useState<string>('');
 	const [content, setContent] = useState<string>('');
 	const [urls, setUrls] = useState<string[]>(['']);
-	const [category, setCategory] = useState<boolean[]>([]);
+	const [category, setCategory] = useState<number | null>(null);
 	const [capacity, setCapacity] = useState<number>(0);
 	const [deadline, setDeadline] = useState<Date | null>(null);
 

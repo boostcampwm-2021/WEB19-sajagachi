@@ -28,26 +28,34 @@ const ChipStyle = (checked: boolean) => {
 };
 
 interface CategoryState {
-	category: boolean[];
-	setCategory: (category: boolean[]) => void;
+	category: number | null;
+	setCategory: (category: number | null) => void;
 }
 
 function CheckCategory({ category, setCategory }: CategoryState) {
-	const [categoryList, setCategoryList] = useState([]);
+	const [categoryList, setCategoryList] = useState<
+		{ name: string; checked: boolean }[]
+	>([]);
 
 	useEffect(() => {
 		fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(
 			result => {
-				setCategoryList(result.map((x: any) => x.name));
-				setCategory(new Array(result.length).fill(false));
+				setCategoryList(
+					result.map((x: any) => {
+						return { name: x.name, checked: false };
+					})
+				);
 			}
 		);
 	}, []);
 
 	const handleCategoryClick = (idx: number) => {
-		const updateCategory = [...category];
-		updateCategory[idx] = !updateCategory[idx];
-		setCategory(updateCategory);
+		const updateCategoryList = [...categoryList];
+		updateCategoryList[idx].checked = true;
+		if (category !== null) updateCategoryList[category].checked = false;
+		setCategoryList(updateCategoryList);
+		if (category === idx) setCategory(null);
+		else setCategory(idx);
 	};
 
 	return (
@@ -56,8 +64,8 @@ function CheckCategory({ category, setCategory }: CategoryState) {
 			<div>
 				{categoryList.map((categoryElem, i) => (
 					<Chip
-						label={categoryElem}
-						css={ChipStyle(category[i])}
+						label={categoryElem.name}
+						css={ChipStyle(categoryElem.checked)}
 						onClick={() => {
 							handleCategoryClick(i);
 						}}
