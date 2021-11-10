@@ -21,10 +21,13 @@ const getPosts = async ({
 		throw new Error('offset 과 limit은 지정해주어야 합니다.');
 	const db = await getDB().get();
 	let sql = `
-	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category, (6371*acos(cos(radians(${lat}))*cos(radians(post.lat))*cos(radians(post.long)-radians(${long}))+sin(radians(${lat}))*sin(radians(post.lat)))) AS distance
+	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category
 	FROM post
 	INNER JOIN category
 	ON post.categoryId = category.id 
+	WHERE
+	post.lat BETWEEN ${lat} - 0.009094341 AND ${lat} + 0.009094341 AND
+    post.long BETWEEN ${long} - 0.0112688753 AND ${long} + 0.0112688753 
 	`;
 	const condition = [];
 
@@ -38,12 +41,11 @@ const getPosts = async ({
 	});
 	if (categories.length !== 0)
 		condition.push(' (' + categories.join(' OR ') + ') ');
-
-	sql += condition.length ? 'WHERE ' + condition.join(' AND ') : '';
-	sql += `HAVING distance <= 1`;
+	sql += condition.length ? ' AND ' + condition.join(' AND ') : '';
 	sql += ' ORDER BY post.id DESC';
 	sql += ` LIMIT ${offset}, ${limit}`;
 	const result = await db.manager.query(sql);
+	console.log(sql);
 	return result;
 };
 
