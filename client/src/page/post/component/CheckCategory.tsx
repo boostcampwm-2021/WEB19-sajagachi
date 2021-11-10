@@ -52,10 +52,10 @@ function CheckCategory({ category, setCategory }: CategoryState) {
 	const handleCategoryClick = (idx: number) => {
 		const updateCategoryList = [...categoryList];
 		updateCategoryList[idx].checked = true;
-		if (category !== null) updateCategoryList[category].checked = false;
+		if (category !== null) updateCategoryList[category - 1].checked = false;
 		setCategoryList(updateCategoryList);
-		if (category === idx) setCategory(null);
-		else setCategory(idx);
+		if (category === idx + 1) setCategory(null);
+		else setCategory(idx + 1);
 	};
 
 	return (
