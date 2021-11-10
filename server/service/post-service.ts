@@ -49,9 +49,10 @@ const getPosts = async ({
 
 const getPost = async (postId: string) => {
 	const db = await getDB().get();
-	const post = await db
-		.getRepository(Post)
-		.findOne({ where: { id: Number(postId) }, relations: ['category'] });
+	const post = await db.manager.findOne(Post, {
+		where: { id: postId },
+		relations: ['category']
+	});
 	return post;
 };
 

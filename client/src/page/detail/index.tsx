@@ -13,32 +13,62 @@ import { Chip } from '@mui/material';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
+import { css } from '@emotion/react';
+import GroupBuyButton from './component/GroupBuyButton';
 
 interface MatchParams {
 	postId: string;
 }
 interface PostType {
+	id: number;
+	lat: number;
+	long: number;
+	deadline: string;
 	userId: number;
 	categoryId: number;
 	title: string;
 	content: string;
 	category: { id: number; name: string };
+	finished: boolean;
+	capacity: number;
+	participantCnt: number;
 }
+
+const detailContainer = css`
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 700px;
+`;
 
 const StyledBox = styled(Box)(() => ({
 	backgroundColor: '#ffe7e7',
-	border: '1px solid #fefafa'
+	border: '1px solid #fefafa',
+	marginLeft: 'auto',
+	marginRight: 'auto',
+	maxWidth: '700px'
 }));
+
+const StyledIconButton = styled(IconButton)`
+	&:hover {
+		background: white;
+	}
+`;
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 	const [post, setPost] = useState<PostType>({
+		id: 0,
 		userId: 0,
 		categoryId: 0,
 		title: '',
 		content: '',
-		category: { id: 0, name: '' }
+		category: { id: 0, name: '' },
+		lat: 0,
+		long: 0,
+		finished: false,
+		capacity: 0,
+		deadline: '',
+		participantCnt: 0
 	});
-
 	useEffect(() => {
 		fetchGet(
 			`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
@@ -47,16 +77,13 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		});
 	}, []);
 	return (
-		<div>
+		<div css={detailContainer}>
 			<Card
 				sx={{
-					minWidth: 275,
-					mr: '10px',
-					ml: '10px',
-					mt: '5.5rem',
 					borderRadius: 7,
 					bgcolor: '#fefafa',
-					border: '1px solid #fefafa'
+					border: '1px solid #fefafa',
+					pb: '4.5rem'
 				}}
 				variant="outlined"
 			>
@@ -84,7 +111,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							작성자| {post.userId}
 						</Typography>
 						<Typography variant="body2">
-							마감시간| 11 : 00
+							마감시간| {post.deadline}
 						</Typography>
 					</Box>
 					<Card
@@ -99,7 +126,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						variant="outlined"
 					>
 						<CardContent>
-							<Typography variant="body2">
+							<Typography variant="body2" lineHeight="2.5">
 								{post.content}
 							</Typography>
 						</CardContent>
@@ -119,20 +146,14 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 				}}
 			>
 				<Box sx={{ display: 'flex', p: 1 }}>
-					<IconButton sx={{ bgcolor: 'white', p: 1, m: 1 }}>
+					<StyledIconButton sx={{ bgcolor: 'white', p: 1, m: 1 }}>
 						<FavoriteBorderIcon sx={{ fontSize: 30 }} />
-					</IconButton>
-					<Button
-						variant="contained"
-						sx={{
-							bgcolor: '#F76A6A',
-							flexGrow: 1,
-							p: 1,
-							m: 1
-						}}
-					>
-						공동 구매
-					</Button>
+					</StyledIconButton>
+					<GroupBuyButton
+						participantCnt={post.participantCnt}
+						capacity={post.capacity}
+						finished={post.finished}
+					/>
 				</Box>
 			</StyledBox>
 		</div>
