@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import InputTitle from './component/InputTitle';
 import InputContent from './component/InputContent';
@@ -9,9 +9,21 @@ import DateDeadline from './component/DateDeadline';
 import IconButton from '@mui/material/IconButton';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
+import { createTheme, ThemeProvider } from '@mui/system';
 
 const URL_REGX: RegExp =
 	/^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
+
+const theme = createTheme({
+	palette: {
+		action: {
+			disabledBackground: '#cccccc',
+			disabled: '#ffffff'
+		}
+	}
+});
 
 const postContainer = css`
 	display: flex;
@@ -83,6 +95,12 @@ function Post() {
 	const [category, setCategory] = useState<number | null>(null);
 	const [capacity, setCapacity] = useState<number>(0);
 	const [deadline, setDeadline] = useState<Date | null>(null);
+	const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (title && content && category !== null) setBtnDisabled(false);
+		else setBtnDisabled(true);
+	}, [title, content, category]);
 
 	const Line = React.memo(() => {
 		return <div css={horizonLine}></div>;
@@ -92,16 +110,18 @@ function Post() {
 		setUrls([...urls, '']);
 	}
 
-	const checkUrlValid = (urls: string[]): boolean => {
+	function checkUrlValid(): boolean {
 		return urls.some(url => {
 			return url ? !URL_REGX.test(url) : false;
 		});
-	};
+	}
 
 	function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
-		if (checkUrlValid(urls)) {
+		if (checkUrlValid()) {
 			alert('올바르지 않은 url 형식입니다');
-			return;
+		} else {
+			const validUrls = urls.filter(x => x !== '');
+			console.log(validUrls);
 		}
 	}
 
@@ -124,13 +144,25 @@ function Post() {
 				<SelectCapacity capacity={capacity} setCapacity={setCapacity} />
 				<DateDeadline deadline={deadline} setDeadline={setDeadline} />
 			</div>
-			<Button
-				style={{ backgroundColor: '#ebabab', color: 'white' }}
-				css={finishButton}
-				onClick={handleFinishClick}
+			<Tooltip
+				TransitionComponent={Zoom}
+				title="제목, 내용, 카테고리를 입력하셔야 합니다."
 			>
-				등록
-			</Button>
+				<span css={finishButton}>
+					<Button
+						style={{
+							backgroundColor: `${
+								btnDisabled ? '#dddddd' : '#ebabab'
+							}`,
+							color: 'white'
+						}}
+						onClick={handleFinishClick}
+						disabled={btnDisabled}
+					>
+						등록
+					</Button>
+				</span>
+			</Tooltip>
 		</div>
 	);
 }

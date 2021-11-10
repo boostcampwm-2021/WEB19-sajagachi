@@ -5,7 +5,8 @@ import {
 	OneToMany,
 	CreateDateColumn,
 	ManyToOne,
-	PrimaryColumn
+	PrimaryColumn,
+	Index
 } from 'typeorm';
 import { User } from './User';
 import { Participant } from './Participant';
@@ -15,6 +16,7 @@ import { Url } from './Url';
 import { WishList } from './WishList';
 
 @Entity()
+@Index(['lat', 'long'])
 export class Post {
 	@PrimaryGeneratedColumn()
 	id!: number;
