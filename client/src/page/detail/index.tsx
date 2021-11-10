@@ -12,7 +12,6 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Chip } from '@mui/material';
 import { fetchGet } from '../../util/util';
 import 'dotenv/config';
-import LinkPreview from './component/LinkPreview';
 import { RouteComponentProps } from 'react-router-dom';
 
 interface MatchParams {
@@ -23,15 +22,7 @@ interface PostType {
 	categoryId: number;
 	title: string;
 	content: string;
-
 	category: { id: number; name: string };
-	previewData: {
-		title: string;
-		description: string;
-		domain: string;
-		img: string;
-		url: string;
-	};
 }
 
 const StyledBox = styled(Box)(() => ({
@@ -45,14 +36,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		categoryId: 0,
 		title: '',
 		content: '',
-		category: { id: 0, name: '' },
-		previewData: {
-			title: '',
-			description: '',
-			domain: '',
-			img: '',
-			url: ''
-		}
+		category: { id: 0, name: '' }
 	});
 
 	useEffect(() => {
@@ -122,7 +106,6 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 					</Card>
 				</CardContent>
 			</Card>
-			<LinkPreview previewData={post.previewData} />
 			<StyledBox
 				sx={{
 					position: 'fixed',
