@@ -15,22 +15,19 @@ const savePost = async (body: Request['body']): Promise<number> => {
 		lat: Number(body.lat),
 		long: Number(body.long)
 	};
-	if (isNaN(Number(body.capacity))) {
-		console.log(Number(body.capacity));
+	if (!isNaN(Number(body.capacity)))
 		postBody.capacity = Number(body.capacity);
-	}
 	if (body.deadline) postBody.deadline = body.deadline;
-	console.log(postBody);
 	const newPost = db.manager.create(Post, postBody);
-	const { id } = await db.manager.save(newPost);
+	const createPost = await db.manager.save(newPost);
 	const { urls } = body;
 	if (urls.length > 0) {
 		const urlValues = urls
-			.map((url: string) => `(${id}, '${url}')`)
+			.map((url: string) => `(${createPost.id}, '${url}')`)
 			.join(',');
 		await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
 	}
-	return id;
+	return createPost.id;
 };
 
 const getPosts = async ({

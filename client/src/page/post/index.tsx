@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
+import { useRecoilValue } from 'recoil';
+import { locationState } from '../../store/location';
 import InputTitle from './component/InputTitle';
 import InputContent from './component/InputContent';
 import InputUrl from './component/InputUrl';
@@ -11,19 +13,10 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import { createTheme, ThemeProvider } from '@mui/system';
+import { fetchPost } from '../../util/util';
 
 const URL_REGX: RegExp =
 	/^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
-
-const theme = createTheme({
-	palette: {
-		action: {
-			disabledBackground: '#cccccc',
-			disabled: '#ffffff'
-		}
-	}
-});
 
 const postContainer = css`
 	display: flex;
@@ -96,6 +89,7 @@ function Post() {
 	const [capacity, setCapacity] = useState<number>(0);
 	const [deadline, setDeadline] = useState<Date | null>(null);
 	const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
+	const currentLocation = useRecoilValue(locationState);
 
 	useEffect(() => {
 		if (title && content && category !== null) setBtnDisabled(false);
@@ -105,6 +99,25 @@ function Post() {
 	const Line = React.memo(() => {
 		return <div css={horizonLine}></div>;
 	});
+
+	function createPost(validUrls: string[]) {
+		const body = {
+			userId: 53253189,
+			categoryId: category,
+			title: title,
+			content: content,
+			capacity: capacity,
+			deadline: deadline,
+			lat: currentLocation.lat,
+			long: currentLocation.lng,
+			urls: validUrls
+		};
+		fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
+			data => {
+				window.location.href = `/post/${data}`;
+			}
+		);
+	}
 
 	function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
 		setUrls([...urls, '']);
@@ -120,8 +133,8 @@ function Post() {
 		if (checkUrlValid()) {
 			alert('올바르지 않은 url 형식입니다');
 		} else {
-			const validUrls = urls.filter(x => x !== '');
-			console.log(validUrls);
+			const validUrls = new Set(urls.filter(x => x !== ''));
+			createPost(Array.from(validUrls));
 		}
 	}
 
