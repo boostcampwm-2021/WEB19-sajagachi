@@ -4,8 +4,8 @@
 }
 
 @font-face {
-	font-family: 'Noto Sans KR Bold';
-	src: url(./asset/NotoSansKR-Bold.otf);
+	font-family: 'Noto Sans KR Medium';
+	src: url(./asset/NotoSansKR-Medium.otf);
 }
 
 * {

@@ -23,18 +23,18 @@ const ItemStyle = css`
 	width: 100%;
 	height: 120px;
 	margin-bottom: 15px;
-	border-radius: 15px;
+	border-radius: 10px;
 	box-shadow: 3px 3px 8px 1px #bbbbbb;
 `;
 
 const ItemContainerStyle = css`
 	width: 100%;
 	height: 100%;
-	padding: 10px 90px 10px 15px;
+	padding: 15px 90px 10px 15px;
 `;
 
 const ItemTitleStyle = css`
-	font-family: 'Noto Sans KR Bold', sans-serif;
+	font-family: 'Noto Sans KR Medium', sans-serif;
 	font-size: 18px;
 	margin: 0;
 	text-overflow: ellipsis;
@@ -59,7 +59,7 @@ const ItemDescStyle = css`
 
 const ChipContainerStyle = css`
 	position: absolute;
-	top: 10px;
+	top: 25px;
 	right: 15px;
 	display: flex;
 	flex-direction: column;
@@ -73,6 +73,15 @@ const ChipStyle = (backgroundColor: string) => ({
 	width: '65px',
 	height: '28px'
 });
+
+const categoryColor: any = {
+	배달음식: '#ffe8fc',
+	로켓배송: '#ffdfc1',
+	대용량: '#c1eade',
+	정기권: '#d3e6ed',
+	해외직구: '#e3e6fc',
+	기타: '#d4dfe1'
+};
 
 export default function Item(props: { item: ItemType }) {
 	return (
@@ -93,13 +102,13 @@ function ItemContent(props: { item: ItemType }) {
 			<div css={ChipContainerStyle}>
 				<Chip
 					label={props.item.category}
-					sx={ChipStyle('grey')}
+					sx={ChipStyle(categoryColor[props.item.category])}
 					size="small"
 				/>
 				<Chip
 					icon={<GroupIcon sx={{ fontSize: 16 }} />}
 					label={`${props.item.participantCnt}/${props.item.capacity}명`}
-					sx={ChipStyle('#FFD8D9')}
+					sx={ChipStyle('#ffd8d9')}
 					size="small"
 				/>
 			</div>
