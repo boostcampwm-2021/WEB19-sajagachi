@@ -43,7 +43,7 @@ const getPosts = async ({
 		throw new Error('offset 과 limit은 지정해주어야 합니다.');
 	const db = await getDB().get();
 	let sql = `
-	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category
+	SELECT post.id, post.title, post.content, post.capacity, post.deadline, category.name as category
 	FROM post
 	INNER JOIN category
 	ON post.categoryId = category.id

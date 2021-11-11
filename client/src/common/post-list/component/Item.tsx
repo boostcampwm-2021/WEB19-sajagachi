@@ -84,15 +84,12 @@ export default function Item(props: { item: ItemType }) {
 	);
 }
 
-const DUMMYDESC =
-	'Apple의 가장 강력한 노트북 라인업. 빠른 속도를 자랑하는 M1 프로세서, 엄청난 그래픽, 눈을 사로잡는 Retina 디스플레이. 이제 14인치 15인치 16인치 저는 13인치가 좋아요';
-
 function ItemContent(props: { item: ItemType }) {
 	return (
 		<div css={ItemContainerStyle}>
 			<h1 css={ItemTitleStyle}>{props.item.title}</h1>
 			<p css={ItemDeadlineStyle}>{dateFormat(props.item.deadline)}까지</p>
-			<p css={ItemDescStyle}>{DUMMYDESC}</p>
+			<p css={ItemDescStyle}>{props.item.content.substring(0, 100)}</p>
 			<div css={ChipContainerStyle}>
 				<Chip label={props.item.category} sx={ChipStyle} size="small" />
 				<Chip
@@ -105,61 +102,3 @@ function ItemContent(props: { item: ItemType }) {
 		</div>
 	);
 }
-
-/*
-function ItemContent(props: { item: ItemType }) {
-	return (
-		<div css={ItemContainerStyle}>
-			<div>{props.item.title}</div>
-			<div>
-				<GroupIcon sx={{ fontSize: 16 }} />
-				{props.item.participantCnt}/{props.item.capacity} |{' '}
-				{dateFormat(props.item.deadline)}까지
-			</div>
-			<Chip label={props.item.category} sx={{ color: 'grey' }} />
-		</div>
-	);
-}
-*/
-
-/*
-const ItemStyle = css`
-	margin: 3px 0;
-	padding: 10px 0;
-	width: 100%;
-	height: 95px;
-	border-radius: 10px;
-	padding-left: 20px;
-	box-sizing: border-box;
-	&:nth-child(2n) {
-		background-color: #ffe7e7;
-	}
-	&:nth-child(2n + 1) {
-		background-color: #fefafa;
-	}
-`;
-
-const TopicStyle = css`
-	font-size: 14px;
-	font-weight: bold;
-`;
-
-const DescStyle = css`
-	font-size: 12px;
-	color: #5a5a5a;
-	display: flex;
-	margin: 7px 0;
-`;
-
-const StyledLink = css`
-	text-decoration: none;
-	&:focus,
-	&:hover,
-	&:visited,
-	&:link,
-	&:active {
-		text-decoration: none;
-		color: black;
-	}
-`;
-*/
