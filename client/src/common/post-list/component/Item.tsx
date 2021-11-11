@@ -65,14 +65,14 @@ const ChipContainerStyle = css`
 	flex-direction: column;
 `;
 
-const ChipStyle = {
-	color: 'grey',
+const ChipStyle = (backgroundColor: string) => ({
+	backgroundColor,
 	marginBottom: '5px',
 	fontSize: '11px',
 	padding: '0px',
 	width: '65px',
 	height: '28px'
-};
+});
 
 export default function Item(props: { item: ItemType }) {
 	return (
@@ -91,11 +91,15 @@ function ItemContent(props: { item: ItemType }) {
 			<p css={ItemDeadlineStyle}>{dateFormat(props.item.deadline)}까지</p>
 			<p css={ItemDescStyle}>{props.item.content.substring(0, 100)}</p>
 			<div css={ChipContainerStyle}>
-				<Chip label={props.item.category} sx={ChipStyle} size="small" />
+				<Chip
+					label={props.item.category}
+					sx={ChipStyle('grey')}
+					size="small"
+				/>
 				<Chip
 					icon={<GroupIcon sx={{ fontSize: 16 }} />}
 					label={`${props.item.participantCnt}/${props.item.capacity}명`}
-					sx={ChipStyle}
+					sx={ChipStyle('#FFD8D9')}
 					size="small"
 				/>
 			</div>
