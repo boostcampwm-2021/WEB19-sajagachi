@@ -49,11 +49,18 @@ const ItemDeadlineStyle = css`
 `;
 
 const ItemDescStyle = css`
-	font-size: 9px;
+	--font-size: 9px;
+	--line-height: 1.4;
+	--lines-to-show: 2;
+	font-size: var(--font-size);
 	text-overflow: ellipsis;
-	height: 30px;
+	height: calc(var(--font-size) * var(--line-height) * var(--lines-to-show));
+	line-height: var(--line-height);
 	margin: 5px 0;
 	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: var(--lines-to-show);
+	-webkit-box-orient: vertical;
 	color: #404040;
 `;
 
