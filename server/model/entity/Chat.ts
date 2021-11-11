@@ -23,7 +23,7 @@ export class Chat {
 	@Column('varchar', { nullable: true, length: 200 })
 	msg!: string;
 
-	@Column('varchar', { nullable: true, length: 100 })
+	@Column('varchar', { nullable: true, length: 200 })
 	img!: string;
 
 	@CreateDateColumn()
