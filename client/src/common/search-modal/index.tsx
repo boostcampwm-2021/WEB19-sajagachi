@@ -166,10 +166,6 @@ function SearchModal({
 			}
 		);
 	}, []);
-	// useEffect(() => {
-	// 	console.log(checkedCategories);
-	// 	const query = decomposeQueryString(window.location.search);
-	// }, [checkedCategories]);
 
 	return (
 		<div>
@@ -211,6 +207,18 @@ function SearchModal({
 					<MapDrawer setLocation={setLocation} location={location} />
 				</div>
 				<div css={buttonContainerStyle}>
+					<Button
+						variant="contained"
+						style={{
+							backgroundColor: '#D9D5D5',
+							marginRight: '15px'
+						}}
+						onClick={e => {
+							setIsSearchModalOn(false);
+						}}
+					>
+						취소
+					</Button>
 					<Button
 						variant="contained"
 						style={{ backgroundColor: '#ebabab' }}
