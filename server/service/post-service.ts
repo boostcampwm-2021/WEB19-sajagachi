@@ -15,7 +15,7 @@ const savePost = async (body: Request['body']): Promise<number> => {
 		lat: Number(body.lat),
 		long: Number(body.long)
 	};
-	if (!isNaN(Number(body.capacity)))
+	if (!isNaN(body.capacity) && Number(body.capacity) > 0)
 		postBody.capacity = Number(body.capacity);
 	if (body.deadline) postBody.deadline = body.deadline;
 	const newPost = db.manager.create(Post, postBody);
