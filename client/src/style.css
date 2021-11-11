@@ -3,6 +3,11 @@
 	src: url(./asset/NotoSansKR-Regular.otf);
 }
 
+@font-face {
+	font-family: 'Noto Sans KR Bold';
+	src: url(./asset/NotoSansKR-Bold.otf);
+}
+
 * {
 	box-sizing: border-box;
 	padding: 0;
