@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const FabStyle = css`
 	position: fixed;
 	right: 30px;
-	bottom: 50px;
+	bottom: 30px;
 `;
 
 export default function FAB() {

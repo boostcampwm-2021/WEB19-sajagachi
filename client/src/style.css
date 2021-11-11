@@ -4,6 +4,11 @@
 }
 
 @font-face {
+	font-family: 'Noto Sans KR Medium';
+	src: url(./asset/NotoSansKR-Medium.otf);
+}
+
+@font-face {
 	font-family: 'Gugi';
 	src: url(./asset/Gugi-Regular.ttf);
 }
