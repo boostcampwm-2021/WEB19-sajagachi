@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	Card,
 	CardContent,
@@ -15,7 +15,7 @@ import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
-import es from 'date-fns/esm/locale/es/index.js';
+import DeadLine, { DeadLineHandle } from './component/DeadLine';
 
 interface MatchParams {
 	postId: string;
@@ -56,7 +56,7 @@ const StyledIconButton = styled(IconButton)`
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 	const [isLoad, setIsLoad] = useState(false);
-	const [endTime, setEndTime] = useState('00:00:00');
+	const deadLineRef = useRef<DeadLineHandle>();
 	const [post, setPost] = useState<PostType>({
 		id: 0,
 		userId: 0,
@@ -73,39 +73,56 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 	});
 
 	useEffect(() => {
-		let es: any;
+		let es: any = null;
 		fetchGet(
 			`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
 		).then(post => {
-			es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
-			es.onmessage = function (e: MessageEvent) {
-				const end = new Date(post.deadline);
-				const server = new Date(parseInt(e.data, 10));
-				end.setDate(end.getDate() - 1);
-				if (server >= end) {
-					setEndTime('00:00:00');
-					return;
-				} else {
-					const t = end.getTime() - server.getTime();
-					const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(
-						-2
-					);
-					const minutes = (
-						'0' + Math.floor((t / 1000 / 60) % 60)
-					).slice(-2);
-					let hours = '' + Math.floor(t / (1000 * 60 * 60));
-					hours = hours.length === 1 ? '0' + hours : hours;
-					setEndTime(hours + ':' + minutes + ':' + seconds);
-					return;
-				}
-			};
+			if (!post.finished) {
+				es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
+				es.onmessage = function (e: MessageEvent) {
+					if (deadLineRef.current) {
+						const end = new Date(post.deadline);
+						const server = new Date(parseInt(e.data, 10));
+						end.setDate(end.getDate() - 1);
+						if (server >= end) {
+							deadLineRef.current.setDeadLine('0일 00:00:00');
+							return;
+						} else {
+							const t = end.getTime() - server.getTime();
+							const seconds = (
+								'0' + Math.floor((t / 1000) % 60)
+							).slice(-2);
+							const minutes = (
+								'0' + Math.floor((t / 1000 / 60) % 60)
+							).slice(-2);
+							const hours = (
+								'0' + Math.floor((t / (1000 * 60 * 60)) % 24)
+							).slice(-2);
+							const days =
+								'' + Math.floor(t / (1000 * 60 * 60) / 24);
+							deadLineRef.current.setDeadLine(
+								days +
+									'일 ' +
+									hours +
+									':' +
+									minutes +
+									':' +
+									seconds
+							);
+							return;
+						}
+					}
+				};
+			}
 			setPost({ ...post });
 			setIsLoad(true);
 		});
 		return () => {
-			es.close();
+			if (es !== null) {
+				es.close();
+			}
 		};
-	}, []);
+	}, [deadLineRef.current]);
 	return isLoad ? (
 		<div css={detailContainer}>
 			<Card
@@ -140,9 +157,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						<Typography variant="body1">
 							작성자| {post.userId}
 						</Typography>
-						<Typography variant="body2">
-							마감시간| {endTime}
-						</Typography>
+						<DeadLine ref={deadLineRef} />
 					</Box>
 					<Card
 						sx={{
