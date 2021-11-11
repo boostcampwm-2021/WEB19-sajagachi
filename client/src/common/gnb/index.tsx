@@ -11,6 +11,7 @@ import logo1 from '../../asset/logo1.svg';
 import logo2 from '../../asset/logo2.svg';
 import logo3 from '../../asset/logo3.svg';
 import BackButton from './component/BackButton';
+import LoginModal from '../login-modal';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -78,6 +79,7 @@ const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
+	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 
 	useEffect(() => {
 		navigator.geolocation.getCurrentPosition(function (pos) {
@@ -87,6 +89,10 @@ function Gnb() {
 			});
 		});
 	}, []);
+
+	function handleLoginClick(e: React.MouseEvent<HTMLElement>) {
+		setIsLoginModalOn(!isLoginModalOn);
+	}
 
 	return (
 		<div css={gnbBackground}>
@@ -116,9 +122,12 @@ function Gnb() {
 					}}
 				>
 					<SearchModalDrawerWithRouter />
-					<IconButton css={btn}>
+					<IconButton css={btn} onClick={handleLoginClick}>
 						<AccountCircleIcon css={btnIcon} />
 					</IconButton>
+					{isLoginModalOn && (
+						<LoginModal setIsLoginModalOn={setIsLoginModalOn} />
+					)}
 				</div>
 			</div>
 		</div>
