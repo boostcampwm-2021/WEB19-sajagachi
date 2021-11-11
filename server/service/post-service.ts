@@ -1,17 +1,36 @@
 import { Request } from 'express';
+import { title } from 'process';
 import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
 import { Url } from '../model/entity/Url';
 import { PostColumn, getPostsOption } from '../type';
 
-const savePost = async (body: Request['body']): Promise<void> => {
+const savePost = async (body: Request['body']): Promise<number> => {
 	const db = await getDB().get();
-	const postBody: PostColumn = body;
+	const postBody: any = {
+		userId: Number(body.userId),
+		categoryId: Number(body.categoryId),
+		title: body.title,
+		content: body.content,
+		lat: Number(body.lat),
+		long: Number(body.long)
+	};
+	if (isNaN(Number(body.capacity))) {
+		console.log(Number(body.capacity));
+		postBody.capacity = Number(body.capacity);
+	}
+	if (body.deadline) postBody.deadline = body.deadline;
+	console.log(postBody);
 	const newPost = db.manager.create(Post, postBody);
 	const { id } = await db.manager.save(newPost);
 	const { urls } = body;
-	const urlValues = urls.map((url: string) => `(${id}, ${url})`).join(',');
-	await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
+	if (urls.length > 0) {
+		const urlValues = urls
+			.map((url: string) => `(${id}, '${url}')`)
+			.join(',');
+		await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
+	}
+	return id;
 };
 
 const getPosts = async ({

@@ -6,7 +6,7 @@ export class Url {
 	@PrimaryColumn('int')
 	postId!: number;
 
-	@Column('varchar', { length: 200 })
+	@PrimaryColumn('varchar', { length: 200 })
 	url!: string;
 
 	@ManyToOne(() => Post, post => post.urls)

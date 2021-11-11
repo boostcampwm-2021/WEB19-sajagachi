@@ -35,8 +35,8 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
 
 export const savePost = async (req: Request, res: Response, next: Function) => {
 	try {
-		await postService.savePost(req.body);
-		res.status(201).send();
+		const postId = await postService.savePost(req.body);
+		res.json(postId);
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });
 	}
