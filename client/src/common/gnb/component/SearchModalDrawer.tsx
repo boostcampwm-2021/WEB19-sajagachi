@@ -8,13 +8,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import { RouteComponentProps } from 'react-router';
 
 const btn = css`
-	width: 48px;
-	height: 48px;
+	width: 2.43rem;
+	height: 2.43rem;
 `;
 
 const btnIcon = css`
-	width: 32px;
-	height: 32px;
+	width: 1.9rem;
+	height: 1.9rem;
 	color: white;
 `;
 

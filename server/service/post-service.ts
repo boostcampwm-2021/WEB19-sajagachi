@@ -1,11 +1,33 @@
+import { Request } from 'express';
+import { title } from 'process';
 import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
-import { getPostsOption } from '../type';
+import { Url } from '../model/entity/Url';
+import { PostColumn, getPostsOption } from '../type';
 
-const savePost = async () => {
+const savePost = async (body: Request['body']): Promise<number> => {
 	const db = await getDB().get();
-	const newPost = db.manager.create(Post, { title: 'hello world' });
-	return await db.manager.save(newPost);
+	const postBody: any = {
+		userId: Number(body.userId),
+		categoryId: Number(body.categoryId),
+		title: body.title,
+		content: body.content,
+		lat: Number(body.lat),
+		long: Number(body.long)
+	};
+	if (!isNaN(body.capacity) && Number(body.capacity) > 0)
+		postBody.capacity = Number(body.capacity);
+	if (body.deadline) postBody.deadline = body.deadline;
+	const newPost = db.manager.create(Post, postBody);
+	const createPost = await db.manager.save(newPost);
+	const { urls } = body;
+	if (urls.length > 0) {
+		const urlValues = urls
+			.map((url: string) => `(${createPost.id}, '${url}')`)
+			.join(',');
+		await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
+	}
+	return createPost.id;
 };
 
 const getPosts = async ({
@@ -21,13 +43,13 @@ const getPosts = async ({
 		throw new Error('offset 과 limit은 지정해주어야 합니다.');
 	const db = await getDB().get();
 	let sql = `
-	SELECT post.id, post.title, post.capacity, post.deadline, category.name as category
+	SELECT post.id, post.title, post.content, post.capacity, post.deadline, category.name as category
 	FROM post
 	INNER JOIN category
-	ON post.categoryId = category.id 
+	ON post.categoryId = category.id
 	WHERE
 	post.lat BETWEEN ${lat} - 0.009094341 AND ${lat} + 0.009094341 AND
-    post.long BETWEEN ${long} - 0.0112688753 AND ${long} + 0.0112688753 
+    post.long BETWEEN ${long} - 0.0112688753 AND ${long} + 0.0112688753
 	`;
 	const condition = [];
 

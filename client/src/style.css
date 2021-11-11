@@ -3,6 +3,16 @@
 	src: url(./asset/NotoSansKR-Regular.otf);
 }
 
+@font-face {
+	font-family: 'Noto Sans KR Medium';
+	src: url(./asset/NotoSansKR-Medium.otf);
+}
+
+@font-face {
+	font-family: 'Gugi';
+	src: url(./asset/Gugi-Regular.ttf);
+}
+
 * {
 	box-sizing: border-box;
 	padding: 0;

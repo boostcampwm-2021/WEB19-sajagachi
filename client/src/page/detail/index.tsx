@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	Card,
 	CardContent,
 	Typography,
-	Button,
-	IconButton
+	IconButton,
+	CircularProgress
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
@@ -15,6 +15,7 @@ import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
+import DeadLine, { DeadLineHandle } from './component/DeadLine';
 
 interface MatchParams {
 	postId: string;
@@ -39,7 +40,6 @@ const detailContainer = css`
 	margin-right: auto;
 	max-width: 700px;
 `;
-
 const StyledBox = styled(Box)(() => ({
 	backgroundColor: '#ffe7e7',
 	border: '1px solid #fefafa',
@@ -55,6 +55,8 @@ const StyledIconButton = styled(IconButton)`
 `;
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
+	const [isLoad, setIsLoad] = useState(false);
+	const deadLineRef = useRef<DeadLineHandle>();
 	const [post, setPost] = useState<PostType>({
 		id: 0,
 		userId: 0,
@@ -69,14 +71,59 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		deadline: '',
 		participantCnt: 0
 	});
+
 	useEffect(() => {
+		let es: any = null;
 		fetchGet(
 			`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
 		).then(post => {
+			if (!post.finished) {
+				es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
+				es.onmessage = function (e: MessageEvent) {
+					if (deadLineRef.current) {
+						const end = new Date(post.deadline);
+						const server = new Date(parseInt(e.data, 10));
+						end.setDate(end.getDate() - 1);
+						if (server >= end) {
+							deadLineRef.current.setDeadLine('0일 00:00:00');
+							return;
+						} else {
+							const t = end.getTime() - server.getTime();
+							const seconds = (
+								'0' + Math.floor((t / 1000) % 60)
+							).slice(-2);
+							const minutes = (
+								'0' + Math.floor((t / 1000 / 60) % 60)
+							).slice(-2);
+							const hours = (
+								'0' + Math.floor((t / (1000 * 60 * 60)) % 24)
+							).slice(-2);
+							const days =
+								'' + Math.floor(t / (1000 * 60 * 60) / 24);
+							deadLineRef.current.setDeadLine(
+								days +
+									'일 ' +
+									hours +
+									':' +
+									minutes +
+									':' +
+									seconds
+							);
+							return;
+						}
+					}
+				};
+			}
 			setPost({ ...post });
+			setIsLoad(true);
 		});
-	}, []);
-	return (
+		return () => {
+			if (es !== null) {
+				es.close();
+			}
+		};
+	}, [deadLineRef.current]);
+	return isLoad ? (
 		<div css={detailContainer}>
 			<Card
 				sx={{
@@ -110,9 +157,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						<Typography variant="body1">
 							작성자| {post.userId}
 						</Typography>
-						<Typography variant="body2">
-							마감시간| {post.deadline}
-						</Typography>
+						<DeadLine ref={deadLineRef} />
 					</Box>
 					<Card
 						sx={{
@@ -157,5 +202,16 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 				</Box>
 			</StyledBox>
 		</div>
+	) : (
+		<Box sx={{ display: 'flex' }}>
+			<CircularProgress
+				sx={{
+					marginTop: '50%',
+					marginLeft: 'auto',
+					marginRight: 'auto',
+					color: '#ebabab'
+				}}
+			/>
+		</Box>
 	);
 }

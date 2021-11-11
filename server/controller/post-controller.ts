@@ -32,3 +32,12 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
 		next({ statusCode: 500, message: err.message });
 	}
 };
+
+export const savePost = async (req: Request, res: Response, next: Function) => {
+	try {
+		const postId = await postService.savePost(req.body);
+		res.json(postId);
+	} catch (err: any) {
+		next({ statusCode: 500, message: err.message });
+	}
+};
