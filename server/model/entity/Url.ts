@@ -9,6 +9,6 @@ export class Url {
 	@PrimaryColumn('varchar', { length: 200 })
 	url!: string;
 
-	@ManyToOne(() => Post, post => post.urls)
+	@ManyToOne(() => Post, post => post.urls, { onDelete: 'CASCADE' })
 	post!: Post;
 }

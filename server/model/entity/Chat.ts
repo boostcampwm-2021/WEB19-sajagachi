@@ -32,6 +32,6 @@ export class Chat {
 	@ManyToOne(() => User, user => user.chats)
 	user!: User;
 
-	@ManyToOne(() => Post, post => post.chats)
+	@ManyToOne(() => Post, post => post.chats, { onDelete: 'CASCADE' })
 	post!: Post;
 }
