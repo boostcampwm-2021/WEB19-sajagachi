@@ -1,4 +1,4 @@
-import { PrimaryColumn, Entity, Column, ManyToOne } from 'typeorm';
+import { PrimaryColumn, Entity, ManyToOne } from 'typeorm';
 import { Post } from './Post';
 
 @Entity()
