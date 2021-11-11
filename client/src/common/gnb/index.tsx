@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -6,6 +7,10 @@ import { locationState } from '../../store/location';
 import { useRecoilState } from 'recoil';
 import SearchModalDrawer from './component/SearchModalDrawer';
 import { withRouter } from 'react-router-dom';
+import logo1 from '../../asset/logo1.svg';
+import logo2 from '../../asset/logo2.svg';
+import logo3 from '../../asset/logo3.svg';
+import BackButton from './component/BackButton';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -26,7 +31,7 @@ const gnbContainer = css`
 	height: 4.4rem;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+
 	align-items: center;
 `;
 
@@ -40,15 +45,34 @@ const logo = css`
 `;
 
 const btn = css`
-	width: 48px;
-	height: 48px;
+	width: 2.43rem;
+	height: 2.43rem;
 `;
 
 const btnIcon = css`
-	width: 32px;
-	height: 32px;
+	width: 1.9rem;
+	height: 1.9rem;
 	color: white;
 `;
+
+const randomLogo = () => {
+	function getRandomInt(min: number, max: number) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
+	}
+	const target = getRandomInt(1, 4);
+	switch (target) {
+		case 1:
+			return logo1;
+		case 2:
+			return logo2;
+		case 3:
+			return logo3;
+		default:
+			return logo1;
+	}
+};
 
 const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 
@@ -67,10 +91,30 @@ function Gnb() {
 	return (
 		<div css={gnbBackground}>
 			<div css={gnbContainer}>
-				<a href="/" css={logo}>
-					🦁
-				</a>
-				<div>
+				<div
+					style={{
+						flex: 1
+					}}
+				>
+					<BackButton />
+				</div>
+				<Link to="/">
+					<img
+						src={randomLogo()}
+						style={{
+							flex: 2,
+							maxHeight: '3.1rem',
+							maxWidth: '12rem'
+						}}
+					/>
+				</Link>
+				<div
+					style={{
+						flex: 1,
+						display: 'flex',
+						justifyContent: 'flex-end'
+					}}
+				>
 					<SearchModalDrawerWithRouter />
 					<IconButton css={btn}>
 						<AccountCircleIcon css={btnIcon} />
