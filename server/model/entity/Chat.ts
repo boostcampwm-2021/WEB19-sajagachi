@@ -23,7 +23,7 @@ export class Chat {
 	@Column('varchar', { nullable: true, length: 200 })
 	msg!: string;
 
-	@Column('varchar', { nullable: true, length: 100 })
+	@Column('varchar', { nullable: true, length: 200 })
 	img!: string;
 
 	@CreateDateColumn()
@@ -32,6 +32,6 @@ export class Chat {
 	@ManyToOne(() => User, user => user.chats)
 	user!: User;
 
-	@ManyToOne(() => Post, post => post.chats)
+	@ManyToOne(() => Post, post => post.chats, { onDelete: 'CASCADE' })
 	post!: Post;
 }

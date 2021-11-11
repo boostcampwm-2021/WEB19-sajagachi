@@ -27,10 +27,10 @@ export class Post {
 	@Column('int')
 	categoryId!: number;
 
-	@Column('varchar', { length: 200, nullable: true })
+	@Column('varchar', { length: 200 })
 	title!: string;
 
-	@Column('varchar', { length: 1000, nullable: true })
+	@Column('varchar', { length: 1000 })
 	content!: string;
 
 	@Column('int', { nullable: true })
@@ -39,13 +39,13 @@ export class Post {
 	@Column('datetime', { nullable: true })
 	deadline!: Date;
 
-	@Column('bool', { nullable: true })
+	@Column('bool', { default: false })
 	finished!: boolean;
 
-	@Column('double', { nullable: true })
+	@Column('double')
 	lat!: number;
 
-	@Column('double', { nullable: true })
+	@Column('double')
 	long!: number;
 
 	@CreateDateColumn()

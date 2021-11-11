@@ -39,7 +39,7 @@ export const fetchGet = async (url: string | undefined, query: string = '') => {
 	return await res.json();
 };
 
-export const fetchPost = async (url: string, body: any, query: any) => {
+export const fetchPost = async (url: string, body: any) => {
 	const options: RequestInit = {
 		method: 'POST',
 		headers: {
@@ -51,7 +51,7 @@ export const fetchPost = async (url: string, body: any, query: any) => {
 		body: JSON.stringify(body)
 	};
 
-	const res = await fetch(`${url}?${query}`, options);
+	const res = await fetch(`${url}`, options);
 	return await res.json();
 };
 

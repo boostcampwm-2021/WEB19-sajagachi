@@ -1,4 +1,4 @@
-import { PrimaryColumn, Entity, Column, ManyToOne } from 'typeorm';
+import { PrimaryColumn, Entity, ManyToOne } from 'typeorm';
 import { Post } from './Post';
 
 @Entity()
@@ -6,9 +6,9 @@ export class Url {
 	@PrimaryColumn('int')
 	postId!: number;
 
-	@Column('varchar', { length: 200 })
+	@PrimaryColumn('varchar', { length: 200 })
 	url!: string;
 
-	@ManyToOne(() => Post, post => post.urls)
+	@ManyToOne(() => Post, post => post.urls, { onDelete: 'CASCADE' })
 	post!: Post;
 }

@@ -10,7 +10,7 @@ export class Participant {
 	@PrimaryColumn('int')
 	postId!: number;
 
-	@ManyToOne(() => Post, _post => _post.participant)
+	@ManyToOne(() => Post, _post => _post.participant, { onDelete: 'CASCADE' })
 	post!: Post;
 
 	@ManyToOne(() => User, _user => _user.participant)
