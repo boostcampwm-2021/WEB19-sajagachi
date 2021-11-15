@@ -8,8 +8,8 @@ import { Done } from '@mui/icons-material';
 
 function isFinished(item: ItemType) {
 	const now = new Date();
-	const deadline = new Date(item.deadline);
-	return item.finished || deadline <= now;
+	if (!item.deadline) return false;
+	return item.finished || new Date(item.deadline) <= now;
 }
 
 const categoryColor: any = {
@@ -103,6 +103,10 @@ export function ItemContent(props: { item: ItemType }) {
 		? FinishedItemDescStyle
 		: ItemDescStyle;
 
+	let deadline = props.item.deadline;
+	if (deadline) deadline = `${dateFormat(props.item.deadline)}까지`;
+	else deadline = '마감 기한 없음';
+
 	let ParticipantChip;
 	if (isFinished(props.item)) {
 		ParticipantChip = (
@@ -117,7 +121,9 @@ export function ItemContent(props: { item: ItemType }) {
 		ParticipantChip = (
 			<Chip
 				icon={<GroupIcon sx={{ fontSize: 16 }} />}
-				label={`${props.item.participantCnt}/${props.item.capacity}명`}
+				label={`${props.item.participantCnt}/${
+					props.item.capacity ?? '-'
+				}명`}
 				sx={ChipStyle('#ffd8d9')}
 				size="small"
 			/>
@@ -127,7 +133,7 @@ export function ItemContent(props: { item: ItemType }) {
 	return (
 		<div css={ItemContainerStyle}>
 			<h1 css={TitleStyle}>{props.item.title}</h1>
-			<p css={DeadlineStyle}>{dateFormat(props.item.deadline)}까지</p>
+			<p css={DeadlineStyle}>{deadline}</p>
 			<p css={DescStyle}>{props.item.content.substring(0, 100)}</p>
 			<div css={ChipContainerStyle}>
 				<Chip
