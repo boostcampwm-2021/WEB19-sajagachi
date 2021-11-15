@@ -47,6 +47,7 @@ const UserListStyle = css`
 
 const UserListItemStyle = css`
 	display: flex;
+	align-items: center;
 	margin: 15px 0;
 `;
 
@@ -59,6 +60,7 @@ const UserAvatarStyle = css`
 
 const UserNameStyle = css`
 	margin: 0;
+	font-size: 14px;
 `;
 
 const UserPointStyle = css`
