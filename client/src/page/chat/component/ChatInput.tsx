@@ -16,7 +16,7 @@ const ChatInputStyle = css`
 `;
 const ChatInputDiv = css`
 	background-color: #ffffff;
-	border: 1px solid pink;
+	border: 1px solid #ebabab;
 	/* #ece5f4 */
 	margin-left: 10px;
 	margin-right: 10px;
@@ -34,7 +34,7 @@ function ChatInput() {
 					value="input 들어갈 예정"
 				/>
 				<SendIcon
-					sx={{ width: '30px', height: '40px', color: 'purple' }}
+					sx={{ width: '30px', height: '40px', color: '#ebabab' }}
 				/>
 			</div>
 		</div>

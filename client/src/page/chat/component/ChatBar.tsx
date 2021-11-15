@@ -23,7 +23,8 @@ function ChatBar(props: { title: string }) {
 					paddingTop: '20px',
 					width: '30px',
 					height: '3.4rem',
-					marginLeft: '10px'
+					marginLeft: '10px',
+					color: '#FFFFFF'
 				}}
 			/>
 			<div css={TitleStyle}>{props.title}</div>
@@ -32,7 +33,8 @@ function ChatBar(props: { title: string }) {
 					paddingTop: '20px',
 					width: '30px',
 					height: '3.4rem',
-					marginRight: '10px'
+					marginRight: '10px',
+					color: '#FFFFFF'
 				}}
 			/>
 		</div>

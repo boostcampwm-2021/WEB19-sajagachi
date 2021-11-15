@@ -11,21 +11,24 @@ type MessageType = {
 const MessageStyle = css`
 	margin: 2px 0px;
 	padding: 5px 10px;
-	width: 60%;
+	max-width: 60%;
 	border-radius: 10px;
-	background-color: #ffe7e7;
+	background-color: #e5e5ea;
+
+	font-size: 14px;
 `;
 
 const DirectionSelector = css`
 	display: flex;
 	justify-content: left;
+	align-items: flex-end;
 `;
 
 const MessageTimeStyle = css`
 	color: gray;
 	font-size: 10px;
 	margin: 0px 10px;
-	padding-top: 10px;
+	padding-bottom: 5px;
 `;
 
 const SenderStyle = css`
