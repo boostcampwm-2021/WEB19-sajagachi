@@ -10,7 +10,7 @@ export const login = async (req: Request, res: Response, next: Function) => {
 		if (user === undefined)
 			user = await loginService.signUp(req.body.userId);
 		res.cookie('user', createToken(user));
-		res.status(201).json();
+		res.status(201).json(user.id);
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });
 	}
@@ -25,11 +25,11 @@ export const checkLogin = async (
 		const { id } = verifyToken(req.cookies.user) as TokenType;
 		if (id) {
 			const user = await loginService.findById(String(id));
-			if (user) res.locals.userId = id;
-		}
-		res.status(401).json({ error: 'unauthorized' });
+			if (user) res.status(200).json(id);
+			else next({ statusCode: 401, message: 'unauthorized' });
+		} else next({ statusCode: 401, message: 'unauthorized' });
 	} catch (err: any) {
-		next({ statusCode: 401, message: 'token expired' });
+		next({ statusCode: 401, message: err.message });
 	}
 };
 

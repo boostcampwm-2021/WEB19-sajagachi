@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import githubButton from '../../asset/github-button.png';
 import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
+import { fetchGet, fetchPost } from '../../util/util';
 
 const modalBackground = css`
 	position: fixed;
@@ -73,6 +74,13 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
 		setId(e.target.value);
 	}
 
+	function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+		fetchPost(url, { userId: id }).then(data => {
+			if (!isNaN(data)) window.location.href = '/';
+		});
+	}
+
 	function handleOutsideClick(e: React.MouseEvent<HTMLDivElement>) {
 		if (e.target === e.currentTarget) setIsLoginModalOn(false);
 	}
@@ -91,7 +99,7 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
 					onChange={handleIdChange}
 					value={id}
 				/>
-				<IconButton css={loginButton}>
+				<IconButton css={loginButton} onClick={handleLoginBtnClick}>
 					<img src={githubIcon} alt="로그인" css={githubImage}></img>
 				</IconButton>
 			</div>
