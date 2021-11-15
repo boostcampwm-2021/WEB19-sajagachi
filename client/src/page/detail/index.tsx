@@ -16,6 +16,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
+import LinkPreview from './component/LinkPreview';
 
 interface MatchParams {
 	postId: string;
@@ -176,6 +177,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							</Typography>
 						</CardContent>
 					</Card>
+					<LinkPreview url="https://github.com/boostcampwm-2021/WEB19-sajagachi" />
 				</CardContent>
 			</Card>
 			<StyledBox
