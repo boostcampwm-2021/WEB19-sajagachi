@@ -37,7 +37,7 @@ export function ChatMenuDrawer() {
 				onClose={toggleDrawer}
 				onOpen={toggleDrawer}
 			>
-				<ChatMenu />
+				<ChatMenu onCloseBtnClicked={() => setIsMenuOn(false)} />
 			</SwipeableDrawer>
 		</>
 	);

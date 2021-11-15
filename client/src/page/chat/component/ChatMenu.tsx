@@ -9,10 +9,20 @@ const ChatMenuStyle = css`
 	width: 80vw;
 	height: 100vh;
 `;
-export function ChatMenu() {
+
+const CloseBtnStyle = css`
+	position: absolute;
+	top: 10px;
+	right: 10px;
+`;
+
+export function ChatMenu(props: { onCloseBtnClicked: Function }) {
 	return (
 		<div css={ChatMenuStyle}>
-			<Close />
+			<Close
+				css={CloseBtnStyle}
+				onClick={() => props.onCloseBtnClicked()}
+			/>
 			<UserList />
 			<PointView />
 			<Button>나가기</Button>
