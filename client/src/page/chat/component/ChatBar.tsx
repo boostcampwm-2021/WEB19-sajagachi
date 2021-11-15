@@ -8,6 +8,11 @@ const ChatBarLayout = css`
 	height: 4.4rem;
 	background-color: #ebabab;
 	justify-content: space-between;
+	z-index: 2;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
 `;
 
 const TitleStyle = css`
