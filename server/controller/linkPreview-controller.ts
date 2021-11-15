@@ -9,7 +9,6 @@ export const parsePreviewLinkData = async (
 	try {
 		const { url } = req.body;
 		const previewData = await linkPreviewService.parsePreviewLinkData(url);
-		console.log(previewData);
 		res.json(previewData);
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });
