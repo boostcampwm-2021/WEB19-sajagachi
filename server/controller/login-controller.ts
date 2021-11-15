@@ -9,7 +9,7 @@ export const login = async (req: Request, res: Response, next: Function) => {
 		let user = await loginService.findById(req.body.userId);
 		if (user === undefined)
 			user = await loginService.signUp(req.body.userId);
-		res.cookie('user', createToken(user));
+		res.cookie('user', createToken(user), { httpOnly: true });
 		res.status(201).json(user.id);
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });
