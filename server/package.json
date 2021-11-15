@@ -13,16 +13,20 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"cookie-parser": "^1.4.5",
 		"cors": "^2.8.5",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
 		"mysql2": "^2.3.2",
 		"reflect-metadata": "^0.1.13",
 		"typeorm": "^0.2.38"
 	},
 	"devDependencies": {
+		"@types/cookie-parser": "^1.4.2",
 		"@types/cors": "^2.8.12",
 		"@types/express": "^4.17.13",
+		"@types/jsonwebtoken": "^8.5.5",
 		"@types/node": "^16.11.6",
 		"nodemon": "^2.0.14",
 		"ts-node": "^10.4.0",

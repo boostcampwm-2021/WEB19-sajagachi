@@ -18,3 +18,7 @@ export type PostColumn = {
 	lat: number;
 	long: number;
 };
+
+export type TokenType = {
+	id: number;
+};
