@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
-import { Drawer } from '@mui/material';
+import { SwipeableDrawer } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ChatMenu } from './ChatMenu';
 
@@ -31,9 +31,14 @@ export function ChatMenuDrawer() {
 				onClick={toggleDrawer}
 			/>
 			{isMenuOn && <div css={BlurredBackground}></div>}
-			<Drawer anchor="right" open={isMenuOn} onClose={toggleDrawer}>
+			<SwipeableDrawer
+				anchor="right"
+				open={isMenuOn}
+				onClose={toggleDrawer}
+				onOpen={toggleDrawer}
+			>
 				<ChatMenu />
-			</Drawer>
+			</SwipeableDrawer>
 		</>
 	);
 }
