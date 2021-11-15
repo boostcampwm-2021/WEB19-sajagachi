@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { css } from '@emotion/react';
+import noItemImg from '../../../asset/noitem.png';
 
 const isValidUrl = (url: string) => {
 	const regex =
@@ -120,7 +121,7 @@ export default function LinkPreview({ url }: { url: string }) {
 				<div style={{ flex: '3', marginRight: '5px' }}>
 					<h6 css={PreviewTitleStyle}>{preview.title}</h6>
 					<p css={PreviewDescStyle}>{preview.description}</p>
-					<p css={PreviewTitleStyle}>{preview.domain}</p>
+					<p css={PreviewDomainStyle}>{preview.domain}</p>
 				</div>
 			) : (
 				<div style={{ flex: '3', marginRight: '5px' }}>
@@ -130,9 +131,9 @@ export default function LinkPreview({ url }: { url: string }) {
 			)}
 			{loading ? (
 				<img
-					style={{ maxWidth: '30%' }}
+					style={{ maxWidth: '30%', maxHeight: 64 }}
 					alt={preview.title}
-					src={preview.img}
+					src={preview.img !== null ? preview.img : noItemImg}
 				/>
 			) : (
 				<div style={{ flex: '1' }}>
