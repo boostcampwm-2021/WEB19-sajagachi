@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@mui/material';
-import styled from '@emotion/styled';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
-
+import { fetchPost } from '../../../util/util';
+import 'dotenv/config';
 type GroupBuyButtonType = {
 	postId: number;
 	participantCnt: number;
@@ -16,7 +16,7 @@ const DUMMY_USER = {
 	name: 'J119_안병웅'
 };
 
-const DUMMY_ISLOGIN = false;
+const DUMMY_ISLOGIN = true;
 
 export default function GroupBuyButton({
 	postId,
@@ -26,9 +26,22 @@ export default function GroupBuyButton({
 }: GroupBuyButtonType) {
 	const history = useHistory();
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
-	const clickHandler = useCallback(() => {
-		if (DUMMY_ISLOGIN) history.push(`/chat/${postId}`);
-		else setIsLoginModalOn(true);
+
+	const clickHandler = useCallback(async () => {
+		if (DUMMY_ISLOGIN) {
+			const postBody = {
+				userId: DUMMY_USER.id,
+				postId,
+				capacity
+			};
+			const result = await fetchPost(
+				`${process.env.REACT_APP_SERVER_URL}/api/participant/save`,
+				postBody
+			);
+			// main 에서 Error Alert 사용 -> Alert 관련 customHook 만들어 놓기
+			if (typeof result === 'string') alert(result);
+			else history.push(`/chat/${postId}`);
+		} else setIsLoginModalOn(true);
 	}, [history]);
 	return (
 		<>

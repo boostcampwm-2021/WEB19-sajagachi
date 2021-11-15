@@ -79,4 +79,12 @@ const getPost = async (postId: string) => {
 	return post;
 };
 
-export default { savePost, getPosts, getPost };
+const updatePostFinished = async (postId: number) => {
+	const db = await getDB().get();
+	const updatedPost = await db.manager.update(Post, postId, {
+		finished: true
+	});
+	return updatedPost;
+};
+
+export default { savePost, getPosts, getPost, updatePostFinished };

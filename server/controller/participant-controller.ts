@@ -10,7 +10,7 @@ export const saveParticipant = async (
 		const [participant, participantNum] =
 			await participantService.getParticipantNum(req.body.postId);
 
-		if (participantNum >= req.body.capacity)
+		if (req.body.capacity !== null && participantNum > req.body.capacity)
 			throw new Error('해당 공구는 정원이 가득 찼습니다.');
 
 		const createdParticipant = await participantService.saveParticipant(
