@@ -16,6 +16,7 @@
 		"cors": "^2.8.5",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
+		"link-preview-generator": "^1.0.7",
 		"mysql2": "^2.3.2",
 		"reflect-metadata": "^0.1.13",
 		"typeorm": "^0.2.38"
