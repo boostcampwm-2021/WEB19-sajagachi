@@ -6,6 +6,7 @@ export interface ItemType {
 	capacity: number;
 	participantCnt: number;
 	deadline: string;
+	finished: boolean;
 }
 
 export interface LocationType {
