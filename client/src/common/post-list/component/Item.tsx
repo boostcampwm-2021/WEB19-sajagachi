@@ -6,6 +6,7 @@ import { ItemType } from '../../../type';
 import { dateFormat } from '../../../util/util';
 import { Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { CheckCircle } from '@mui/icons-material';
 
 const LinkStyle = css`
 	&:focus,
@@ -42,10 +43,20 @@ const ItemTitleStyle = css`
 	white-space: nowrap;
 `;
 
+const FinishedItemTitleStyle = css`
+	${ItemTitleStyle};
+	color: #aeaeae;
+`;
+
 const ItemDeadlineStyle = css`
 	font-size: 12px;
 	margin: 5px 0;
 	color: #404040;
+`;
+
+const FinishedItemDeadlineStyle = css`
+	${ItemDeadlineStyle};
+	color: #aeaeae;
 `;
 
 const ItemDescStyle = css`
@@ -62,6 +73,11 @@ const ItemDescStyle = css`
 	-webkit-line-clamp: var(--lines-to-show);
 	-webkit-box-orient: vertical;
 	color: #404040;
+`;
+
+const FinishedItemDescStyle = css`
+	${ItemDescStyle};
+	color: #aeaeae;
 `;
 
 const ChipContainerStyle = css`
@@ -100,24 +116,58 @@ export default function Item(props: { item: ItemType }) {
 	);
 }
 
+function isFinished(item: ItemType) {
+	const now = new Date();
+	const deadline = new Date(item.deadline);
+	return item.finished || deadline <= now;
+}
+
 function ItemContent(props: { item: ItemType }) {
+	const TitleStyle = isFinished(props.item)
+		? FinishedItemTitleStyle
+		: ItemTitleStyle;
+
+	const DeadlineStyle = isFinished(props.item)
+		? FinishedItemDeadlineStyle
+		: ItemDeadlineStyle;
+
+	const DescStyle = isFinished(props.item)
+		? FinishedItemDescStyle
+		: ItemDescStyle;
+
+	let ParticipantChip;
+	if (isFinished(props.item)) {
+		ParticipantChip = (
+			<Chip
+				icon={<CheckCircle sx={{ fontSize: 16 }} />}
+				label="마감"
+				sx={ChipStyle('#dadada')}
+				size="small"
+			/>
+		);
+	} else {
+		ParticipantChip = (
+			<Chip
+				icon={<GroupIcon sx={{ fontSize: 16 }} />}
+				label={`${props.item.participantCnt}/${props.item.capacity}명`}
+				sx={ChipStyle('#ffd8d9')}
+				size="small"
+			/>
+		);
+	}
+
 	return (
 		<div css={ItemContainerStyle}>
-			<h1 css={ItemTitleStyle}>{props.item.title}</h1>
-			<p css={ItemDeadlineStyle}>{dateFormat(props.item.deadline)}까지</p>
-			<p css={ItemDescStyle}>{props.item.content.substring(0, 100)}</p>
+			<h1 css={TitleStyle}>{props.item.title}</h1>
+			<p css={DeadlineStyle}>{dateFormat(props.item.deadline)}까지</p>
+			<p css={DescStyle}>{props.item.content.substring(0, 100)}</p>
 			<div css={ChipContainerStyle}>
 				<Chip
 					label={props.item.category}
 					sx={ChipStyle(categoryColor[props.item.category])}
 					size="small"
 				/>
-				<Chip
-					icon={<GroupIcon sx={{ fontSize: 16 }} />}
-					label={`${props.item.participantCnt}/${props.item.capacity}명`}
-					sx={ChipStyle('#ffd8d9')}
-					size="small"
-				/>
+				{ParticipantChip}
 			</div>
 		</div>
 	);
