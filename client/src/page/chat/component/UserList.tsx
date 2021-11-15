@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
-import { Button } from '@mui/material';
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle
+} from '@mui/material';
 
 const DUMMYUSERS = [
 	// REMOVE LATER
@@ -104,10 +111,14 @@ export function UserList() {
 		</div>
 	);
 }
-
 function UserListItem(props: { user: any }) {
 	const hostId = 53253189; // REMOVE LATER
 	const loginId = 53253189; // REMOVE LATER
+
+	const [isDialogOn, setIsDialogOn] = useState(false);
+	const handleDialogOpen = () => setIsDialogOn(true);
+	const handleDialogClose = () => setIsDialogOn(false);
+
 	return (
 		<li css={UserListItemStyle}>
 			{hostId === props.user.id && (
@@ -116,7 +127,9 @@ function UserListItem(props: { user: any }) {
 			<img src={props.user.img} css={UserAvatarStyle} />
 			<p css={UserNameStyle}>{props.user.name}</p>
 			{hostId === loginId && (
-				<button css={UserKickBtnStyle}>내보내기</button>
+				<button css={UserKickBtnStyle} onClick={handleDialogOpen}>
+					내보내기
+				</button>
 			)}
 			{props.user.point && (
 				<div css={UserPointStyle}>
@@ -124,6 +137,25 @@ function UserListItem(props: { user: any }) {
 					<p>{props.user.point}</p>
 				</div>
 			)}
+			<Dialog
+				open={isDialogOn}
+				onClose={handleDialogClose}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle>사용자 내보내기</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						정말 사용자를 채팅방에서 내보내시겠습니까?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleDialogClose}>취소</Button>
+					<Button onClick={handleDialogClose} autoFocus>
+						내보내기
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</li>
 	);
 }
