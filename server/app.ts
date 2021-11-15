@@ -3,6 +3,8 @@ import cors from 'cors';
 import 'dotenv/config';
 import router from './routes';
 import sseRouter from './routes/sse';
+import { socketInit } from './socket';
+const http = require('http');
 
 const corsOption = {
 	origin: process.env.CLIENT_URL,
@@ -11,6 +13,7 @@ const corsOption = {
 };
 
 const app = express();
+
 const port = process.env.PORT || 5000;
 
 app.use(cors(corsOption));
@@ -21,4 +24,7 @@ app.use(express.static('public'));
 app.use('/api', router);
 app.use('/sse', sseRouter);
 
-app.listen(port, () => console.log(`Server listening at port ${port}`));
+const server = app.listen(port, () =>
+	console.log(`Server listening at port ${port}`)
+);
+socketInit(server, app);

@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
 import { fetchPost } from '../../../util/util';
-import 'dotenv/config';
+
 type GroupBuyButtonType = {
 	postId: number;
 	participantCnt: number;
@@ -34,7 +34,7 @@ export default function GroupBuyButton({
 			const postBody = {
 				userId: DUMMY_USER.id,
 				postId,
-				capacity: 0
+				capacity
 			};
 			const result = await fetchPost(
 				`${process.env.REACT_APP_SERVER_URL}/api/participant/save`,
@@ -44,7 +44,11 @@ export default function GroupBuyButton({
 			if (result === '해당 공구는 정원이 가득 찼습니다.') {
 				alert(result);
 				setButtonState(true);
-			} else history.push(`/chat/${postId}`);
+			} else
+				history.push(`/chat/${postId}`, {
+					userId: DUMMY_USER.id,
+					postId
+				});
 		} else setIsLoginModalOn(true);
 	}, [history]);
 	return (
