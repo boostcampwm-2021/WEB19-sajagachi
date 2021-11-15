@@ -26,28 +26,32 @@ export default function GroupBuyButton({
 }: GroupBuyButtonType) {
 	const history = useHistory();
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
-
+	const [buttonState, setButtonState] = useState(
+		finished || participantCnt >= capacity ? true : false
+	);
 	const clickHandler = useCallback(async () => {
 		if (DUMMY_ISLOGIN) {
 			const postBody = {
 				userId: DUMMY_USER.id,
 				postId,
-				capacity
+				capacity: 0
 			};
 			const result = await fetchPost(
 				`${process.env.REACT_APP_SERVER_URL}/api/participant/save`,
 				postBody
 			);
 			// main 에서 Error Alert 사용 -> Alert 관련 customHook 만들어 놓기
-			if (typeof result === 'string') alert(result);
-			else history.push(`/chat/${postId}`);
+			if (result === '해당 공구는 정원이 가득 찼습니다.') {
+				alert(result);
+				setButtonState(true);
+			} else history.push(`/chat/${postId}`);
 		} else setIsLoginModalOn(true);
 	}, [history]);
 	return (
 		<>
 			<Button
 				variant="contained"
-				disabled={finished || participantCnt >= capacity ? true : false}
+				disabled={buttonState}
 				sx={{
 					bgcolor: '#F76A6A',
 					':hover': {
