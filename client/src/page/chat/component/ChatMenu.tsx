@@ -8,6 +8,7 @@ import { Button } from '@mui/material';
 const ChatMenuStyle = css`
 	width: 80vw;
 	height: 100vh;
+	padding-top: 30px;
 `;
 
 const CloseBtnStyle = css`
