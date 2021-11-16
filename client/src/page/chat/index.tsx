@@ -4,9 +4,9 @@ import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
 import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
-import 'dotenv/config';
 import io from 'socket.io-client';
-import { RouteComponentProps } from 'react-router-dom';
+import { getCurrentTime } from '../../util/util';
+
 const ChatContainer = css`
 	margin-left: auto;
 	margin-right: auto;
@@ -19,32 +19,6 @@ const ChatLayout = css`
 	background-color: #ffffff;
 	border-radius: 30px 30px 0px 0px;
 `;
-const DUMMYDATA = [
-	{
-		sender: 'gomster96',
-		msg: '안녕하세요',
-		time: '오전 9:25',
-		isMe: true
-	},
-	{
-		sender: 'FloralLif',
-		msg: '안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요',
-		time: '오전 9:26',
-		isMe: false
-	},
-	{
-		sender: 'gomster96',
-		msg: '안녕하세요',
-		time: '오전 9:27',
-		isMe: false
-	},
-	{
-		sender: 'gomster96',
-		msg: '안녕하세요',
-		time: '오전 9:28',
-		isMe: false
-	}
-];
 
 type MessageType = {
 	sender: string;
@@ -78,13 +52,11 @@ function Chat(props: any) {
 					{
 						sender: user,
 						msg,
-						time: '오전 9:28',
+						time: getCurrentTime(),
 						isMe: checkMe(user)
 					}
 				];
 			});
-			console.log('sendUser: ', user);
-			console.log('msg: ', msg);
 		});
 		return () => {
 			socketRef.current.disconnect();
