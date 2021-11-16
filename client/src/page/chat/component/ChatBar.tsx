@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from '@emotion/react';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { ChatMenuDrawer } from './ChatMenuDrawer';
+import { Socket } from 'socket.io-client';
 const ChatBarLayout = css`
 	display: flex;
 	flex-direction: row;
@@ -20,7 +21,7 @@ const TitleStyle = css`
 	font-size: 18px;
 `;
 
-function ChatBar(props: { title: string }) {
+function ChatBar(props: { title: string; socket: Socket }) {
 	return (
 		<div css={ChatBarLayout}>
 			<ArrowBackIosNewIcon
@@ -33,7 +34,7 @@ function ChatBar(props: { title: string }) {
 				}}
 			/>
 			<div css={TitleStyle}>{props.title}</div>
-			<ChatMenuDrawer />
+			<ChatMenuDrawer socket={props.socket} />
 		</div>
 	);
 }

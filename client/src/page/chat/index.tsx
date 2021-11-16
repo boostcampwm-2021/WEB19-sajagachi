@@ -47,9 +47,8 @@ const DUMMYDATA = [
 ];
 
 function Chat(props: any) {
-	const socketRef = useRef<any>();
+	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
 	useEffect(() => {
-		socketRef.current = io(String(process.env.REACT_APP_SERVER_URL));
 		socketRef.current.emit('message', 'myMessage');
 		return () => {
 			socketRef.current.disconnect();
@@ -57,7 +56,10 @@ function Chat(props: any) {
 	}, []);
 	return (
 		<div css={ChatContainer}>
-			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />
+			<ChatBar
+				title={'타이틀이 들어갈 공간입니당아아아'}
+				socket={socketRef.current}
+			/>
 			<div css={ChatLayout}>
 				{DUMMYDATA.map(chat => {
 					return chat.isMe ? (
