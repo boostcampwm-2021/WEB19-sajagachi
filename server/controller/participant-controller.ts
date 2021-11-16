@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import participantService from '../service/participant-service';
+import postService from '../service/post-service';
 
-export const saveParticipant = async (
+export const createParticipant = async (
 	req: Request,
 	res: Response,
 	next: Function
@@ -9,8 +10,13 @@ export const saveParticipant = async (
 	try {
 		const [participant, participantNum] =
 			await participantService.getParticipantNum(req.body.postId);
+		const capacity = await postService.getCapacity(req.body.postId);
 
-		if (req.body.capacity !== null && participantNum > req.body.capacity)
+		if (capacity === undefined)
+			throw new Error('유효하지 않은 postId 입니다.');
+		console.log(participantNum);
+		console.log(capacity);
+		if (capacity !== null && participantNum > capacity)
 			throw new Error('해당 공구는 정원이 가득 찼습니다.');
 
 		const createdParticipant = await participantService.saveParticipant(

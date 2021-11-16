@@ -14,8 +14,7 @@ const saveParticipant = async (userId: number, postId: number) => {
 
 	const newParticipant = db.manager.create(Participant, {
 		userId,
-		postId,
-		point: 0
+		postId
 	});
 	const createdParticipant = await db.manager.save(newParticipant);
 
