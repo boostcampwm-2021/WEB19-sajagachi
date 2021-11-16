@@ -7,9 +7,7 @@ import { locationState } from '../../store/location';
 import { useRecoilState } from 'recoil';
 import SearchModalDrawer from './component/SearchModalDrawer';
 import { withRouter } from 'react-router-dom';
-import logo1 from '../../asset/logo1.svg';
-import logo2 from '../../asset/logo2.svg';
-import logo3 from '../../asset/logo3.svg';
+import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
 
@@ -56,25 +54,6 @@ const btnIcon = css`
 	color: white;
 `;
 
-const randomLogo = () => {
-	function getRandomInt(min: number, max: number) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
-	}
-	const target = getRandomInt(1, 4);
-	switch (target) {
-		case 1:
-			return logo1;
-		case 2:
-			return logo2;
-		case 3:
-			return logo3;
-		default:
-			return logo1;
-	}
-};
-
 const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 
 function Gnb() {
@@ -106,7 +85,7 @@ function Gnb() {
 				</div>
 				<Link to="/">
 					<img
-						src={randomLogo()}
+						src={logoImg}
 						style={{
 							flex: 2,
 							maxHeight: '3.1rem',
