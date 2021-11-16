@@ -155,7 +155,9 @@ function SearchModal({
 					});
 					return arr;
 				});
-				setLocation({ lat: query.lat, lng: query.long });
+				if (query.lat && query.long) {
+					setLocation({ lat: query.lat, lng: query.long });
+				}
 				if (query.search) setSearch(query.search);
 				setCheckedFinished(checkedFinished => {
 					if (query.finished === true) checkedFinished[1] = true;
