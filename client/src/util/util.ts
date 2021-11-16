@@ -87,3 +87,12 @@ export const decomposeQueryString = (queryStr: string) => {
 		: undefined;
 	return result;
 };
+
+export const getCurrentTime = () => {
+	const current = new Date();
+	let currentHour = current.getHours();
+	const currentMinutes = current.getMinutes();
+	const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
+	currentHour = currentHour < 12 ? currentHour : currentHour - 12;
+	return strAmPm + currentHour + '시 ' + currentMinutes + '분';
+};
