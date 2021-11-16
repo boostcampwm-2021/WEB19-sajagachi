@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
@@ -10,40 +10,8 @@ import {
 	DialogContentText,
 	DialogTitle
 } from '@mui/material';
-
-const DUMMYUSERS = [
-	// REMOVE LATER
-	{
-		id: 1024025,
-		name: 'Linus Torvalds',
-		img: 'https://avatars.githubusercontent.com/u/1024025?v=4',
-		point: 30000
-	},
-	{
-		id: 53253189,
-		name: 'FloralLife',
-		img: 'https://avatars.githubusercontent.com/u/53253189?v=4',
-		point: 30000
-	},
-	{
-		id: 67548567,
-		name: 'J127_우재석',
-		img: 'https://avatars.githubusercontent.com/u/67548567?v=4',
-		point: null
-	},
-	{
-		id: 76616101,
-		name: 'gintooooonic',
-		img: 'https://avatars.githubusercontent.com/u/76616101?v=4',
-		point: 50000
-	},
-	{
-		id: 80206884,
-		name: 'J119_안병웅',
-		img: 'https://avatars.githubusercontent.com/u/80206884?v=4',
-		point: null
-	}
-];
+import { fetchGet } from '../../../util/util';
+import 'dotenv/config';
 
 const UserListStyle = css`
 	padding: 0 15px;
@@ -99,19 +67,40 @@ const UserPointStyle = css`
 	}
 `;
 
+type ParticipantType = {
+	point: number;
+	user: {
+		id: number;
+		name: string;
+		img: string;
+	};
+};
+
 export function UserList() {
+	const [participants, setParticipants] = useState<ParticipantType[]>([]);
+	const updateParticipants = async (postId: number) => {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+		const result = await fetchGet(url);
+		setParticipants(result);
+	};
+
+	useEffect(() => {
+		const DUMMYPOSTID = 1000026;
+		updateParticipants(DUMMYPOSTID);
+	}, []);
+
 	return (
 		<div css={UserListStyle}>
-			<h1>참여자 ({DUMMYUSERS.length}명)</h1>
+			<h1>참여자 ({participants.length}명)</h1>
 			<ul>
-				{DUMMYUSERS.map(user => (
-					<UserListItem user={user} />
+				{participants.map(user => (
+					<UserListItem key={user.user.id} user={user} />
 				))}
 			</ul>
 		</div>
 	);
 }
-function UserListItem(props: { user: any }) {
+function UserListItem({ user }: { user: ParticipantType }) {
 	const hostId = 53253189; // REMOVE LATER
 	const loginId = 53253189; // REMOVE LATER
 
@@ -121,20 +110,20 @@ function UserListItem(props: { user: any }) {
 
 	return (
 		<li css={UserListItemStyle}>
-			{hostId === props.user.id && (
+			{hostId === user.user.id && (
 				<img src={crown} css={UserHostCrownStyle} />
 			)}
-			<img src={props.user.img} css={UserAvatarStyle} />
-			<p css={UserNameStyle}>{props.user.name}</p>
+			<img src={user.user.img} css={UserAvatarStyle} />
+			<p css={UserNameStyle}>{user.user.name}</p>
 			{hostId === loginId && (
 				<button css={UserKickBtnStyle} onClick={handleDialogOpen}>
 					내보내기
 				</button>
 			)}
-			{props.user.point && (
+			{user.point && (
 				<div css={UserPointStyle}>
 					<MonetizationOn />
-					<p>{props.user.point}</p>
+					<p>{user.point}</p>
 				</div>
 			)}
 			<Dialog
