@@ -15,7 +15,7 @@ export class User {
 	@Column('varchar', { length: 255 })
 	img!: string;
 
-	@Column('int', { default: true })
+	@Column('int', { default: 0 })
 	point: number = 0;
 
 	@OneToMany(() => Post, post => post.user)
