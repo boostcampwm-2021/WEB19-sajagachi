@@ -18,7 +18,7 @@ const App = () => {
 		<>
 			<ThemeProvider theme={theme}>
 				<Router>
-					{!window.location.pathname.startsWith('/chat') && <Gnb />}
+					<Gnb />
 					<Switch>
 						<Route exact path="/" component={Main} />
 						<Route exact path="/post" component={Post} />

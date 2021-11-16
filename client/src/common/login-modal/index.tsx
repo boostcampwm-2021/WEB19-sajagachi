@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import githubButton from '../../asset/github-button.png';
 import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
+import { fetchGet, fetchPost } from '../../util/util';
 
 const modalBackground = css`
 	position: fixed;
@@ -36,6 +37,22 @@ const loginText = css`
 	margin-bottom: 30px;
 `;
 
+const InputText = css`
+	border: 2px solid #ce9393;
+	border-radius: 16px;
+	box-sizing: border-box;
+	box-shadow: none;
+	width: 40%;
+	height: 40px;
+	background: transparent;
+	outline: none;
+	color: #000000;
+	font-size: 16px;
+	overflow: hidden;
+	padding: 10px;
+	text-align: center;
+`;
+
 const loginButton = css`
 	width: 40%;
 	height: 40%;
@@ -46,11 +63,24 @@ const githubImage = css`
 	height: 90%;
 `;
 
-function LoginModal({
-	setIsLoginModalOn
-}: {
+type ModalState = {
 	setIsLoginModalOn: (isLoginModalOn: boolean) => void;
-}) {
+};
+
+function LoginModal({ setIsLoginModalOn }: ModalState) {
+	const [id, setId] = useState<string>();
+
+	function handleIdChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setId(e.target.value);
+	}
+
+	function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+		fetchPost(url, { userId: id }).then(data => {
+			if (!isNaN(data)) window.location.href = '/';
+		});
+	}
+
 	function handleOutsideClick(e: React.MouseEvent<HTMLDivElement>) {
 		if (e.target === e.currentTarget) setIsLoginModalOn(false);
 	}
@@ -63,7 +93,13 @@ function LoginModal({
 		>
 			<div css={modal}>
 				<h1 css={loginText}>로그인</h1>
-				<IconButton css={loginButton}>
+				<input
+					type="text"
+					css={InputText}
+					onChange={handleIdChange}
+					value={id}
+				/>
+				<IconButton css={loginButton} onClick={handleLoginBtnClick}>
 					<img src={githubIcon} alt="로그인" css={githubImage}></img>
 				</IconButton>
 			</div>

@@ -93,7 +93,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						const server = new Date(parseInt(e.data, 10));
 						end.setDate(end.getDate() - 1);
 						if (server >= end) {
-							deadLineRef.current.setDeadLine('0일 00:00:00');
+							deadLineRef.current.setDeadLine('기한 마감');
 							return;
 						} else {
 							const t = end.getTime() - server.getTime();
@@ -206,6 +206,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						<FavoriteBorderIcon sx={{ fontSize: 30 }} />
 					</StyledIconButton>
 					<GroupBuyButton
+						postId={Number(match.params.postId)}
 						participantCnt={post.participantCnt}
 						capacity={post.capacity}
 						finished={post.finished}
