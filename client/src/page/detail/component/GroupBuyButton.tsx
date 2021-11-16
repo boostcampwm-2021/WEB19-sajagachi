@@ -33,8 +33,7 @@ export default function GroupBuyButton({
 		if (DUMMY_ISLOGIN) {
 			const postBody = {
 				userId: DUMMY_USER.id,
-				postId,
-				capacity
+				postId
 			};
 			const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
 			const result = await fetchPost(url, postBody);
