@@ -69,7 +69,7 @@ export default function GroupBuyButton({
 			>
 				{finished
 					? '모집 종료'
-					: `공동 구매 (${participantCnt} / ${capacity})`}
+					: `공동 구매 (${participantCnt} / ${capacity ?? ' - '})`}
 			</Button>
 			{isLoginModalOn && (
 				<LoginModal setIsLoginModalOn={setIsLoginModalOn} />
