@@ -72,11 +72,15 @@ const getPosts = async ({
 
 const getPost = async (postId: string) => {
 	const db = await getDB().get();
-	const post = await db.manager.findOne(Post, {
-		where: { id: postId },
-		relations: ['category']
-	});
-	return post;
+	try {
+		const post = await db.manager.findOne(Post, {
+			where: { id: postId },
+			relations: ['category', 'urls']
+		});
+		return post;
+	} catch (e) {
+		console.log(e);
+	}
 };
 
 const updatePostFinished = async (postId: number) => {

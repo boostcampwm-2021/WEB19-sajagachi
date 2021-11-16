@@ -16,6 +16,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
+import LinkPreview from './component/LinkPreview';
+
+interface UrlType {
+	postId: number;
+	url: string;
+}
 
 interface MatchParams {
 	postId: string;
@@ -33,6 +39,7 @@ interface PostType {
 	finished: boolean;
 	capacity: number;
 	participantCnt: number;
+	urls: UrlType[];
 }
 
 const detailContainer = css`
@@ -69,7 +76,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		finished: false,
 		capacity: 0,
 		deadline: '',
-		participantCnt: 0
+		participantCnt: 0,
+		urls: []
 	});
 
 	useEffect(() => {
@@ -176,6 +184,9 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							</Typography>
 						</CardContent>
 					</Card>
+					{post.urls.map((url, idx) => {
+						return <LinkPreview key={idx} url={url.url} />;
+					})}
 				</CardContent>
 			</Card>
 			<StyledBox
