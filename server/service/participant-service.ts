@@ -9,6 +9,15 @@ const getParticipantNum = async (postId: number) => {
 	return result;
 };
 
+const getParticipants = async (postId: number) => {
+	const db = await getDB().get();
+	const result = await db.manager.find(Participant, {
+		where: { postId },
+		relations: ['user']
+	});
+	return result;
+};
+
 const saveParticipant = async (userId: number, postId: number) => {
 	const db = await getDB().get();
 
@@ -21,4 +30,4 @@ const saveParticipant = async (userId: number, postId: number) => {
 	return createdParticipant;
 };
 
-export default { getParticipantNum, saveParticipant };
+export default { getParticipantNum, getParticipants, saveParticipant };
