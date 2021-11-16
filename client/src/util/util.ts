@@ -30,7 +30,8 @@ export const fetchGet = async (url: string | undefined, query: string = '') => {
 		headers: {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
-			Cache: 'no-cache'
+			Cache: 'no-cache',
+			credentials: 'include'
 		},
 		credentials: 'include'
 	};
@@ -45,7 +46,8 @@ export const fetchPost = async (url: string, body: any) => {
 		headers: {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
-			Cache: 'no-cache'
+			Cache: 'no-cache',
+			credentials: 'include'
 		},
 		credentials: 'include',
 		body: JSON.stringify(body)
@@ -84,4 +86,13 @@ export const decomposeQueryString = (queryStr: string) => {
 		? params.get('search') + ''
 		: undefined;
 	return result;
+};
+
+export const getCurrentTime = () => {
+	const current = new Date();
+	let currentHour = current.getHours();
+	const currentMinutes = current.getMinutes();
+	const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
+	currentHour = currentHour < 12 ? currentHour : currentHour - 12;
+	return strAmPm + currentHour + '시 ' + currentMinutes + '분';
 };

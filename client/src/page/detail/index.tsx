@@ -16,6 +16,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
+import LinkPreview from './component/LinkPreview';
+
+interface UrlType {
+	postId: number;
+	url: string;
+}
 
 interface MatchParams {
 	postId: string;
@@ -33,6 +39,7 @@ interface PostType {
 	finished: boolean;
 	capacity: number;
 	participantCnt: number;
+	urls: UrlType[];
 }
 
 const detailContainer = css`
@@ -69,9 +76,16 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		finished: false,
 		capacity: 0,
 		deadline: '',
-		participantCnt: 0
+		participantCnt: 0,
+		urls: []
 	});
-
+	const [loginId, setLoginId] = useState<number>();
+	useEffect(() => {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+		fetchGet(url).then(userLoginId => {
+			if (!isNaN(userLoginId)) setLoginId(userLoginId);
+		});
+	}, []);
 	useEffect(() => {
 		let es: any = null;
 		fetchGet(
@@ -85,7 +99,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						const server = new Date(parseInt(e.data, 10));
 						end.setDate(end.getDate() - 1);
 						if (server >= end) {
-							deadLineRef.current.setDeadLine('0일 00:00:00');
+							deadLineRef.current.setDeadLine('기한 마감');
 							return;
 						} else {
 							const t = end.getTime() - server.getTime();
@@ -176,6 +190,9 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 							</Typography>
 						</CardContent>
 					</Card>
+					{post.urls.map((url, idx) => {
+						return <LinkPreview key={idx} url={url.url} />;
+					})}
 				</CardContent>
 			</Card>
 			<StyledBox
@@ -195,6 +212,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						<FavoriteBorderIcon sx={{ fontSize: 30 }} />
 					</StyledIconButton>
 					<GroupBuyButton
+						loginId={loginId}
+						postId={Number(match.params.postId)}
 						participantCnt={post.participantCnt}
 						capacity={post.capacity}
 						finished={post.finished}

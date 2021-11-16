@@ -43,7 +43,7 @@ const getPosts = async ({
 		throw new Error('offset 과 limit은 지정해주어야 합니다.');
 	const db = await getDB().get();
 	let sql = `
-	SELECT post.id, post.title, post.content, post.capacity, post.deadline, category.name as category
+	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, category.name as category
 	FROM post
 	INNER JOIN category
 	ON post.categoryId = category.id
@@ -72,11 +72,29 @@ const getPosts = async ({
 
 const getPost = async (postId: string) => {
 	const db = await getDB().get();
-	const post = await db.manager.findOne(Post, {
-		where: { id: postId },
-		relations: ['category']
-	});
-	return post;
+	try {
+		const post = await db.manager.findOne(Post, {
+			where: { id: postId },
+			relations: ['category', 'urls']
+		});
+		return post;
+	} catch (e) {
+		console.log(e);
+	}
 };
 
-export default { savePost, getPosts, getPost };
+const updatePostFinished = async (postId: number) => {
+	const db = await getDB().get();
+	const updatedPost = await db.manager.update(Post, postId, {
+		finished: true
+	});
+	return updatedPost;
+};
+
+const getCapacity = async (postId: number) => {
+	const db = await getDB().get();
+	const capacity = await db.manager.findOne(Post, { where: { id: postId } });
+	return capacity?.capacity;
+};
+
+export default { savePost, getPosts, getPost, updatePostFinished, getCapacity };
