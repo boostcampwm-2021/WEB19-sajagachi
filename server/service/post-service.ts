@@ -91,4 +91,10 @@ const updatePostFinished = async (postId: number) => {
 	return updatedPost;
 };
 
-export default { savePost, getPosts, getPost, updatePostFinished };
+const getCapacity = async (postId: number) => {
+	const db = await getDB().get();
+	const capacity = await db.manager.findOne(Post, { where: { id: postId } });
+	return capacity?.capacity;
+};
+
+export default { savePost, getPosts, getPost, updatePostFinished, getCapacity };

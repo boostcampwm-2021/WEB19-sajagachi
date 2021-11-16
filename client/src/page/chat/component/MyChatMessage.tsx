@@ -35,11 +35,9 @@ const MessageTimeStyle = css`
 
 function MyChatMessage(props: { msgData: MessageType }) {
 	return (
-		<div>
-			<div css={DirectionSelector}>
-				<div css={MessageTimeStyle}>{props.msgData.time}</div>
-				<div css={MessageStyle}>{props.msgData.msg}</div>
-			</div>
+		<div css={DirectionSelector}>
+			<span css={MessageTimeStyle}>{props.msgData.time}</span>
+			<p css={MessageStyle}>{props.msgData.msg}</p>
 		</div>
 	);
 }

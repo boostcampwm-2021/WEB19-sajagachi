@@ -39,15 +39,15 @@ const SenderStyle = css`
 
 function OtherChatMessage(props: { msgData: MessageType }) {
 	return (
-		<div>
+		<>
 			<div css={DirectionSelector}>
-				<div css={SenderStyle}>{props.msgData.sender}</div>
+				<span css={SenderStyle}>{props.msgData.sender}</span>
 			</div>
 			<div css={DirectionSelector}>
-				<div css={MessageStyle}>{props.msgData.msg}</div>
-				<div css={MessageTimeStyle}>{props.msgData.time}</div>
+				<p css={MessageStyle}>{props.msgData.msg}</p>
+				<span css={MessageTimeStyle}>{props.msgData.time}</span>
 			</div>
-		</div>
+		</>
 	);
 }
 
