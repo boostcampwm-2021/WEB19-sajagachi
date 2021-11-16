@@ -2,16 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
-import {
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle
-} from '@mui/material';
 import { fetchGet } from '../../../util/util';
 import 'dotenv/config';
+import Confirm from '../../../common/confirm';
 
 const UserListStyle = css`
 	padding: 0 15px;
@@ -104,9 +97,7 @@ function UserListItem({ user }: { user: ParticipantType }) {
 	const hostId = 53253189; // REMOVE LATER
 	const loginId = 53253189; // REMOVE LATER
 
-	const [isDialogOn, setIsDialogOn] = useState(false);
-	const handleDialogOpen = () => setIsDialogOn(true);
-	const handleDialogClose = () => setIsDialogOn(false);
+	const [isConfirmOn, setIsConfirmOn] = useState(false);
 
 	return (
 		<li css={UserListItemStyle}>
@@ -116,7 +107,10 @@ function UserListItem({ user }: { user: ParticipantType }) {
 			<img src={user.user.img} css={UserAvatarStyle} />
 			<p css={UserNameStyle}>{user.user.name}</p>
 			{hostId === loginId && (
-				<button css={UserKickBtnStyle} onClick={handleDialogOpen}>
+				<button
+					css={UserKickBtnStyle}
+					onClick={() => setIsConfirmOn(true)}
+				>
 					내보내기
 				</button>
 			)}
@@ -126,25 +120,14 @@ function UserListItem({ user }: { user: ParticipantType }) {
 					<p>{user.point}</p>
 				</div>
 			)}
-			<Dialog
-				open={isDialogOn}
-				onClose={handleDialogClose}
-				aria-labelledby="alert-dialog-title"
-				aria-describedby="alert-dialog-description"
+			<Confirm
+				on={isConfirmOn}
+				title="사용자 내보내기"
+				onCancel={() => setIsConfirmOn(false)}
+				onConfirm={() => setIsConfirmOn(false)}
 			>
-				<DialogTitle>사용자 내보내기</DialogTitle>
-				<DialogContent>
-					<DialogContentText id="alert-dialog-description">
-						정말 사용자를 채팅방에서 내보내시겠습니까?
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={handleDialogClose}>취소</Button>
-					<Button onClick={handleDialogClose} autoFocus>
-						내보내기
-					</Button>
-				</DialogActions>
-			</Dialog>
+				정말 사용자를 채팅에서 내보내시겠습니까?
+			</Confirm>
 		</li>
 	);
 }
