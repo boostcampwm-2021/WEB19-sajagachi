@@ -15,8 +15,6 @@ export const createParticipant = async (
 
 		if (capacity === undefined)
 			throw new Error('유효하지 않은 postId 입니다.');
-		console.log(participantNum);
-		console.log(capacity);
 		if (capacity !== null && participantNum > capacity)
 			throw new Error('해당 공구는 정원이 가득 찼습니다.');
 

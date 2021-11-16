@@ -6,7 +6,7 @@ import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
 import 'dotenv/config';
 import io from 'socket.io-client';
-
+import { RouteComponentProps } from 'react-router-dom';
 const ChatContainer = css`
 	margin-left: auto;
 	margin-right: auto;
@@ -47,10 +47,22 @@ const DUMMYDATA = [
 ];
 
 function Chat(props: any) {
-	const socketRef = useRef<any>();
+	const userId = props.location.state.userId;
+	const postId = props.location.state.postId;
+
+	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
 	useEffect(() => {
-		socketRef.current = io(String(process.env.REACT_APP_SERVER_URL));
-		socketRef.current.emit('message', 'myMessage');
+		console.log('start: ');
+		console.log(socketRef.current);
+
+		socketRef.current.emit('joinRoom', postId, userId);
+		socketRef.current.on('afterJoin', (msg: string) => {
+			console.log(msg);
+		});
+		socketRef.current.on('receiveMsg', (user: string, msg: string) => {
+			console.log('sendUser: ', user);
+			console.log('msg: ', msg);
+		});
 		return () => {
 			socketRef.current.disconnect();
 		};
@@ -67,7 +79,11 @@ function Chat(props: any) {
 					);
 				})}
 			</div>
-			<ChatInput />
+			<ChatInput
+				socket={socketRef.current}
+				postId={postId}
+				userId={userId}
+			/>
 		</div>
 	);
 }
