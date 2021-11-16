@@ -2,6 +2,21 @@ import { Request, Response } from 'express';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
 
+export const getParticipants = async (
+	req: Request,
+	res: Response,
+	next: Function
+) => {
+	try {
+		const participants = await participantService.getParticipants(
+			+req.params.post_id
+		);
+		res.json(participants);
+	} catch (err: any) {
+		next({ statusCode: 500, message: err.message });
+	}
+};
+
 export const createParticipant = async (
 	req: Request,
 	res: Response,
