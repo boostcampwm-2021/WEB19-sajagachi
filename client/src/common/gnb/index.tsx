@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
+import Alert from '../alert';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -59,6 +60,7 @@ const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
+	const [isAlertOn, setIsAlertOn] = useState(false);
 
 	useEffect(() => {
 		const onSuccess = (pos: any) => {
@@ -75,9 +77,7 @@ function Gnb() {
 				lng: location.lng,
 				isLoaded: true
 			});
-			alert(
-				'위치 권한을 허용해주시면 현재 위치의 게시글을 불러올 수 있어요.'
-			);
+			setIsAlertOn(true);
 		};
 
 		navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
@@ -123,6 +123,14 @@ function Gnb() {
 					)}
 				</div>
 			</div>
+			<Alert
+				on={isAlertOn}
+				title="위치를 불러오지 못했어요"
+				onClose={() => setIsAlertOn(false)}
+			>
+				위치 권한을 허용해주시면 근처의 공동구매 게시글을 검색해드릴 수
+				있어요.
+			</Alert>
 		</div>
 	);
 }
