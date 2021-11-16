@@ -5,6 +5,7 @@ import LoginModal from '../../../common/login-modal';
 import { fetchPost } from '../../../util/util';
 
 type GroupBuyButtonType = {
+	loginId: number | undefined;
 	postId: number;
 	participantCnt: number;
 	capacity: number;
@@ -16,9 +17,8 @@ const DUMMY_USER = {
 	name: 'J119_안병웅'
 };
 
-const DUMMY_ISLOGIN = true;
-
 export default function GroupBuyButton({
+	loginId,
 	postId,
 	participantCnt,
 	capacity,
@@ -27,27 +27,31 @@ export default function GroupBuyButton({
 	const history = useHistory();
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 	const [buttonState, setButtonState] = useState(
-		finished || participantCnt >= capacity ? true : false
+		finished ||
+			(capacity !== null
+				? participantCnt >= capacity
+					? true
+					: false
+				: false)
 	);
 	const clickHandler = useCallback(async () => {
-		if (DUMMY_ISLOGIN) {
+		if (loginId === undefined) setIsLoginModalOn(true);
+		else {
 			const postBody = {
-				userId: DUMMY_USER.id,
-				postId,
-				capacity
+				userId: loginId,
+				postId
 			};
 			const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
 			const result = await fetchPost(url, postBody);
-			// main 에서 Error Alert 사용 -> Alert 관련 customHook 만들어 놓기
 			if (result === '해당 공구는 정원이 가득 찼습니다.') {
 				alert(result);
 				setButtonState(true);
 			} else
 				history.push(`/chat/${postId}`, {
-					userId: DUMMY_USER.id,
+					userId: loginId,
 					postId
 				});
-		} else setIsLoginModalOn(true);
+		}
 	}, [history]);
 	return (
 		<>
@@ -69,7 +73,7 @@ export default function GroupBuyButton({
 			>
 				{finished
 					? '모집 종료'
-					: `공동 구매 (${participantCnt} / ${capacity})`}
+					: `공동 구매 (${participantCnt} / ${capacity ?? ' - '})`}
 			</Button>
 			{isLoginModalOn && (
 				<LoginModal setIsLoginModalOn={setIsLoginModalOn} />
