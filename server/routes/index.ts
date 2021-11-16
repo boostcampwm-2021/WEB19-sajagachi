@@ -3,14 +3,14 @@ import postRouter from './post';
 import categoryRouter from './category';
 import sseRouter from './sse';
 import linkPreviewRouter from './linkPreview';
-import participantRouter from './participant';
+import chatRouter from './chat';
 import loginRouter from './login';
 
 const router = express.Router();
 
 router.use('/post', postRouter);
 router.use('/category', categoryRouter);
-router.use('/participant', participantRouter);
+router.use('/chat', chatRouter);
 router.use('/sse', sseRouter);
 router.use('/previewData', linkPreviewRouter);
 router.use('/login', loginRouter);

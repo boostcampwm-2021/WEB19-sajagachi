@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
 
-export const saveParticipant = async (
+export const createParticipant = async (
 	req: Request,
 	res: Response,
 	next: Function

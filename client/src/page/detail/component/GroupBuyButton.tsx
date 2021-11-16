@@ -36,10 +36,8 @@ export default function GroupBuyButton({
 				postId,
 				capacity
 			};
-			const result = await fetchPost(
-				`${process.env.REACT_APP_SERVER_URL}/api/participant/save`,
-				postBody
-			);
+			const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+			const result = await fetchPost(url, postBody);
 			// main 에서 Error Alert 사용 -> Alert 관련 customHook 만들어 놓기
 			if (result === '해당 공구는 정원이 가득 찼습니다.') {
 				alert(result);
