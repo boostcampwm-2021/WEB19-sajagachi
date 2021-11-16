@@ -39,8 +39,6 @@ function Chat(props: any) {
 	};
 
 	useEffect(() => {
-		console.log(socketRef.current);
-
 		socketRef.current.emit('joinRoom', postId, userId);
 		socketRef.current.on('afterJoin', (msg: string) => {
 			console.log(msg);
@@ -64,7 +62,12 @@ function Chat(props: any) {
 	}, []);
 	return (
 		<div css={ChatContainer}>
-			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />
+			<ChatBar
+				title={'타이틀이 들어갈 공간입니당아아아'}
+				socket={socketRef.current}
+				postId={postId}
+				userId={userId}
+			/>
 			<div css={ChatLayout}>
 				{chatDatas.map((chat: MessageType) => {
 					return chat.isMe ? (

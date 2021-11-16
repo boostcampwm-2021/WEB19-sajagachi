@@ -13,9 +13,7 @@ const MessageStyle = css`
 	padding: 5px 10px;
 	max-width: 60%;
 	border-radius: 10px;
-
 	background-color: #f76a6a;
-
 	color: #ffffff;
 	font-size: 14px;
 `;

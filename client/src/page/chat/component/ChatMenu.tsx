@@ -4,6 +4,7 @@ import { Close } from '@mui/icons-material';
 import { UserList } from './UserList';
 import { PointView } from './PointView';
 import { Button } from '@mui/material';
+import { Socket } from 'socket.io-client';
 
 const ChatMenuStyle = css`
 	width: 300px;
@@ -37,7 +38,14 @@ const QuitBtnStyle = css`
 	}
 `;
 
-export function ChatMenu(props: { onCloseBtnClicked: Function }) {
+type propsType = {
+	onCloseBtnClicked: Function;
+	socket: Socket;
+	postId: string;
+	userId: string;
+};
+
+export function ChatMenu(props: propsType) {
 	return (
 		<div css={ChatMenuStyle}>
 			<Close
@@ -45,7 +53,12 @@ export function ChatMenu(props: { onCloseBtnClicked: Function }) {
 				onClick={() => props.onCloseBtnClicked()}
 			/>
 			<UserList />
-			<PointView />
+			<PointView
+				socket={props.socket}
+				point={null}
+				postId={props.postId}
+				userId={props.userId}
+			/>
 			<div css={QuitBtnContainerStyle}>
 				<Button css={QuitBtnStyle}>나가기</Button>
 			</div>
