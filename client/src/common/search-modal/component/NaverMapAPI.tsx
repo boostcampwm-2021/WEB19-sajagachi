@@ -41,7 +41,7 @@ function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 		const initMap = () => {
 			map = new naver.maps.Map('map', {
 				center: new naver.maps.LatLng(location.lat, location.lng),
-				zoom: 13
+				zoom: 16
 			});
 		};
 		initMap();

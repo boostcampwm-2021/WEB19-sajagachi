@@ -66,11 +66,7 @@ export const dateFormat = (dateStr: string) => {
 };
 
 export const decomposeQueryString = (queryStr: string) => {
-	const DEFAULT_LOCATION = {
-		lat: 37.5642135,
-		long: 127.0016985
-	};
-	const result: QueryStringType = DEFAULT_LOCATION;
+	const result: QueryStringType = {};
 	const params = new URLSearchParams(queryStr);
 	result.category = params
 		.get('category')
@@ -80,8 +76,8 @@ export const decomposeQueryString = (queryStr: string) => {
 	result.finished = params.get('finished')
 		? params.get('finished') === 'true'
 		: undefined;
-	result.lat = Number(params.get('lat') ?? DEFAULT_LOCATION.lat);
-	result.long = Number(params.get('long') ?? DEFAULT_LOCATION.long);
+	if (Number(params.get('lat'))) result.lat = Number(params.get('lat'));
+	if (Number(params.get('long'))) result.long = Number(params.get('long'));
 	result.search = params.get('search')
 		? params.get('search') + ''
 		: undefined;
