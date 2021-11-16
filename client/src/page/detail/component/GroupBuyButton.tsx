@@ -27,7 +27,12 @@ export default function GroupBuyButton({
 	const history = useHistory();
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 	const [buttonState, setButtonState] = useState(
-		finished || participantCnt >= capacity ? true : false
+		finished ||
+			(capacity !== null
+				? participantCnt >= capacity
+					? true
+					: false
+				: false)
 	);
 	const clickHandler = useCallback(async () => {
 		if (DUMMY_ISLOGIN) {
