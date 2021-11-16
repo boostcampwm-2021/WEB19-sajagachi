@@ -59,4 +59,4 @@ function ChatInput(props: ChatInputType) {
 	);
 }
 
-export default React.memo(ChatInput);
+export default ChatInput;

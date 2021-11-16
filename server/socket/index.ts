@@ -37,9 +37,6 @@ export const socketInit = (server: any, app: Application) => {
 	io.on('connection', (socket: any) => {
 		joinRoom(socket, io);
 		sendMsg(socket, io);
-		socket.on('messageSend', (msg: string) => {
-			console.log(msg);
-		});
 
 		socket.on('disconnect', () => {
 			console.log('socket disconnected!');
