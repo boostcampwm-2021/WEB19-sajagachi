@@ -1,5 +1,7 @@
 import { Server } from 'socket.io';
 import chatService from '../service/chat-service';
+import participantService from '../service/participant-service';
+import userService from '../service/user-service';
 
 export const joinRoom = (socket: any, io: Server) => {
 	socket.on('joinRoom', (postId: string, userId: string) => {
@@ -25,4 +27,30 @@ export const sendMsg = (socket: any, io: Server) => {
 		chatService.saveChat(Number(userId), Number(postId), msg);
 		io.to(postId).emit('receiveMsg', userId, msg);
 	});
+};
+
+export const confirmPurchase = (socket: any, io: Server) => {
+	socket.on(
+		'purchase confirm',
+		async (postId: string, userId: string, sendPoint: number) => {
+			const user = await userService.findById(userId);
+			if (user === undefined)
+				socket.emit('purchase error', '사용자 정보 에러');
+			else if (user.point < sendPoint)
+				socket.emit('purchase error', '잔여 포인트 부족');
+			else {
+				userService.usePoint(
+					Number(userId),
+					Number(user.point),
+					sendPoint
+				);
+				participantService.confirmPoint(
+					Number(postId),
+					Number(userId),
+					sendPoint
+				);
+				io.to(postId).emit('purchase confirm', userId, sendPoint);
+			}
+		}
+	);
 };

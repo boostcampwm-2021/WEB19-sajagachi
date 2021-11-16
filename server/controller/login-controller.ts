@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import loginService from '../service/login-service';
+import userService from '../service/user-service';
 import { TokenType } from '../type';
 import { User } from '../model/entity/User';
 import jwt from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response, next: Function) => {
 	try {
-		let user = await loginService.findById(req.body.userId);
+		let user = await userService.findById(req.body.userId);
 		if (user === undefined)
-			user = await loginService.signUp(req.body.userId);
+			user = await userService.signUp(req.body.userId);
 		res.cookie('user', createToken(user), { httpOnly: true });
 		res.status(201).json(user.id);
 	} catch (err: any) {
@@ -24,7 +24,7 @@ export const checkLogin = async (
 	try {
 		const { id } = verifyToken(req.cookies.user) as TokenType;
 		if (id) {
-			const user = await loginService.findById(String(id));
+			const user = await userService.findById(String(id));
 			if (user) res.status(200).json(id);
 			else next({ statusCode: 401, message: 'unauthorized' });
 		} else next({ statusCode: 401, message: 'unauthorized' });

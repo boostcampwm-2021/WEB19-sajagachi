@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import 'dotenv/config';
 import { Application } from 'express';
-import { joinRoom, sendMsg } from './chat';
+import { confirmPurchase, joinRoom, sendMsg } from './chat';
 
 export const socketInit = (server: any, app: Application) => {
 	const io = new Server(server, {
@@ -13,6 +13,7 @@ export const socketInit = (server: any, app: Application) => {
 	io.on('connection', (socket: any) => {
 		joinRoom(socket, io);
 		sendMsg(socket, io);
+		confirmPurchase(socket, io);
 
 		socket.on('disconnect', () => {
 			console.log('socket disconnected!');

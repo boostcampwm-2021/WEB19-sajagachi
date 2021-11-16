@@ -1,3 +1,4 @@
+import { Db } from 'typeorm';
 import { getDB } from '../db/db';
 import { User } from '../model/entity/User';
 
@@ -20,4 +21,12 @@ const signUp = async (id: string): Promise<User> => {
 	return createUser;
 };
 
-export default { findById, signUp };
+const usePoint = async (id: number, point: number, sendPoint: number) => {
+	const db = await getDB().get();
+	const result = await db.manager.update(User, id, {
+		point: point - sendPoint
+	});
+	return result;
+};
+
+export default { findById, signUp, usePoint };

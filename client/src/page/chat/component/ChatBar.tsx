@@ -21,7 +21,14 @@ const TitleStyle = css`
 	font-size: 18px;
 `;
 
-function ChatBar(props: { title: string; socket: Socket }) {
+type propsType = {
+	title: string;
+	socket: Socket;
+	postId: string;
+	userId: string;
+};
+
+function ChatBar(props: propsType) {
 	return (
 		<div css={ChatBarLayout}>
 			<ArrowBackIosNewIcon
@@ -34,7 +41,11 @@ function ChatBar(props: { title: string; socket: Socket }) {
 				}}
 			/>
 			<div css={TitleStyle}>{props.title}</div>
-			<ChatMenuDrawer socket={props.socket} />
+			<ChatMenuDrawer
+				socket={props.socket}
+				postId={props.postId}
+				userId={props.userId}
+			/>
 		</div>
 	);
 }

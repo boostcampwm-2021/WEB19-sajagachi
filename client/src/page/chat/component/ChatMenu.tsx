@@ -38,10 +38,14 @@ const QuitBtnStyle = css`
 	}
 `;
 
-export function ChatMenu(props: {
+type propsType = {
 	onCloseBtnClicked: Function;
 	socket: Socket;
-}) {
+	postId: string;
+	userId: string;
+};
+
+export function ChatMenu(props: propsType) {
 	return (
 		<div css={ChatMenuStyle}>
 			<Close
@@ -49,7 +53,12 @@ export function ChatMenu(props: {
 				onClick={() => props.onCloseBtnClicked()}
 			/>
 			<UserList />
-			<PointView socket={props.socket} point={null} />
+			<PointView
+				socket={props.socket}
+				point={null}
+				postId={props.postId}
+				userId={props.userId}
+			/>
 			<div css={QuitBtnContainerStyle}>
 				<Button css={QuitBtnStyle}>나가기</Button>
 			</div>

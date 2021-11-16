@@ -35,4 +35,25 @@ const saveParticipant = async (userId: number, postId: number) => {
 	return createdParticipant;
 };
 
-export default { getParticipantNum, getParticipants, saveParticipant };
+const confirmPoint = async (
+	postId: number,
+	userId: number,
+	sendPoint: number
+) => {
+	const db = await getDB().get();
+	const result = await db.manager.update(
+		Participant,
+		{ postId, userId },
+		{
+			point: sendPoint
+		}
+	);
+	return result;
+};
+
+export default {
+	getParticipantNum,
+	getParticipants,
+	saveParticipant,
+	confirmPoint
+};

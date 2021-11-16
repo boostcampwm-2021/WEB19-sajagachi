@@ -15,7 +15,13 @@ const BlurredBackground = css`
 	backdrop-filter: blur(4px);
 `;
 
-export function ChatMenuDrawer(props: { socket: Socket }) {
+type propsType = {
+	socket: Socket;
+	postId: string;
+	userId: string;
+};
+
+export function ChatMenuDrawer(props: propsType) {
 	const [isMenuOn, setIsMenuOn] = useState(false);
 	const toggleDrawer = () => setIsMenuOn(!isMenuOn);
 
@@ -41,6 +47,8 @@ export function ChatMenuDrawer(props: { socket: Socket }) {
 				<ChatMenu
 					onCloseBtnClicked={() => setIsMenuOn(false)}
 					socket={props.socket}
+					postId={props.postId}
+					userId={props.userId}
 				/>
 			</SwipeableDrawer>
 		</>

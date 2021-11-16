@@ -62,9 +62,12 @@ const PointBtnStyle = (purchase: boolean) => css`
 type PointState = {
 	socket: Socket;
 	point: number | null;
+	postId: string;
+	userId: string;
 };
 
 export function PointView(props: PointState) {
+	console.log(props);
 	const socket = props.socket;
 	const [myPoint, setMyPoint] = useState<string>('');
 	const [purchase, setPurchase] = useState<boolean>(false);
@@ -74,6 +77,13 @@ export function PointView(props: PointState) {
 			setMyPoint(String(props.point));
 			setPurchase(true);
 		}
+		socket.on('purchase error', msg => {
+			console.log(msg);
+		});
+
+		return () => {
+			socket.off('purchase error');
+		};
 	}, []);
 
 	const handlePointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +91,13 @@ export function PointView(props: PointState) {
 	};
 
 	const handlePointBtnClick = () => {
-		if (purchase) socket.emit('purchase confirm', { point: myPoint });
+		if (!purchase)
+			socket.emit(
+				'purchase confirm',
+				props.postId,
+				props.userId,
+				Number(myPoint)
+			);
 		else socket.emit('purchase cancel');
 		setPurchase(!purchase);
 	};
