@@ -67,11 +67,11 @@ export default function LinkPreview({ url }: { url: string }) {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		const getMetadata = async (url: string) => {
-			const response = await fetch(
-				`${process.env.REACT_APP_SERVER_URL}/api/previewData?url=${url}`
+			const response = await fetchGet(
+				`${process.env.REACT_APP_SERVER_URL}/api/previewData`,
+				`url=${url}`
 			);
-			const json = await response.json();
-			setMetadata(json.metadata);
+			setMetadata(response.metadata);
 			setIsLoading(false);
 		};
 		getMetadata(url);

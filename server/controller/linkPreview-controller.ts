@@ -7,10 +7,7 @@ export const parsePreviewLinkData = async (req: Request, res: Response) => {
 		let url = req.query.url as unknown as string;
 
 		if (!url) {
-			return res
-				.set('Access-Control-Allow-Origin', '*')
-				.status(400)
-				.json({ error: 'Invalid URL' });
+			return res.status(400).json({ error: 'Invalid URL' });
 		}
 
 		url = url.indexOf('://') === -1 ? 'http://' + url : url;
@@ -21,10 +18,7 @@ export const parsePreviewLinkData = async (req: Request, res: Response) => {
 			);
 
 		if (!url || !isUrlValid) {
-			return res
-				.set('Access-Control-Allow-Origin', '*')
-				.status(400)
-				.json({ error: 'Invalid URL' });
+			return res.status(400).json({ error: 'Invalid URL' });
 		}
 
 		if (url && isUrlValid) {
@@ -62,8 +56,7 @@ export const parsePreviewLinkData = async (req: Request, res: Response) => {
 			sendResponse(res, output);
 		}
 	} catch (error) {
-		console.log(error);
-		return res.set('Access-Control-Allow-Origin', '*').status(500).json({
+		return res.status(500).json({
 			error: 'Internal server error. Please open a Github issue or contact me on Twitter @dhaiwat10 if the issue persists.'
 		});
 	}
@@ -71,16 +64,10 @@ export const parsePreviewLinkData = async (req: Request, res: Response) => {
 
 const sendResponse = (res: Response, output: APIOutput | null) => {
 	if (!output) {
-		return res
-			.set('Access-Control-Allow-Origin', '*')
-			.status(404)
-			.json({ metadata: null });
+		return res.status(404).json({ metadata: null });
 	}
 
-	return res
-		.set('Access-Control-Allow-Origin', '*')
-		.status(200)
-		.json({ metadata: output });
+	return res.status(200).json({ metadata: output });
 };
 
 const getMetadata = async (url: string): Promise<MetaResult | null> => {
@@ -88,7 +75,6 @@ const getMetadata = async (url: string): Promise<MetaResult | null> => {
 		const result = (await parse(url)) as MetaResult;
 		return result;
 	} catch (err) {
-		console.log(err);
 		return null;
 	}
 };
