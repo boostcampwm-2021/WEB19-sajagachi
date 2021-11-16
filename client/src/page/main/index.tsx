@@ -13,10 +13,8 @@ import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
-import { Link, Redirect } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
-import LoadingUI from './component/LoadingUI';
 
 const theme = createTheme({
 	palette: {
@@ -96,10 +94,6 @@ function Main() {
 			if (loader.current) observer.unobserve(loader.current);
 		};
 	}, [handleObserver]);
-
-	if (!location.isLoaded) {
-		return <LoadingUI />;
-	}
 
 	return (
 		<div css={mainContainer}>

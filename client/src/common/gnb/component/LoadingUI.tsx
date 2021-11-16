@@ -3,8 +3,6 @@ import { css } from '@emotion/react';
 import loadingImg from '../../../asset/loading.gif';
 
 const LoadingUIStyle = css`
-	position: relative;
-	top: 100px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

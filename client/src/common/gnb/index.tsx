@@ -11,6 +11,8 @@ import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
 import Alert from '../alert';
+import { Backdrop } from '@mui/material';
+import LoadingUI from './component/LoadingUI';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -61,6 +63,7 @@ function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 	const [isAlertOn, setIsAlertOn] = useState(false);
+	const [isBackdropOn, setIsBackropOn] = useState(true);
 
 	useEffect(() => {
 		const onSuccess = (pos: any) => {
@@ -82,6 +85,10 @@ function Gnb() {
 
 		navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
 	}, []);
+
+	useEffect(() => {
+		setIsBackropOn(!location.isLoaded);
+	}, [location.isLoaded]);
 
 	function handleLoginClick(e: React.MouseEvent<HTMLElement>) {
 		setIsLoginModalOn(!isLoginModalOn);
@@ -131,6 +138,9 @@ function Gnb() {
 				위치 권한을 허용해주시면 근처의 공동구매 게시글을 검색해드릴 수
 				있어요.
 			</Alert>
+			<Backdrop open={isBackdropOn} sx={{ backgroundColor: '#ffffff' }}>
+				<LoadingUI />
+			</Backdrop>
 		</div>
 	);
 }
