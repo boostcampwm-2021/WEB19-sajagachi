@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 
@@ -18,13 +18,39 @@ const ChatInputDiv = css`
 	display: flex;
 	justify-content: center;
 `;
-function ChatInput() {
+type ChatInputType = {
+	socket: any;
+	postId: number;
+	userId: string;
+};
+
+function ChatInput(props: ChatInputType) {
+	const input = useRef<HTMLInputElement | null>(null);
+
+	const checkEnter = useCallback((event: KeyboardEvent) => {
+		return event.code === 'Enter' || event.code === 'NumpadEnter';
+	}, []);
+
+	const sendInput = useCallback((event: any) => {
+		if (input.current !== null && checkEnter(event)) {
+			props.socket.emit(
+				'sendMsg',
+				props.postId,
+				props.userId,
+				input.current.value
+			);
+			input.current.value = '';
+		}
+	}, []);
+
 	return (
 		<div css={ChatInputDiv}>
 			<input
 				css={ChatInputStyle}
 				type="text"
-				placeholder="input 들어갈 예정"
+				placeholder="메시지를 입력해주세요"
+				onKeyPress={sendInput}
+				ref={input}
 			/>
 			<SendIcon
 				sx={{ width: '30px', height: '40px', color: '#ebabab' }}

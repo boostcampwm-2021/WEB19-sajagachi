@@ -79,7 +79,13 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 		participantCnt: 0,
 		urls: []
 	});
-
+	const [loginId, setLoginId] = useState<number>();
+	useEffect(() => {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+		fetchGet(url).then(userLoginId => {
+			if (!isNaN(userLoginId)) setLoginId(userLoginId);
+		});
+	}, []);
 	useEffect(() => {
 		let es: any = null;
 		fetchGet(
@@ -206,6 +212,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 						<FavoriteBorderIcon sx={{ fontSize: 30 }} />
 					</StyledIconButton>
 					<GroupBuyButton
+						loginId={loginId}
 						postId={Number(match.params.postId)}
 						participantCnt={post.participantCnt}
 						capacity={post.capacity}

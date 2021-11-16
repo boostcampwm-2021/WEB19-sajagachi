@@ -6,7 +6,7 @@ import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
 import 'dotenv/config';
 import io from 'socket.io-client';
-
+import { RouteComponentProps } from 'react-router-dom';
 const ChatContainer = css`
 	margin-left: auto;
 	margin-right: auto;
@@ -46,11 +46,46 @@ const DUMMYDATA = [
 	}
 ];
 
+type MessageType = {
+	sender: string;
+	msg: string;
+	time: string;
+	isMe: boolean;
+};
+
 function Chat(props: any) {
-	const socketRef = useRef<any>();
+	const userId = props.location.state.userId;
+	const postId = props.location.state.postId;
+
+	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
+	const [chatDatas, setChatDatas] = useState<any>([]);
+
+	const checkMe = (sender: string) => {
+		return sender === userId;
+	};
+
 	useEffect(() => {
-		socketRef.current = io(String(process.env.REACT_APP_SERVER_URL));
-		socketRef.current.emit('message', 'myMessage');
+		console.log(socketRef.current);
+
+		socketRef.current.emit('joinRoom', postId, userId);
+		socketRef.current.on('afterJoin', (msg: string) => {
+			console.log(msg);
+		});
+		socketRef.current.on('receiveMsg', (user: string, msg: string) => {
+			setChatDatas((chatDatas: MessageType[]) => {
+				return [
+					...chatDatas,
+					{
+						sender: user,
+						msg,
+						time: '오전 9:28',
+						isMe: checkMe(user)
+					}
+				];
+			});
+			console.log('sendUser: ', user);
+			console.log('msg: ', msg);
+		});
 		return () => {
 			socketRef.current.disconnect();
 		};
@@ -59,7 +94,7 @@ function Chat(props: any) {
 		<div css={ChatContainer}>
 			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />
 			<div css={ChatLayout}>
-				{DUMMYDATA.map(chat => {
+				{chatDatas.map((chat: MessageType) => {
 					return chat.isMe ? (
 						<MyChatMessage msgData={chat} />
 					) : (
@@ -67,7 +102,11 @@ function Chat(props: any) {
 					);
 				})}
 			</div>
-			<ChatInput />
+			<ChatInput
+				socket={socketRef.current}
+				postId={postId}
+				userId={userId}
+			/>
 		</div>
 	);
 }
