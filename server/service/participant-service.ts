@@ -9,4 +9,17 @@ const getParticipantNum = async (postId: number) => {
 	return result;
 };
 
-export default { getParticipantNum };
+const saveParticipant = async (userId: number, postId: number) => {
+	const db = await getDB().get();
+
+	const newParticipant = db.manager.create(Participant, {
+		userId,
+		postId,
+		point: 0
+	});
+	const createdParticipant = await db.manager.save(newParticipant);
+
+	return createdParticipant;
+};
+
+export default { getParticipantNum, saveParticipant };

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
 import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
+import 'dotenv/config';
+import io from 'socket.io-client';
 
 const ChatContainer = css`
 	margin-left: auto;
@@ -43,7 +45,16 @@ const DUMMYDATA = [
 		isMe: false
 	}
 ];
-function Chat() {
+
+function Chat(props: any) {
+	const socketRef = useRef<any>();
+	useEffect(() => {
+		socketRef.current = io(String(process.env.REACT_APP_SERVER_URL));
+		socketRef.current.emit('message', 'myMessage');
+		return () => {
+			socketRef.current.disconnect();
+		};
+	}, []);
 	return (
 		<div css={ChatContainer}>
 			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />

@@ -31,7 +31,7 @@ function ChatInput() {
 				<input
 					css={ChatInputStyle}
 					type="text"
-					value="input 들어갈 예정"
+					placeholder="input 들어갈 예정"
 				/>
 				<SendIcon
 					sx={{ width: '30px', height: '40px', color: '#ebabab' }}
