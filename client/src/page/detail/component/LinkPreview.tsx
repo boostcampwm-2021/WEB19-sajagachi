@@ -1,33 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Skeleton from '@mui/material/Skeleton';
 import { css } from '@emotion/react';
-import noItemImg from '../../../asset/noitem.png';
-
-const isValidUrl = (url: string) => {
-	const regex =
-		/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/;
-	return regex.test(url);
-};
-
-const fetchLinkPreviewData = async (url: string) => {
-	const res = await fetch(API_PARSE_DETAILS_OF_LINK, {
-		method: 'POST',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ url })
-	});
-	return await res.json();
-};
+import { Skeleton } from '@mui/material';
+import noImg from '../../../asset/noImg.jpg';
+import { fetchGet } from '../../../util/util';
 
 interface PreviewType {
 	title?: string | undefined;
 	description?: string | undefined;
-	domain?: string | undefined;
-	img?: string | undefined;
+	hostname?: string | undefined;
+	image?: string | undefined;
 }
-
 const PreviewContainerStyle = css`
 	display: flex;
 	align-items: center;
@@ -48,24 +30,15 @@ const PreviewContainerStyle = css`
 `;
 
 const PreviewTitleStyle = css`
-	--font-size: 12px;
-	--line-height: 1.4;
-	--lines-to-show: 1;
-	font-size: var(--font-size);
 	text-overflow: ellipsis;
-	height: calc(var(--font-size) * var(--line-height) * var(--lines-to-show));
-	line-height: var(--line-height);
+	white-space: nowrap;
 	overflow: hidden;
 	margin: 5px 0;
-	margin: 0;
-	display: -webkit-box;
-	-webkit-line-clamp: var(--lines-to-show);
-	-webkit-box-orient: vertical;
-	color: #404040;
+	max-width: 60vw;
 `;
 
 const PreviewDescStyle = css`
-	--font-size: 9px;
+	--font-size: 0.7rem;
 	--line-height: 1.4;
 	--lines-to-show: 2;
 	font-size: var(--font-size);
@@ -77,63 +50,54 @@ const PreviewDescStyle = css`
 	display: -webkit-box;
 	-webkit-line-clamp: var(--lines-to-show);
 	-webkit-box-orient: vertical;
-	color: #404040;
 `;
 
 const PreviewDomainStyle = css`
-	--font-size: 10px;
-	--line-height: 1.4;
-	--lines-to-show: 1;
-	font-size: var(--font-size);
+	font-size: 0.7rem;
 	text-overflow: ellipsis;
-	height: calc(var(--font-size) * var(--line-height) * var(--lines-to-show));
-	line-height: var(--line-height);
 	overflow: hidden;
+	white-space: nowrap;
 	margin: 5px 0;
-	margin: 0;
-	display: -webkit-box;
-	-webkit-line-clamp: var(--lines-to-show);
-	-webkit-box-orient: vertical;
+	max-width: 60vw;
 	color: #404040;
 `;
 
 export default function LinkPreview({ url }: { url: string }) {
-	const [loading, setLoading] = useState(false);
-	const [preview, setPreviewData] = useState<PreviewType>({});
-	const [isUrlValid, setUrlValidation] = useState(false);
-
-	const setLinkPreviewData = async (url: string) => {
-		if (!isValidUrl(url)) return;
-		setUrlValidation(true);
-		setLoading(false);
-		const linkPreviewData = await fetchLinkPreviewData(url);
-		setPreviewData(linkPreviewData);
-		setLoading(true);
-	};
-
+	const [metadata, setMetadata] = useState<PreviewType>({});
+	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
-		setLinkPreviewData(url);
+		const getMetadata = async (url: string) => {
+			const response = await fetchGet(
+				`${process.env.REACT_APP_SERVER_URL}/api/previewData`,
+				`url=${url}`
+			);
+			setMetadata(response.metadata);
+			setIsLoading(false);
+		};
+		getMetadata(url);
 	}, [url]);
 
 	return (
 		<a css={PreviewContainerStyle} target="_blank" href={url}>
-			{loading ? (
-				<div style={{ flex: '3', marginRight: '5px' }}>
-					<h6 css={PreviewTitleStyle}>{preview.title}</h6>
-					<p css={PreviewDescStyle}>{preview.description}</p>
-					<p css={PreviewDomainStyle}>{preview.domain}</p>
-				</div>
-			) : (
-				<div style={{ flex: '3', marginRight: '5px' }}>
-					<Skeleton />
-					<Skeleton width="60%" />
-				</div>
-			)}
-			{loading ? (
+			<div style={{ flex: '3', marginRight: '5px' }}>
+				{!isLoading ? (
+					<>
+						<h4 css={PreviewTitleStyle}>{metadata.title}</h4>
+						<p css={PreviewDescStyle}>{metadata.description}</p>
+						<p css={PreviewDomainStyle}>{metadata.hostname}</p>
+					</>
+				) : (
+					<>
+						<Skeleton />
+						<Skeleton width="60%" />
+					</>
+				)}
+			</div>
+			{!isLoading ? (
 				<img
+					src={metadata.image ? metadata.image : noImg}
 					style={{ maxWidth: '30%', maxHeight: 64 }}
-					alt={preview.title}
-					src={preview.img !== null ? preview.img : noItemImg}
+					alt={metadata.title}
 				/>
 			) : (
 				<div style={{ flex: '1' }}>
@@ -143,5 +107,3 @@ export default function LinkPreview({ url }: { url: string }) {
 		</a>
 	);
 }
-
-const API_PARSE_DETAILS_OF_LINK = `${process.env.REACT_APP_SERVER_URL}/api/previewData`;
