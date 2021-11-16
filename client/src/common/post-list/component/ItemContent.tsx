@@ -27,32 +27,24 @@ const ItemContainerStyle = css`
 	padding: 15px 90px 10px 15px;
 `;
 
-const ItemTitleStyle = css`
+const ItemTitleStyle = (finished: boolean) => css`
 	font-family: 'Noto Sans KR Medium', sans-serif;
 	font-size: 18px;
 	margin: 0;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	${finished ? 'color: #aeaeae;' : ''}
 `;
 
-const FinishedItemTitleStyle = css`
-	${ItemTitleStyle};
-	color: #aeaeae;
-`;
-
-const ItemDeadlineStyle = css`
+const ItemDeadlineStyle = (finished: boolean) => css`
 	font-size: 12px;
 	margin: 5px 0;
 	color: #404040;
+	${finished ? 'color: #aeaeae;' : ''}
 `;
 
-const FinishedItemDeadlineStyle = css`
-	${ItemDeadlineStyle};
-	color: #aeaeae;
-`;
-
-const ItemDescStyle = css`
+const ItemDescStyle = (finished: boolean) => css`
 	--font-size: 9px;
 	--line-height: 1.4;
 	--lines-to-show: 2;
@@ -66,11 +58,7 @@ const ItemDescStyle = css`
 	-webkit-line-clamp: var(--lines-to-show);
 	-webkit-box-orient: vertical;
 	color: #404040;
-`;
-
-const FinishedItemDescStyle = css`
-	${ItemDescStyle};
-	color: #aeaeae;
+	${finished ? 'color: #aeaeae;' : ''}
 `;
 
 const ChipContainerStyle = css`
@@ -91,58 +79,44 @@ const ChipStyle = (backgroundColor: string) => ({
 });
 
 export function ItemContent(props: { item: ItemType }) {
-	const TitleStyle = isFinished(props.item)
-		? FinishedItemTitleStyle
-		: ItemTitleStyle;
-
-	const DeadlineStyle = isFinished(props.item)
-		? FinishedItemDeadlineStyle
-		: ItemDeadlineStyle;
-
-	const DescStyle = isFinished(props.item)
-		? FinishedItemDescStyle
-		: ItemDescStyle;
-
-	let deadline = props.item.deadline;
-	if (deadline) deadline = `${dateFormat(props.item.deadline)}까지`;
-	else deadline = '마감 기한 없음';
-
-	let ParticipantChip;
-	if (isFinished(props.item)) {
-		ParticipantChip = (
-			<Chip
-				icon={<Done sx={{ fontSize: 16 }} />}
-				label="마감"
-				sx={ChipStyle('#dadada')}
-				size="small"
-			/>
-		);
-	} else {
-		ParticipantChip = (
-			<Chip
-				icon={<GroupIcon sx={{ fontSize: 16 }} />}
-				label={`${props.item.participantCnt}/${
-					props.item.capacity ?? '-'
-				}명`}
-				sx={ChipStyle('#ffd8d9')}
-				size="small"
-			/>
-		);
-	}
+	const fin = isFinished(props.item);
+	const deadline = props.item.deadline
+		? `${dateFormat(props.item.deadline)}까지`
+		: '마감 기한 없음';
 
 	return (
 		<div css={ItemContainerStyle}>
-			<h1 css={TitleStyle}>{props.item.title}</h1>
-			<p css={DeadlineStyle}>{deadline}</p>
-			<p css={DescStyle}>{props.item.content.substring(0, 100)}</p>
+			<h1 css={ItemTitleStyle(fin)}>{props.item.title}</h1>
+			<p css={ItemDeadlineStyle(fin)}>{deadline}</p>
+			<p css={ItemDescStyle(fin)}>
+				{props.item.content.substring(0, 100)}
+			</p>
 			<div css={ChipContainerStyle}>
 				<Chip
 					label={props.item.category}
 					sx={ChipStyle(categoryColor[props.item.category])}
 					size="small"
 				/>
-				{ParticipantChip}
+				<ParticipantChip item={props.item} />
 			</div>
 		</div>
+	);
+}
+
+function ParticipantChip(props: { item: ItemType }) {
+	const fin = isFinished(props.item);
+	return (
+		<Chip
+			icon={fin ? <Done /> : <GroupIcon />}
+			label={
+				fin
+					? '마감'
+					: `${props.item.participantCnt}/${
+							props.item.capacity ?? '-'
+					  }명`
+			}
+			sx={ChipStyle(fin ? '#dadada' : '#ffd8d9')}
+			size="small"
+		/>
 	);
 }
