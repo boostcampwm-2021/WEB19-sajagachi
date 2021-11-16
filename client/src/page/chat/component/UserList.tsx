@@ -70,6 +70,13 @@ type ParticipantType = {
 };
 
 export function UserList() {
+	const [myId, setMyId] = useState<number>(-1);
+	const updateMyId = async () => {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+		const result = await fetchGet(url);
+		if (!isNaN(+result)) setMyId(+result); // note: result can be "jwt expired" or other string value
+	};
+
 	const [participants, setParticipants] = useState<ParticipantType[]>([]);
 	const updateParticipants = async (postId: number) => {
 		const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
@@ -80,6 +87,7 @@ export function UserList() {
 	useEffect(() => {
 		const DUMMYPOSTID = 1000026;
 		updateParticipants(DUMMYPOSTID);
+		updateMyId();
 	}, []);
 
 	return (
@@ -87,15 +95,14 @@ export function UserList() {
 			<h1>참여자 ({participants.length}명)</h1>
 			<ul>
 				{participants.map(user => (
-					<UserListItem key={user.user.id} user={user} />
+					<UserListItem key={user.user.id} user={user} myId={myId} />
 				))}
 			</ul>
 		</div>
 	);
 }
-function UserListItem({ user }: { user: ParticipantType }) {
-	const hostId = 53253189; // REMOVE LATER
-	const loginId = 53253189; // REMOVE LATER
+function UserListItem({ user, myId }: { user: ParticipantType; myId: number }) {
+	const hostId = 76616101; // should be replaced by real host id
 
 	const [isConfirmOn, setIsConfirmOn] = useState(false);
 
@@ -106,7 +113,7 @@ function UserListItem({ user }: { user: ParticipantType }) {
 			)}
 			<img src={user.user.img} css={UserAvatarStyle} />
 			<p css={UserNameStyle}>{user.user.name}</p>
-			{hostId === loginId && (
+			{hostId === myId && (
 				<button
 					css={UserKickBtnStyle}
 					onClick={() => setIsConfirmOn(true)}
