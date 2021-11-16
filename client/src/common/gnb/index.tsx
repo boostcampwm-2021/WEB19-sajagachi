@@ -61,12 +61,26 @@ function Gnb() {
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 
 	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(function (pos) {
+		const onSuccess = (pos: any) => {
 			setLocation({
 				lat: pos.coords.latitude,
-				lng: pos.coords.longitude
+				lng: pos.coords.longitude,
+				isLoaded: true
 			});
-		});
+		};
+
+		const onFailure = () => {
+			setLocation({
+				lat: location.lat,
+				lng: location.lng,
+				isLoaded: true
+			});
+			alert(
+				'위치 권한을 허용해주시면 현재 위치의 게시글을 불러올 수 있어요.'
+			);
+		};
+
+		navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
 	}, []);
 
 	function handleLoginClick(e: React.MouseEvent<HTMLElement>) {
