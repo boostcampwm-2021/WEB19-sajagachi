@@ -27,7 +27,12 @@ export default function GroupBuyButton({
 	const history = useHistory();
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 	const [buttonState, setButtonState] = useState(
-		finished || participantCnt >= capacity ? true : false
+		finished ||
+			(capacity !== null
+				? participantCnt >= capacity
+					? true
+					: false
+				: false)
 	);
 	const clickHandler = useCallback(async () => {
 		if (DUMMY_ISLOGIN) {
@@ -69,7 +74,7 @@ export default function GroupBuyButton({
 			>
 				{finished
 					? '모집 종료'
-					: `공동 구매 (${participantCnt} / ${capacity})`}
+					: `공동 구매 (${participantCnt} / ${capacity ?? ' - '})`}
 			</Button>
 			{isLoginModalOn && (
 				<LoginModal setIsLoginModalOn={setIsLoginModalOn} />
