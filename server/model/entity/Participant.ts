@@ -17,5 +17,5 @@ export class Participant {
 	user!: User;
 
 	@Column('int', { nullable: true })
-	point!: number;
+	point!: number | null;
 }

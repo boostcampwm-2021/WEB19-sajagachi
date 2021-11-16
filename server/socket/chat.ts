@@ -31,7 +31,7 @@ export const sendMsg = (socket: any, io: Server) => {
 
 export const confirmPurchase = (socket: any, io: Server) => {
 	socket.on(
-		'purchase confirm',
+		'point confirm',
 		async (postId: string, userId: string, sendPoint: number) => {
 			const user = await userService.findById(userId);
 			if (user === undefined)
@@ -44,7 +44,7 @@ export const confirmPurchase = (socket: any, io: Server) => {
 					Number(user.point),
 					sendPoint
 				);
-				participantService.confirmPoint(
+				participantService.updatePoint(
 					Number(postId),
 					Number(userId),
 					sendPoint
@@ -53,4 +53,31 @@ export const confirmPurchase = (socket: any, io: Server) => {
 			}
 		}
 	);
+};
+
+export const cancelPurchase = (socket: any, io: Server) => {
+	socket.on('point cancel', async (postId: string, userId: string) => {
+		const user = await userService.findById(userId);
+		if (user === undefined)
+			socket.emit('purchase error', '사용자 정보 에러');
+		else {
+			const participant = await participantService.getParticipant(
+				Number(postId),
+				Number(userId)
+			);
+			if (participant === undefined)
+				socket.emit('purchase error', '참여 정보 에러');
+			else if (participant.point === null)
+				socket.emit('purchase error', '참여 정보 없음');
+			else {
+				participantService.updatePoint(
+					Number(postId),
+					Number(userId),
+					null
+				);
+				userService.addPoint(Number(userId), participant.point);
+				io.to(postId).emit('purchase cancel', userId);
+			}
+		}
+	});
 };

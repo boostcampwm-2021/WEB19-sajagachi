@@ -67,7 +67,6 @@ type PointState = {
 };
 
 export function PointView(props: PointState) {
-	console.log(props);
 	const socket = props.socket;
 	const [myPoint, setMyPoint] = useState<string>('');
 	const [purchase, setPurchase] = useState<boolean>(false);
@@ -81,8 +80,18 @@ export function PointView(props: PointState) {
 			console.log(msg);
 		});
 
+		socket.on('purchase confirm', (userId: string, sendPoint: number) => {
+			if (userId === props.userId) setPurchase(true);
+		});
+
+		socket.on('purchase cancel', (userId: string) => {
+			if (userId === props.userId) setPurchase(false);
+		});
+
 		return () => {
 			socket.off('purchase error');
+			socket.off('purchase confirm');
+			socket.off('purchase cancel');
 		};
 	}, []);
 
@@ -93,13 +102,12 @@ export function PointView(props: PointState) {
 	const handlePointBtnClick = () => {
 		if (!purchase)
 			socket.emit(
-				'purchase confirm',
+				'point confirm',
 				props.postId,
 				props.userId,
 				Number(myPoint)
 			);
-		else socket.emit('purchase cancel');
-		setPurchase(!purchase);
+		else socket.emit('point cancel', props.postId, props.userId);
 	};
 
 	return (

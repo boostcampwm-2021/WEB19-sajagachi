@@ -39,8 +39,6 @@ function Chat(props: any) {
 	};
 
 	useEffect(() => {
-		console.log(socketRef.current);
-
 		socketRef.current.emit('joinRoom', postId, userId);
 		socketRef.current.on('afterJoin', (msg: string) => {
 			console.log(msg);

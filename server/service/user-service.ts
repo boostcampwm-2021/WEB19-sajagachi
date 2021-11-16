@@ -29,4 +29,17 @@ const usePoint = async (id: number, point: number, sendPoint: number) => {
 	return result;
 };
 
-export default { findById, signUp, usePoint };
+const addPoint = async (id: number, point: number) => {
+	const db = await getDB().get();
+	const result = await db
+		.createQueryBuilder()
+		.update(User)
+		.set({
+			point: () => `point + ${point}`
+		})
+		.where('id = :id', { id: id })
+		.execute();
+	return result;
+};
+
+export default { findById, signUp, usePoint, addPoint };

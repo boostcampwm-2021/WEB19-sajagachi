@@ -23,6 +23,12 @@ const getParticipants = async (postId: number) => {
 	return result;
 };
 
+const getParticipant = async (postId: number, userId: number) => {
+	const db = await getDB().get();
+	const result = await db.manager.findOne(Participant, { postId, userId });
+	return result;
+};
+
 const saveParticipant = async (userId: number, postId: number) => {
 	const db = await getDB().get();
 
@@ -35,17 +41,17 @@ const saveParticipant = async (userId: number, postId: number) => {
 	return createdParticipant;
 };
 
-const confirmPoint = async (
+const updatePoint = async (
 	postId: number,
 	userId: number,
-	sendPoint: number
+	newPoint: number | null
 ) => {
 	const db = await getDB().get();
 	const result = await db.manager.update(
 		Participant,
 		{ postId, userId },
 		{
-			point: sendPoint
+			point: newPoint
 		}
 	);
 	return result;
@@ -55,5 +61,6 @@ export default {
 	getParticipantNum,
 	getParticipants,
 	saveParticipant,
-	confirmPoint
+	getParticipant,
+	updatePoint
 };
