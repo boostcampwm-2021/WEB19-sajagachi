@@ -8,8 +8,9 @@ export const createParticipant = async (
 	next: Function
 ) => {
 	try {
-		const [participant, participantNum] =
-			await participantService.getParticipantNum(req.body.postId);
+		const participantNum = await participantService.getParticipantNum(
+			req.body.postId
+		);
 		const capacity = await postService.getCapacity(req.body.postId);
 
 		if (capacity === undefined)
