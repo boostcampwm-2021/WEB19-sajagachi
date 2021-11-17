@@ -10,9 +10,9 @@ export const login = async (req: Request, res: Response, next: Function) => {
 		if (user === undefined)
 			user = await userService.signUp(req.body.userId);
 		res.cookie('user', createToken(user), { httpOnly: true });
-		res.status(201).json(user.id);
+		res.status(201).json({ id: user.id, name: user.name });
 	} catch (err: any) {
-		next({ statusCode: 500, message: err.message });
+		next({ statusCode: 401, message: err.message });
 	}
 };
 
@@ -35,7 +35,7 @@ export const checkLogin = async (
 
 const createToken = (user: User) => {
 	const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-	return jwt.sign({ id: user.id }, secretKey, { expiresIn: `1h` });
+	return jwt.sign({ id: user.id }, secretKey);
 };
 
 const verifyToken = (token: string) => {
