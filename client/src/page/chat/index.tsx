@@ -34,7 +34,7 @@ function Chat(props: any) {
 
 	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
 	const [chatDatas, setChatDatas] = useState<any>([]);
-	const scrollRef = useRef<HTMLDivElement>();
+	const messageEndRef = useRef<HTMLDivElement>(null);
 	const checkMe = (sender: string) => {
 		return sender === userId;
 	};
@@ -63,10 +63,19 @@ function Chat(props: any) {
 			socketRef.current.disconnect();
 		};
 	}, []);
+
+	useEffect(() => {
+		messageEndRef.current?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest'
+		});
+	}, [chatDatas]);
+
 	return (
 		<div css={ChatContainer}>
 			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />
-			<div css={ChatLayout} ref={scrollRef}>
+			<div css={ChatLayout}>
 				{chatDatas.map((chat: MessageType) => {
 					return chat.isMe ? (
 						<MyChatMessage msgData={chat} />
@@ -74,6 +83,7 @@ function Chat(props: any) {
 						<OtherChatMessage msgData={chat} />
 					);
 				})}
+				<div key="messageEndDiv" ref={messageEndRef}></div>
 			</div>
 			<ChatInput
 				socket={socketRef.current}
