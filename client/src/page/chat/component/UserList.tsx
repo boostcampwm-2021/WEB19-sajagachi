@@ -95,24 +95,24 @@ export function UserList() {
 			<h1>참여자 ({participants.length}명)</h1>
 			<ul>
 				{participants.map(user => (
-					<UserListItem key={user.user.id} user={user} myId={myId} />
+					<UserListItem key={user.user.id} item={user} myId={myId} />
 				))}
 			</ul>
 		</div>
 	);
 }
-function UserListItem({ user, myId }: { user: ParticipantType; myId: number }) {
+function UserListItem({ item, myId }: { item: ParticipantType; myId: number }) {
 	const hostId = 76616101; // should be replaced by real host id
 
 	const [isConfirmOn, setIsConfirmOn] = useState(false);
 
 	return (
 		<li css={UserListItemStyle}>
-			{hostId === user.user.id && (
+			{hostId === item.user.id && (
 				<img src={crown} css={UserHostCrownStyle} />
 			)}
-			<img src={user.user.img} css={UserAvatarStyle} />
-			<p css={UserNameStyle}>{user.user.name}</p>
+			<img src={item.user.img} css={UserAvatarStyle} />
+			<p css={UserNameStyle}>{item.user.name}</p>
 			{hostId === myId && (
 				<button
 					css={UserKickBtnStyle}
@@ -121,10 +121,10 @@ function UserListItem({ user, myId }: { user: ParticipantType; myId: number }) {
 					내보내기
 				</button>
 			)}
-			{user.point && (
+			{item.point && (
 				<div css={UserPointStyle}>
 					<MonetizationOn />
-					<p>{user.point}</p>
+					<p>{item.point}</p>
 				</div>
 			)}
 			<Confirm
