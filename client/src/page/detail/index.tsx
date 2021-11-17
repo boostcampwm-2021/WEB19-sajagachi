@@ -11,7 +11,6 @@ import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Chip } from '@mui/material';
 import { fetchGet } from '../../util/util';
-import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
