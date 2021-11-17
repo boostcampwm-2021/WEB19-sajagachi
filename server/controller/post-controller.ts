@@ -45,3 +45,13 @@ export const savePost = async (req: Request, res: Response, next: Function) => {
 		next({ statusCode: 500, message: err.message });
 	}
 };
+
+export const getHost = async (req: Request, res: Response, next: Function) => {
+	try {
+		const { postId } = req.params;
+		const userId = await postService.getHost(+postId);
+		res.json(userId);
+	} catch (err: any) {
+		next({ statusCode: 500, message: err.message });
+	}
+};

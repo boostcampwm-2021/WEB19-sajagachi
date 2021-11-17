@@ -100,11 +100,23 @@ const getCapacity = async (postId: number) => {
 	return capacity?.capacity;
 };
 
+const getHost = async (postId: number) => {
+	const db = await getDB().get();
+	const result = await db.manager.findOne(Post, {
+		select: ['userId'],
+		where: { id: postId }
+	});
+
+	if (!result) throw new Error('post not found');
+	return result.userId;
+};
+
 export default {
 	savePost,
 	getPosts,
 	getPost,
 	updatePostFinished,
 	getCapacity,
-	saveUrls
+	saveUrls,
+	getHost
 };
