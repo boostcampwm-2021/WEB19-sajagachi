@@ -7,6 +7,8 @@ export interface ItemType {
 	participantCnt: number;
 	deadline: string;
 	finished: boolean;
+	lat: number;
+	long: number;
 }
 
 export interface LocationType {
