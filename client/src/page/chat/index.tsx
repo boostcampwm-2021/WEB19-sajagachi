@@ -18,6 +18,7 @@ const ChatLayout = css`
 	/* background-color: #ece5f4; */
 	background-color: #ffffff;
 	border-radius: 30px 30px 0px 0px;
+	overflow: scroll;
 `;
 
 type MessageType = {
@@ -33,7 +34,7 @@ function Chat(props: any) {
 
 	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
 	const [chatDatas, setChatDatas] = useState<any>([]);
-
+	const messageEndRef = useRef<HTMLDivElement>(null);
 	const checkMe = (sender: string) => {
 		return sender === userId;
 	};
@@ -60,6 +61,15 @@ function Chat(props: any) {
 			socketRef.current.disconnect();
 		};
 	}, []);
+
+	useEffect(() => {
+		messageEndRef.current?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest'
+		});
+	}, [chatDatas]);
+
 	return (
 		<div css={ChatContainer}>
 			<ChatBar
@@ -76,6 +86,7 @@ function Chat(props: any) {
 						<OtherChatMessage msgData={chat} />
 					);
 				})}
+				<div key="messageEndDiv" ref={messageEndRef}></div>
 			</div>
 			<ChatInput
 				socket={socketRef.current}
