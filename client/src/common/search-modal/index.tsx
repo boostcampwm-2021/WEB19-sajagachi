@@ -11,10 +11,10 @@ import {
 	createQueryString,
 	decomposeQueryString,
 	fetchGet,
-	finishedToBool
+	finishedToBool,
+	getAddressByGeocode
 } from '../../util/util';
 import { LocationType } from '../../type';
-import 'dotenv/config';
 
 const searchModal = css`
 	max-width: 700px;
@@ -91,20 +91,9 @@ function SearchModal({
 	const [address, setAddress] = useState('위치 확인 중');
 	const [search, setSearch] = useState('');
 
-	function searchCoordinateToAddress(latlng: any) {
-		if (naver.maps.Service) {
-			naver.maps.Service.reverseGeocode(
-				{
-					location: new naver.maps.LatLng(latlng.lat, latlng.lng)
-				},
-				function (status, response) {
-					if (status !== naver.maps.Service.Status.OK) {
-						// 에러 처리를 어떻게 해야하지?
-					}
-					setAddress(response.result.items[0].address);
-				}
-			);
-		}
+	async function searchCoordinateToAddress(latlng: any) {
+		const result = await getAddressByGeocode(latlng.lat, latlng.lng);
+		setAddress(result);
 	}
 
 	const handleCategoryClick = (idx: number) => {
@@ -155,7 +144,9 @@ function SearchModal({
 					});
 					return arr;
 				});
-				setLocation({ lat: query.lat, lng: query.long });
+				if (query.lat && query.long) {
+					setLocation({ lat: query.lat, lng: query.long });
+				}
 				if (query.search) setSearch(query.search);
 				setCheckedFinished(checkedFinished => {
 					if (query.finished === true) checkedFinished[1] = true;

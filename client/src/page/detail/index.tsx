@@ -4,29 +4,28 @@ import {
 	CardContent,
 	Typography,
 	IconButton,
-	CircularProgress
+	CircularProgress,
+	Chip,
+	Box
 } from '@mui/material';
-import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { Chip } from '@mui/material';
 import { fetchGet } from '../../util/util';
-import 'dotenv/config';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
 import LinkPreview from './component/LinkPreview';
 
-interface UrlType {
+type UrlType = {
 	postId: number;
 	url: string;
-}
+};
 
-interface MatchParams {
+type MatchParams = {
 	postId: string;
-}
-interface PostType {
+};
+type PostType = {
 	id: number;
 	lat: number;
 	long: number;
@@ -40,7 +39,7 @@ interface PostType {
 	capacity: number;
 	participantCnt: number;
 	urls: UrlType[];
-}
+};
 
 const detailContainer = css`
 	margin-left: auto;
@@ -95,9 +94,13 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
 				es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
 				es.onmessage = function (e: MessageEvent) {
 					if (deadLineRef.current) {
+						if (post.deadline === null) {
+							deadLineRef.current.setDeadLine('기한 없음');
+							return;
+						}
 						const end = new Date(post.deadline);
 						const server = new Date(parseInt(e.data, 10));
-						end.setDate(end.getDate() - 1);
+						end.setDate(end.getDate());
 						if (server >= end) {
 							deadLineRef.current.setDeadLine('기한 마감');
 							return;

@@ -18,6 +18,7 @@ const ChatLayout = css`
 	/* background-color: #ece5f4; */
 	background-color: #ffffff;
 	border-radius: 30px 30px 0px 0px;
+	overflow: scroll;
 `;
 
 type MessageType = {
@@ -33,14 +34,12 @@ function Chat(props: any) {
 
 	const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
 	const [chatDatas, setChatDatas] = useState<any>([]);
-
+	const messageEndRef = useRef<HTMLDivElement>(null);
 	const checkMe = (sender: string) => {
 		return sender === userId;
 	};
 
 	useEffect(() => {
-		console.log(socketRef.current);
-
 		socketRef.current.emit('joinRoom', postId, userId);
 		socketRef.current.on('afterJoin', (msg: string) => {
 			console.log(msg);
@@ -62,9 +61,21 @@ function Chat(props: any) {
 			socketRef.current.disconnect();
 		};
 	}, []);
+
+	useEffect(() => {
+		messageEndRef.current?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest'
+		});
+	}, [chatDatas]);
+
 	return (
 		<div css={ChatContainer}>
-			<ChatBar title={'타이틀이 들어갈 공간입니당아아아'} />
+			<ChatBar
+				title={'타이틀이 들어갈 공간입니당아아아'}
+				socket={socketRef.current}
+			/>
 			<div css={ChatLayout}>
 				{chatDatas.map((chat: MessageType) => {
 					return chat.isMe ? (
@@ -73,6 +84,7 @@ function Chat(props: any) {
 						<OtherChatMessage msgData={chat} />
 					);
 				})}
+				<div key="messageEndDiv" ref={messageEndRef}></div>
 			</div>
 			<ChatInput
 				socket={socketRef.current}

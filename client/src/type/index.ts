@@ -12,6 +12,13 @@ export interface ItemType {
 export interface LocationType {
 	lat: number;
 	lng: number;
+	isLoaded?: boolean;
+}
+
+export interface LoginUserType {
+	id: number;
+	name: string;
+	isSigned: boolean;
 }
 
 export interface QueryStringType {
@@ -19,7 +26,7 @@ export interface QueryStringType {
 	limit?: number;
 	category?: number[];
 	finished?: boolean | undefined;
-	lat: number;
-	long: number;
+	lat?: number;
+	long?: number;
 	search?: string;
 }

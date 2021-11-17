@@ -66,11 +66,7 @@ export const dateFormat = (dateStr: string) => {
 };
 
 export const decomposeQueryString = (queryStr: string) => {
-	const DEFAULT_LOCATION = {
-		lat: 37.5642135,
-		long: 127.0016985
-	};
-	const result: QueryStringType = DEFAULT_LOCATION;
+	const result: QueryStringType = {};
 	const params = new URLSearchParams(queryStr);
 	result.category = params
 		.get('category')
@@ -80,8 +76,8 @@ export const decomposeQueryString = (queryStr: string) => {
 	result.finished = params.get('finished')
 		? params.get('finished') === 'true'
 		: undefined;
-	result.lat = Number(params.get('lat') ?? DEFAULT_LOCATION.lat);
-	result.long = Number(params.get('long') ?? DEFAULT_LOCATION.long);
+	if (Number(params.get('lat'))) result.lat = Number(params.get('lat'));
+	if (Number(params.get('long'))) result.long = Number(params.get('long'));
 	result.search = params.get('search')
 		? params.get('search') + ''
 		: undefined;
@@ -95,4 +91,20 @@ export const getCurrentTime = () => {
 	const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
 	currentHour = currentHour < 12 ? currentHour : currentHour - 12;
 	return strAmPm + currentHour + '시 ' + currentMinutes + '분';
+};
+
+export const getAddressByGeocode = (lat: number, lng: number) => {
+	return new Promise((resolve: (value: string) => void, reject) => {
+		if (!naver.maps.Service) reject('map service error');
+		const location = new naver.maps.LatLng(lat, lng);
+		naver.maps.Service.reverseGeocode({ location }, (status, response) => {
+			if (status !== naver.maps.Service.Status.OK)
+				reject('map service error');
+			resolve(response.result.items[0].address);
+		});
+	});
+}
+
+export const parsePath = (pathName: string): string[] => {
+	return pathName.split('/').filter(path => path !== '');
 };

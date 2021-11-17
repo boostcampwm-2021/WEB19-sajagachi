@@ -7,13 +7,14 @@ import {
 	decomposeQueryString,
 	fetchGet
 } from '../../util/util';
-import 'dotenv/config';
 import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
-import { Link, Redirect } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { locationState } from '../../store/location';
+import LocationIndicator from './component/LocationIndicator';
 
 const theme = createTheme({
 	palette: {
@@ -41,6 +42,7 @@ function Main() {
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [alert, setAlert] = useState(false);
 	const [isFetch, setIsFetch] = useState(false);
+	const location = useRecoilValue(locationState);
 
 	let offset = useRef(0);
 	const loader = useRef(null);
@@ -48,7 +50,7 @@ function Main() {
 	useEffect(() => {
 		setItems([]);
 		offset.current = 0;
-	}, [window.location.search]);
+	}, [window.location.search, location]);
 
 	const handleObserver = useCallback(
 		entry => {
@@ -61,6 +63,8 @@ function Main() {
 					createQueryString({
 						offset: offset.current,
 						limit: 15,
+						lat: location.lat,
+						long: location.lng,
 						...filter
 					})
 				)
@@ -75,7 +79,7 @@ function Main() {
 					});
 			}
 		},
-		[window.location.search]
+		[window.location.search, location]
 	);
 
 	useEffect(() => {
@@ -94,6 +98,7 @@ function Main() {
 	return (
 		<div css={mainContainer}>
 			{alert && <ErrorAlert alert={alert} />}
+			<LocationIndicator />
 			<PostList items={items} />
 			<div ref={loader} />
 			{!isFetch && (

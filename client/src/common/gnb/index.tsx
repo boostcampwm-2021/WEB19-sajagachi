@@ -10,6 +10,9 @@ import { withRouter } from 'react-router-dom';
 import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
+import Alert from '../alert';
+import { Backdrop } from '@mui/material';
+import LoadingUI from './component/LoadingUI';
 
 const gnbBackground = css`
 	z-index: 1;
@@ -59,15 +62,47 @@ const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
+	const [isAlertOn, setIsAlertOn] = useState(false);
+	const [isBackdropOn, setIsBackropOn] = useState(false);
 
 	useEffect(() => {
-		navigator.geolocation.getCurrentPosition(function (pos) {
+		const onSuccess = (pos: any) => {
 			setLocation({
 				lat: pos.coords.latitude,
-				lng: pos.coords.longitude
+				lng: pos.coords.longitude,
+				isLoaded: true
 			});
-		});
+			localStorage.setItem('lat', pos.coords.latitude);
+			localStorage.setItem('lng', pos.coords.longitude);
+		};
+
+		const onFailure = () => {
+			setLocation({
+				lat: location.lat,
+				lng: location.lng,
+				isLoaded: true
+			});
+			setIsAlertOn(true);
+		};
+
+		const lat = localStorage.getItem('lat');
+		const lng = localStorage.getItem('lng');
+
+		if (lat && lng) {
+			setLocation({
+				lat: +lat,
+				lng: +lng,
+				isLoaded: true
+			});
+		} else {
+			setIsBackropOn(true);
+			navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+		}
 	}, []);
+
+	useEffect(() => {
+		setIsBackropOn(!location.isLoaded);
+	}, [location.isLoaded]);
 
 	function handleLoginClick(e: React.MouseEvent<HTMLElement>) {
 		setIsLoginModalOn(!isLoginModalOn);
@@ -109,6 +144,17 @@ function Gnb() {
 					)}
 				</div>
 			</div>
+			<Alert
+				on={isAlertOn}
+				title="위치를 불러오지 못했어요"
+				onClose={() => setIsAlertOn(false)}
+			>
+				위치 권한을 허용해주시면 근처의 공동구매 게시글을 검색해드릴 수
+				있어요.
+			</Alert>
+			<Backdrop open={isBackdropOn} sx={{ backgroundColor: '#ffffff' }}>
+				<LoadingUI />
+			</Backdrop>
 		</div>
 	);
 }

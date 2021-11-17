@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import { fetchPost } from '../../util/util';
+import { loginUserState } from '../../store/login';
 
 const URL_REGX: RegExp =
 	/^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
@@ -82,6 +83,7 @@ const capacityDeadline = css`
 `;
 
 function Post() {
+	const loginUser = useRecoilValue(loginUserState);
 	const [title, setTitle] = useState<string>('');
 	const [content, setContent] = useState<string>('');
 	const [urls, setUrls] = useState<string[]>(['']);
@@ -102,7 +104,7 @@ function Post() {
 
 	function createPost(validUrls: string[]) {
 		const body = {
-			userId: 53253189,
+			userId: loginUser.id,
 			categoryId: category,
 			title: title,
 			content: content,

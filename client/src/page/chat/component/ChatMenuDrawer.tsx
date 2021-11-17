@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { SwipeableDrawer } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ChatMenu } from './ChatMenu';
+import { Socket } from 'socket.io-client';
 
 const BlurredBackground = css`
 	position: fixed;
@@ -14,7 +15,11 @@ const BlurredBackground = css`
 	backdrop-filter: blur(4px);
 `;
 
-export function ChatMenuDrawer() {
+type propsType = {
+	socket: Socket;
+};
+
+export function ChatMenuDrawer(props: propsType) {
 	const [isMenuOn, setIsMenuOn] = useState(false);
 	const toggleDrawer = () => setIsMenuOn(!isMenuOn);
 
@@ -37,7 +42,10 @@ export function ChatMenuDrawer() {
 				onClose={toggleDrawer}
 				onOpen={toggleDrawer}
 			>
-				<ChatMenu onCloseBtnClicked={() => setIsMenuOn(false)} />
+				<ChatMenu
+					onCloseBtnClicked={() => setIsMenuOn(false)}
+					socket={props.socket}
+				/>
 			</SwipeableDrawer>
 		</>
 	);

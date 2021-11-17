@@ -23,18 +23,18 @@ export type TokenType = {
 	id: number;
 };
 
-export interface APIOutput {
+export type APIOutput = {
 	title: string | null;
 	description: string | null;
 	image: string | null;
 	siteName: string | null;
 	hostname: string | null;
-}
-interface Image {
+};
+type Image = {
 	url: string;
-}
+};
 
-export interface MetaResult {
+export type MetaResult = {
 	images: Array<Image>;
 	meta: {
 		description?: string;
@@ -50,4 +50,4 @@ export interface MetaResult {
 		url?: string;
 		videos?: Array<Image>;
 	};
-}
+};
