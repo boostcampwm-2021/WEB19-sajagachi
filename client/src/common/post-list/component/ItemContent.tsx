@@ -49,7 +49,7 @@ const ItemDeadlineStyle = (finished: boolean) => css`
 const ItemDescStyle = (finished: boolean) => css`
 	--font-size: 9px;
 	--line-height: 1.4;
-	--lines-to-show: 2;
+	--lines-to-show: 1;
 	font-size: var(--font-size);
 	text-overflow: ellipsis;
 	height: calc(var(--font-size) * var(--line-height) * var(--lines-to-show));
@@ -74,7 +74,8 @@ const DistIconStyle = (finished: boolean) => css`
 
 const ItemDistStyle = (finished: boolean) => css`
 	font-size: 12px;
-	margin: 6px 0;
+	margin: 0;
+	margin-top: 17px;
 	color: #404040;
 	${finished ? 'color: #aeaeae;' : ''}
 `;
