@@ -7,7 +7,6 @@ import {
 	decomposeQueryString,
 	fetchGet
 } from '../../util/util';
-import 'dotenv/config';
 import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';

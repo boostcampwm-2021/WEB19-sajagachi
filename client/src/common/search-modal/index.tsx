@@ -14,7 +14,6 @@ import {
 	finishedToBool
 } from '../../util/util';
 import { LocationType } from '../../type';
-import 'dotenv/config';
 
 const searchModal = css`
 	max-width: 700px;

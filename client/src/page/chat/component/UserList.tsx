@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
 import { fetchGet } from '../../../util/util';
-import 'dotenv/config';
 import Confirm from '../../../common/confirm';
 
 const UserListStyle = css`
