@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
-import { fetchGet } from '../../../util/util';
+import { fetchGet, parsePath } from '../../../util/util';
 import Confirm from '../../../common/confirm';
 
 const UserListStyle = css`
@@ -69,7 +69,9 @@ type ParticipantType = {
 };
 
 export function UserList() {
-	const [myId, setMyId] = useState<number>(-1);
+	const [myId, setMyId] = useState<number>(-1); // 페이지 컴포넌트에서 가져오도록 변경
+	const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
+
 	const updateMyId = async () => {
 		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
 		const result = await fetchGet(url);
@@ -84,8 +86,7 @@ export function UserList() {
 	};
 
 	useEffect(() => {
-		const DUMMYPOSTID = 1000026;
-		updateParticipants(DUMMYPOSTID);
+		updateParticipants(postId);
 		updateMyId();
 	}, []);
 
