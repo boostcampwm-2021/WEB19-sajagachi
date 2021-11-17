@@ -103,8 +103,34 @@ export const getAddressByGeocode = (lat: number, lng: number) => {
 			resolve(response.result.items[0].address);
 		});
 	});
-}
+};
 
 export const parsePath = (pathName: string): string[] => {
 	return pathName.split('/').filter(path => path !== '');
+};
+
+export const getDistance = (
+	lat1: number,
+	lng1: number,
+	lat2: number,
+	lng2: number
+) => {
+	const R = 6371e3;
+	const RAD = Math.PI / 180;
+
+	const deltaLat = Math.abs(lat1 - lat2) * RAD;
+	const deltaLng = Math.abs(lng1 - lng2) * RAD;
+
+	const sinDeltaLat = Math.sin(deltaLat / 2);
+	const sinDeltaLng = Math.sin(deltaLng / 2);
+	const sqrt = Math.sqrt(
+		sinDeltaLat * sinDeltaLat +
+			Math.cos(lat1 * RAD) *
+				Math.cos(lat2 * RAD) *
+				sinDeltaLng *
+				sinDeltaLng
+	);
+
+	const dist = 2 * R * Math.asin(sqrt);
+	return dist;
 };
