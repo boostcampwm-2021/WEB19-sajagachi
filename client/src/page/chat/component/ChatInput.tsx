@@ -41,15 +41,15 @@ type ChatInputType = {
 function ChatInput(props: ChatInputType) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	const checkEnter = useCallback((event: KeyboardEvent) => {
+	const checkEnter = (event: KeyboardEvent) => {
 		return event.code === 'Enter' || event.code === 'NumpadEnter';
-	}, []);
-	const isValidEvent = useCallback((event: any) => {
+	};
+	const isValidEvent = (event: any) => {
 		if (event.type === 'click') return true;
 		else if (event.type === 'keypress' && checkEnter(event)) return true;
 		else return false;
-	}, []);
-	const sendMessage = useCallback(() => {
+	};
+	const sendMessage = () => {
 		if (inputRef.current !== null && inputRef.current.value !== '') {
 			props.socket.emit(
 				'sendMsg',
@@ -59,10 +59,10 @@ function ChatInput(props: ChatInputType) {
 			);
 			inputRef.current.value = '';
 		}
-	}, []);
-	const sendInput = useCallback((event: any) => {
+	};
+	const sendInput = (event: any) => {
 		if (isValidEvent(event)) sendMessage();
-	}, []);
+	};
 
 	return (
 		<div css={ChatInputDiv}>
