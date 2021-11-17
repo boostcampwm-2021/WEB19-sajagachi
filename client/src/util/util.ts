@@ -103,4 +103,8 @@ export const getAddressByGeocode = (lat: number, lng: number) => {
 			resolve(response.result.items[0].address);
 		});
 	});
+}
+
+export const parsePath = (pathName: string): string[] => {
+	return pathName.split('/').filter(path => path !== '');
 };

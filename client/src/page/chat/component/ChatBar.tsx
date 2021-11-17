@@ -24,8 +24,6 @@ const TitleStyle = css`
 type propsType = {
 	title: string;
 	socket: Socket;
-	postId: string;
-	userId: string;
 };
 
 function ChatBar(props: propsType) {
@@ -41,11 +39,7 @@ function ChatBar(props: propsType) {
 				}}
 			/>
 			<div css={TitleStyle}>{props.title}</div>
-			<ChatMenuDrawer
-				socket={props.socket}
-				postId={props.postId}
-				userId={props.userId}
-			/>
+			<ChatMenuDrawer socket={props.socket} />
 		</div>
 	);
 }
