@@ -2,12 +2,16 @@ import { Request, Response } from 'express';
 import { parse } from 'html-metadata-parser';
 import { MetaResult, APIOutput } from '../type';
 
-export const parsePreviewLinkData = async (req: Request, res: Response) => {
+export const parsePreviewLinkData = async (
+	req: Request,
+	res: Response,
+	next: Function
+) => {
 	try {
-		let url = req.query.url as unknown as string;
+		let url = req.query.url as string;
 
 		if (!url) {
-			return res.status(400).json({ error: 'Invalid URL' });
+			next({ statusCode: 400, message: 'Invalid URL' });
 		}
 
 		url = url.indexOf('://') === -1 ? 'http://' + url : url;
@@ -17,49 +21,69 @@ export const parsePreviewLinkData = async (req: Request, res: Response) => {
 				url
 			);
 
-		if (!url || !isUrlValid) {
-			return res.status(400).json({ error: 'Invalid URL' });
+		if (!isUrlValid) {
+			next({ statusCode: 400, message: 'Invalid URL' });
 		}
 
-		if (url && isUrlValid) {
-			const { hostname } = new URL(url);
+		const { hostname } = new URL(url);
 
-			let output: APIOutput;
-
-			const metadata = await getMetadata(url);
-			if (!metadata) {
-				return sendResponse(res, null);
-			}
-			const { images, og, meta } = metadata!;
-
-			let image = og.image
-				? og.image
-				: images.length > 0
-				? images[0].url
-				: null;
-			const description = og.description
-				? og.description
-				: meta.description
-				? meta.description
-				: null;
-			const title = (og.title ? og.title : meta.title) || '';
-			const siteName = og.site_name || '';
-
-			output = {
-				title,
-				description,
-				image,
-				siteName,
-				hostname
-			};
-
-			sendResponse(res, output);
+		const metadata = await getMetadata(url);
+		if (!metadata) {
+			return sendResponse(res, null);
 		}
+
+		const { image, description, title, siteName } =
+			manufactureMetadata(metadata);
+
+		const output: APIOutput = {
+			title,
+			description,
+			image,
+			siteName,
+			hostname
+		};
+
+		sendResponse(res, output);
 	} catch (error) {
-		return res.status(500).json({
-			error: 'Internal server error. Please open a Github issue or contact me on Twitter @dhaiwat10 if the issue persists.'
-		});
+		next({ statusCode: 500, message: 'Internal server error' });
 	}
+};
+
+const manufactureMetadata = (metadata: MetaResult) => {
+	const image = checkMetadataImage(metadata);
+	const description = checkMetadataDesc(metadata);
+	const title = checkMetadataTitle(metadata);
+	const siteName = checkMetadataSiteName(metadata);
+	return { image, description, title, siteName };
+};
+
+const checkMetadataImage = (metadata: MetaResult) => {
+	const { images, og } = metadata;
+	if (og.image) {
+		return og.image;
+	}
+	return images.length > 0 ? images[0].url : null;
+};
+
+const checkMetadataDesc = (metadata: MetaResult) => {
+	const { og, meta } = metadata;
+	if (og.description) {
+		return og.description;
+	}
+	return meta.description ? meta.description : null;
+};
+
+const checkMetadataTitle = (metadata: MetaResult) => {
+	const { og, meta } = metadata;
+	if (og.title) {
+		return og.title;
+	}
+	return meta.title || '';
+};
+
+const checkMetadataSiteName = (metadata: MetaResult) => {
+	const { og } = metadata;
+	return og.site_name || '';
 };
 
 const sendResponse = (res: Response, output: APIOutput | null) => {
