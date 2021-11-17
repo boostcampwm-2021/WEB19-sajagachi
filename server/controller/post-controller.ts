@@ -35,6 +35,11 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
 export const savePost = async (req: Request, res: Response, next: Function) => {
 	try {
 		const postId = await postService.savePost(req.body);
+		await postService.saveUrls(req.body.urls, postId);
+		await participantService.saveParticipant(
+			Number(req.body.userId),
+			postId
+		);
 		res.json(postId);
 	} catch (err: any) {
 		next({ statusCode: 500, message: err.message });

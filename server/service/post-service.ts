@@ -20,14 +20,17 @@ const savePost = async (body: Request['body']): Promise<number> => {
 	if (body.deadline) postBody.deadline = body.deadline;
 	const newPost = db.manager.create(Post, postBody);
 	const createPost = await db.manager.save(newPost);
-	const { urls } = body;
+	return createPost.id;
+};
+
+const saveUrls = async (urls: string[], postId: number): Promise<void> => {
+	const db = await getDB().get();
 	if (urls.length > 0) {
 		const urlValues = urls
-			.map((url: string) => `(${createPost.id}, '${url}')`)
+			.map((url: string) => `(${postId}, '${url}')`)
 			.join(',');
 		await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
 	}
-	return createPost.id;
 };
 
 const getPosts = async ({
@@ -97,4 +100,11 @@ const getCapacity = async (postId: number) => {
 	return capacity?.capacity;
 };
 
-export default { savePost, getPosts, getPost, updatePostFinished, getCapacity };
+export default {
+	savePost,
+	getPosts,
+	getPost,
+	updatePostFinished,
+	getCapacity,
+	saveUrls
+};
