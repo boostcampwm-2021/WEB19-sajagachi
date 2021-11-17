@@ -12,6 +12,7 @@ export interface ItemType {
 export interface LocationType {
 	lat: number;
 	lng: number;
+	isLoaded?: boolean;
 }
 
 export interface QueryStringType {
