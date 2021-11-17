@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { Close } from '@mui/icons-material';
 import { UserList } from './UserList';
 import PointView from './PointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
+import { fetchGet, parsePath } from '../../../util/util';
 
 const ChatMenuStyle = css`
 	width: 300px;
@@ -44,13 +45,26 @@ type propsType = {
 };
 
 export function ChatMenu(props: propsType) {
+	const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
+	const [hostId, setHostId] = useState<number>(-1);
+
+	const updateHostId = async () => {
+		const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/host`;
+		const result = await fetchGet(url);
+		setHostId(result);
+	};
+
+	useEffect(() => {
+		updateHostId();
+	}, []);
+
 	return (
 		<div css={ChatMenuStyle}>
 			<Close
 				css={CloseBtnStyle}
 				onClick={() => props.onCloseBtnClicked()}
 			/>
-			<UserList />
+			<UserList hostId={hostId} />
 			<PointView socket={props.socket} />
 			<div css={QuitBtnContainerStyle}>
 				<Button css={QuitBtnStyle}>나가기</Button>

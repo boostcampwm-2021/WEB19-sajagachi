@@ -68,7 +68,7 @@ type ParticipantType = {
 	};
 };
 
-export function UserList() {
+export function UserList({ hostId }: { hostId: number }) {
 	const [myId, setMyId] = useState<number>(-1); // 페이지 컴포넌트에서 가져오도록 변경
 	const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
@@ -95,15 +95,26 @@ export function UserList() {
 			<h1>참여자 ({participants.length}명)</h1>
 			<ul>
 				{participants.map(user => (
-					<UserListItem key={user.user.id} item={user} myId={myId} />
+					<UserListItem
+						key={user.user.id}
+						item={user}
+						myId={myId}
+						hostId={hostId}
+					/>
 				))}
 			</ul>
 		</div>
 	);
 }
-function UserListItem({ item, myId }: { item: ParticipantType; myId: number }) {
-	const hostId = 76616101; // should be replaced by real host id
-
+function UserListItem({
+	item,
+	myId,
+	hostId
+}: {
+	item: ParticipantType;
+	myId: number;
+	hostId: number;
+}) {
 	const [isConfirmOn, setIsConfirmOn] = useState(false);
 
 	return (
