@@ -11,14 +11,18 @@ const ChatContainer = css`
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 700px;
+	height: 100%;
+	position: relative;
 `;
 const ChatLayout = css`
-	margin: 5px 10px 0px 10px;
+	margin: 5px 0px 0px 0px;
 	height: 79vh;
-	/* background-color: #ece5f4; */
 	background-color: #ffffff;
-	border-radius: 30px 30px 0px 0px;
+	padding-top: 15px;
 	overflow: scroll;
+	overflow-x: hidden;
+	padding-left: 20px;
+	padding-right: 20px;
 `;
 
 type MessageType = {

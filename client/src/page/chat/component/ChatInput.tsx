@@ -1,22 +1,30 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
-
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 const ChatInputStyle = css`
-	margin-top: 5px;
+	/* margin-top: 5px; */
+	margin: 5px 5px 0px 5px;
 	width: 80%;
 	height: 30px;
 	border: none;
+	font-size: 18px;
+	&:focus {
+		outline: none;
+	}
 `;
 const ChatInputDiv = css`
+	position: absolute;
 	background-color: #ffffff;
 	border: 1px solid #ebabab;
-	/* #ece5f4 */
 	margin-left: 10px;
 	margin-right: 10px;
 	border-radius: 20px;
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
+	bottom: 20px;
+	left: 0;
+	right: 0;
 `;
 type ChatInputType = {
 	socket: any;
@@ -45,6 +53,14 @@ function ChatInput(props: ChatInputType) {
 
 	return (
 		<div css={ChatInputDiv}>
+			<AddCircleIcon
+				sx={{
+					width: '40px',
+					height: '40px',
+					color: '#ebabab',
+					paddingLeft: '10px'
+				}}
+			/>
 			<input
 				css={ChatInputStyle}
 				type="text"
@@ -53,7 +69,12 @@ function ChatInput(props: ChatInputType) {
 				ref={input}
 			/>
 			<SendIcon
-				sx={{ width: '30px', height: '40px', color: '#ebabab' }}
+				sx={{
+					width: '40px',
+					height: '40px',
+					color: '#ebabab',
+					paddingRight: '10px'
+				}}
 			/>
 		</div>
 	);
