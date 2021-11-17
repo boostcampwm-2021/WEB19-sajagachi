@@ -9,12 +9,12 @@ type MessageType = {
 };
 
 const MessageStyle = css`
-	margin: 2px 0px;
+	margin: 4px 0px;
 	padding: 5px 10px;
 	max-width: 60%;
 	border-radius: 10px;
 	background-color: #e5e5ea;
-	font-size: 14px;
+	font-size: 18px;
 `;
 
 const DirectionSelector = css`

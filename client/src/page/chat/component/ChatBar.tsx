@@ -14,6 +14,8 @@ const ChatBarLayout = css`
 	top: 0px;
 	left: 0px;
 	right: 0px;
+	max-width: 700px;
+	margin: auto;
 `;
 
 const TitleStyle = css`
@@ -21,12 +23,12 @@ const TitleStyle = css`
 	font-size: 18px;
 `;
 
-type propsType = {
+type ChatBarType = {
 	title: string;
 	socket: Socket;
 };
 
-function ChatBar(props: propsType) {
+function ChatBar(props: ChatBarType) {
 	return (
 		<div css={ChatBarLayout}>
 			<ArrowBackIosNewIcon
