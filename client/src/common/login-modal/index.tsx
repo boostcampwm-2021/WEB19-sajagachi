@@ -4,6 +4,10 @@ import githubButton from '../../asset/github-button.png';
 import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
 import { fetchGet, fetchPost } from '../../util/util';
+import { useRecoilState } from 'recoil';
+import { loginUserState } from '../../store/login';
+import { LoginUserType } from '../../type';
+import { useHistory } from 'react-router';
 
 const modalBackground = css`
 	position: fixed;
@@ -68,7 +72,10 @@ type ModalState = {
 };
 
 function LoginModal({ setIsLoginModalOn }: ModalState) {
+	const history = useHistory();
 	const [id, setId] = useState<string>();
+	const [loginUser, setLoginUser] =
+		useRecoilState<LoginUserType>(loginUserState);
 
 	function handleIdChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setId(e.target.value);
@@ -77,7 +84,11 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
 	function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
 		const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
 		fetchPost(url, { userId: id }).then(data => {
-			if (!isNaN(data)) window.location.href = '/';
+			if (!isNaN(data.id)) {
+				setLoginUser({ id: data.id, name: data.name, isSigned: true });
+				setIsLoginModalOn(false);
+				history.push('/');
+			}
 		});
 	}
 

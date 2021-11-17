@@ -15,6 +15,12 @@ export interface LocationType {
 	isLoaded?: boolean;
 }
 
+export interface LoginUserType {
+	id: number;
+	name: string;
+	isSigned: boolean;
+}
+
 export interface QueryStringType {
 	offset?: number;
 	limit?: number;
