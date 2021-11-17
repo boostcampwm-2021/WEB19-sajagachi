@@ -92,3 +92,7 @@ export const getCurrentTime = () => {
 	currentHour = currentHour < 12 ? currentHour : currentHour - 12;
 	return strAmPm + currentHour + '시 ' + currentMinutes + '분';
 };
+
+export const parsePath = (pathName: string): string[] => {
+	return pathName.split('/').filter(path => path !== '');
+};

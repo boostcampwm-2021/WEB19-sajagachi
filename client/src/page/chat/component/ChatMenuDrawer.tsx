@@ -17,8 +17,6 @@ const BlurredBackground = css`
 
 type propsType = {
 	socket: Socket;
-	postId: string;
-	userId: string;
 };
 
 export function ChatMenuDrawer(props: propsType) {
@@ -47,8 +45,6 @@ export function ChatMenuDrawer(props: propsType) {
 				<ChatMenu
 					onCloseBtnClicked={() => setIsMenuOn(false)}
 					socket={props.socket}
-					postId={props.postId}
-					userId={props.userId}
 				/>
 			</SwipeableDrawer>
 		</>
