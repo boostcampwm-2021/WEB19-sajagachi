@@ -75,8 +75,6 @@ function Chat(props: any) {
 			<ChatBar
 				title={'타이틀이 들어갈 공간입니당아아아'}
 				socket={socketRef.current}
-				postId={postId}
-				userId={userId}
 			/>
 			<div css={ChatLayout}>
 				{chatDatas.map((chat: MessageType) => {

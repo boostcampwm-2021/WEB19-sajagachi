@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/react';
 import { Close } from '@mui/icons-material';
 import { UserList } from './UserList';
-import { PointView } from './PointView';
+import PointView from './PointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 
@@ -41,8 +41,6 @@ const QuitBtnStyle = css`
 type propsType = {
 	onCloseBtnClicked: Function;
 	socket: Socket;
-	postId: string;
-	userId: string;
 };
 
 export function ChatMenu(props: propsType) {
@@ -53,12 +51,7 @@ export function ChatMenu(props: propsType) {
 				onClick={() => props.onCloseBtnClicked()}
 			/>
 			<UserList />
-			<PointView
-				socket={props.socket}
-				point={null}
-				postId={props.postId}
-				userId={props.userId}
-			/>
+			<PointView socket={props.socket} />
 			<div css={QuitBtnContainerStyle}>
 				<Button css={QuitBtnStyle}>나가기</Button>
 			</div>
