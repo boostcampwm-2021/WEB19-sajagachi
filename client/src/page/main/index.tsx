@@ -14,6 +14,7 @@ import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
 import { useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
+import LocationIndicator from './component/LocationIndicator';
 
 const theme = createTheme({
 	palette: {
@@ -97,6 +98,7 @@ function Main() {
 	return (
 		<div css={mainContainer}>
 			{alert && <ErrorAlert alert={alert} />}
+			<LocationIndicator />
 			<PostList items={items} />
 			<div ref={loader} />
 			{!isFetch && (

@@ -63,7 +63,7 @@ function Gnb() {
 	const [location, setLocation] = useRecoilState(locationState);
 	const [isLoginModalOn, setIsLoginModalOn] = useState(false);
 	const [isAlertOn, setIsAlertOn] = useState(false);
-	const [isBackdropOn, setIsBackropOn] = useState(true);
+	const [isBackdropOn, setIsBackropOn] = useState(false);
 
 	useEffect(() => {
 		const onSuccess = (pos: any) => {
@@ -72,6 +72,8 @@ function Gnb() {
 				lng: pos.coords.longitude,
 				isLoaded: true
 			});
+			localStorage.setItem('lat', pos.coords.latitude);
+			localStorage.setItem('lng', pos.coords.longitude);
 		};
 
 		const onFailure = () => {
@@ -83,7 +85,19 @@ function Gnb() {
 			setIsAlertOn(true);
 		};
 
-		navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+		const lat = localStorage.getItem('lat');
+		const lng = localStorage.getItem('lng');
+
+		if (lat && lng) {
+			setLocation({
+				lat: +lat,
+				lng: +lng,
+				isLoaded: true
+			});
+		} else {
+			setIsBackropOn(true);
+			navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+		}
 	}, []);
 
 	useEffect(() => {

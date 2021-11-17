@@ -93,6 +93,18 @@ export const getCurrentTime = () => {
 	return strAmPm + currentHour + '시 ' + currentMinutes + '분';
 };
 
+export const getAddressByGeocode = (lat: number, lng: number) => {
+	return new Promise((resolve: (value: string) => void, reject) => {
+		if (!naver.maps.Service) reject('map service error');
+		const location = new naver.maps.LatLng(lat, lng);
+		naver.maps.Service.reverseGeocode({ location }, (status, response) => {
+			if (status !== naver.maps.Service.Status.OK)
+				reject('map service error');
+			resolve(response.result.items[0].address);
+		});
+	});
+}
+
 export const parsePath = (pathName: string): string[] => {
 	return pathName.split('/').filter(path => path !== '');
 };

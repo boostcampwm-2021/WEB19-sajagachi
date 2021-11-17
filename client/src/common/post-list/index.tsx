@@ -6,7 +6,6 @@ const ListStyle = css`
 	list-style: none;
 	padding-left: 0;
 	padding: 0 15px;
-	padding-top: 20px;
 	max-width: 800px;
 	margin: 0 auto;
 `;
