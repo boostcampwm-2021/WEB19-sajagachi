@@ -27,6 +27,7 @@ function ChatInput(props: ChatInputType) {
         'sendMsg',
         props.postId,
         props.user.userId,
+        props.user.userName,
         inputRef.current.value
       );
       inputRef.current.value = '';

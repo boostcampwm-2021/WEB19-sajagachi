@@ -10,6 +10,7 @@ export const getChats = async (req: Request, res: Response, next: Function) => {
       limit as string,
       cursor as string
     );
+
     res.json(chats);
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });

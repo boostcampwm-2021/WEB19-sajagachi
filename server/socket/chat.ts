@@ -25,11 +25,14 @@ export const leaveRoom = (socket: any, io: Server) => {
 };
 
 export const sendMsg = (socket: any, io: Server) => {
-  socket.on('sendMsg', (postId: number, userId: number, msg: string) => {
-    // 채팅을 보낸 user 정보와 msg를 보내줌 => 객체로 만들어진 시간은 여기서 만들어서 보내줘야할 것 같음
-    chatService.saveChat(userId, postId, msg);
-    io.to(String(postId)).emit('receiveMsg', userId, msg);
-  });
+  socket.on(
+    'sendMsg',
+    (postId: number, userId: number, userName: string, msg: string) => {
+      // 채팅을 보낸 user 정보와 msg를 보내줌 => 객체로 만들어진 시간은 여기서 만들어서 보내줘야할 것 같음
+      chatService.saveChat(userId, postId, msg);
+      io.to(String(postId)).emit('receiveMsg', userId, userName, msg);
+    }
+  );
 };
 
 export const confirmPurchase = (socket: any, io: Server) => {
