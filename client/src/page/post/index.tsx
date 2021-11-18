@@ -96,8 +96,6 @@ function Post() {
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
   const currentLocation = useRecoilValue(locationState);
 
-  const [isLoginModalOn, setIsLoginModalOn] = useState(false);
-
   useEffect(() => {
     if (title && content && category !== null) setBtnDisabled(false);
     else setBtnDisabled(true);
@@ -114,7 +112,7 @@ function Post() {
             isSigned: true
           });
         } else {
-          setIsLoginModalOn(true);
+          history.push('/');
         }
       });
     }
@@ -163,42 +161,39 @@ function Post() {
   }
 
   return (
-    <>
-      {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
-      <div css={postContainer}>
-        <InputTitle title={title} setTitle={setTitle} />
-        <Line />
-        <InputContent content={content} setContent={setContent} />
-        {urls.map((url, idx) => (
-          <InputUrl idx={idx} urls={urls} setUrls={setUrls} />
-        ))}
-        <IconButton sx={{ ml: 'auto', mr: 'auto' }} onClick={handleUrlAddClick}>
-          <AddBoxIcon css={urlAddIcon} />
-        </IconButton>
-        <CheckCategory category={category} setCategory={setCategory} />
-        <div css={capacityDeadline}>
-          <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
-          <DateDeadline deadline={deadline} setDeadline={setDeadline} />
-        </div>
-        <Tooltip
-          TransitionComponent={Zoom}
-          title="제목, 내용, 카테고리를 입력하셔야 합니다."
-        >
-          <span css={finishButton}>
-            <Button
-              style={{
-                backgroundColor: `${btnDisabled ? '#dddddd' : '#ebabab'}`,
-                color: 'white'
-              }}
-              onClick={handleFinishClick}
-              disabled={btnDisabled}
-            >
-              등록
-            </Button>
-          </span>
-        </Tooltip>
+    <div css={postContainer}>
+      <InputTitle title={title} setTitle={setTitle} />
+      <Line />
+      <InputContent content={content} setContent={setContent} />
+      {urls.map((url, idx) => (
+        <InputUrl idx={idx} urls={urls} setUrls={setUrls} />
+      ))}
+      <IconButton sx={{ ml: 'auto', mr: 'auto' }} onClick={handleUrlAddClick}>
+        <AddBoxIcon css={urlAddIcon} />
+      </IconButton>
+      <CheckCategory category={category} setCategory={setCategory} />
+      <div css={capacityDeadline}>
+        <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
+        <DateDeadline deadline={deadline} setDeadline={setDeadline} />
       </div>
-    </>
+      <Tooltip
+        TransitionComponent={Zoom}
+        title="제목, 내용, 카테고리를 입력하셔야 합니다."
+      >
+        <span css={finishButton}>
+          <Button
+            style={{
+              backgroundColor: `${btnDisabled ? '#dddddd' : '#ebabab'}`,
+              color: 'white'
+            }}
+            onClick={handleFinishClick}
+            disabled={btnDisabled}
+          >
+            등록
+          </Button>
+        </span>
+      </Tooltip>
+    </div>
   );
 }
 

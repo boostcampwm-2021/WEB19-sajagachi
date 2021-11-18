@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Fab from '@mui/material/Fab';
 import EditIcon from '@mui/icons-material/Edit';
 import { css } from '@emotion/react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
+import LoginModal from '../../../common/login-modal';
+import { LoginUserType } from '../../../type';
 
 const FabStyle = css`
   position: fixed;
@@ -10,12 +12,26 @@ const FabStyle = css`
   bottom: 30px;
 `;
 
-export default function FAB() {
+export default function FAB({ loginUser }: { loginUser: LoginUserType }) {
+  const [isLoginModalOn, setIsLoginModalOn] = useState(false);
+  const history = useHistory();
+
+  const handleFabClick = () => {
+    if (!loginUser.isSigned) setIsLoginModalOn(true);
+    else history.push('/post');
+  };
+
   return (
-    <Link to="/post">
-      <Fab css={FabStyle} sx={{ backgroundColor: '#ebabab' }} aria-label="edit">
+    <>
+      <Fab
+        css={FabStyle}
+        sx={{ backgroundColor: '#ebabab' }}
+        aria-label="edit"
+        onClick={handleFabClick}
+      >
         <EditIcon sx={{ color: '#ffffff' }} />
       </Fab>
-    </Link>
+      {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
+    </>
   );
 }

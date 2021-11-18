@@ -124,7 +124,7 @@ function Main() {
       {isFetch && items.length === 0 && (
         <img src={noItemImg} css={ImageStyle} alt={'noItem'} />
       )}
-      <FAB />
+      <FAB loginUser={loginUser} />
     </div>
   );
 }
