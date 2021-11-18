@@ -9,6 +9,7 @@ import { fetchGet, getCurrentTime, parsePath } from '../../util';
 import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
+import { useHistory } from 'react-router';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -19,6 +20,7 @@ const ChatContainer = css`
 `;
 
 function Chat() {
+  const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
   const [userMe, setUserMe] = useState<UserInfoType>();
@@ -29,8 +31,9 @@ function Chat() {
     const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
     const userLogin = loginUser.isSigned ? loginUser : await fetchGet(loginUrl);
     if (!loginUser.isSigned) {
-      if (isNaN(userLogin.id)) console.log('login 필요합니다.');
-      else
+      if (isNaN(userLogin.id)) {
+        history.push(`/post/${postId}`);
+      } else
         setLoginUser({
           id: userLogin.id,
           name: userLogin.name,
