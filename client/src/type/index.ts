@@ -42,3 +42,8 @@ export type ParticipantType = {
     img: string;
   };
 };
+
+export type UserInfoType = {
+  userId: number;
+  userName: string;
+};

@@ -6,6 +6,7 @@ import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
 import { getCurrentTime } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
+import { UserInfoType } from '../../../type';
 
 const ProgressStyle = {
   color: '#f76a6a',
@@ -54,11 +55,11 @@ const checkBetweenFromTo = (target: number, from: number, to: number) => {
 
 export default function ChatList({
   postId,
-  userId,
+  user,
   socket
 }: {
-  postId: String;
-  userId: String;
+  postId: number;
+  user: UserInfoType;
   socket: Socket;
 }) {
   const [isFetch, setIsFetch] = useState(false);
@@ -75,17 +76,17 @@ export default function ChatList({
           sender: String(chat.userId),
           msg: chat.msg,
           time: getAMPMTime(new Date(chat.created_at)),
-          isMe: String(chat.userId) == userId ? true : false
+          isMe: chat.userId === user.userId ? true : false
         } as MessageType;
       })
       .reverse();
   };
-  const checkMe = (sender: string) => {
-    return sender === userId;
+  const checkMe = (sender: number) => {
+    return sender === user.userId;
   };
 
   useEffect(() => {
-    socket.on('receiveMsg', (user: string, msg: string) => {
+    socket.on('receiveMsg', (user: number, msg: string) => {
       const isMe = checkMe(user);
       const bottom =
         (parent.current?.scrollHeight as number) -

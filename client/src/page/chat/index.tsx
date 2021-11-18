@@ -6,10 +6,9 @@ import ChatList from './component/ChatList';
 import io from 'socket.io-client';
 
 import { fetchGet, getCurrentTime, parsePath } from '../../util';
-import { ParticipantType } from '../../type';
+import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
-
 
 const ChatContainer = css`
   margin-left: auto;
@@ -19,21 +18,40 @@ const ChatContainer = css`
   position: relative;
 `;
 
-function Chat(props: any) {
-  const userId = '121212';
+function Chat() {
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
-  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
 
   const updateParticipants = async (postId: number) => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(url);
-    setParticipants(result);
+    const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+    const userLoginId = await fetchGet(loginUrl);
+    const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+    const result = await fetchGet(participantUrl);
+    if (isNaN(userLoginId)) console.log('login 필요합니다.');
+
+    const participantMe = result.find(
+      (participant: ParticipantType) => participant.user.id === userLoginId
+    );
+    if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
+    if (participantMe !== undefined) {
+      // 나중에 이조건 없애주기
+      setChatSocket(participantMe.user.id);
+      setUserMe({
+        userId: participantMe.user.id,
+        userName: participantMe.user.name
+      });
+      setParticipants(result);
+    }
+  };
+
+  const setChatSocket = (userId: number) => {
+    socketRef.current.emit('joinRoom', postId, userId);
   };
 
   useEffect(() => {
-    socketRef.current.emit('joinRoom', postId, userId);
+    updateParticipants(postId);
     socketRef.current.on('afterJoin', (msg: string) => {
       console.log(msg);
     });
@@ -66,8 +84,6 @@ function Chat(props: any) {
       });
     });
 
-    updateParticipants(postId);
-
     return () => {
       socketRef.current.disconnect();
     };
@@ -75,13 +91,19 @@ function Chat(props: any) {
 
   return (
     <div css={ChatContainer}>
-      <ChatBar
-        title={'타이틀이 들어갈 공간입니당아아아'}
-        socket={socketRef.current}
-        participants={participants}
-      />
-      <ChatList postId={postId} userId={userId} socket={socketRef.current} />
-      <ChatInput socket={socketRef.current} postId={postId} userId={userId} />
+      {participants && (
+        <ChatBar
+          title={'타이틀이 들어갈 공간입니당아아아'}
+          socket={socketRef.current}
+          participants={participants}
+        />
+      )}
+      {userMe && (
+        <ChatList postId={postId} user={userMe} socket={socketRef.current} />
+      )}
+      {userMe && (
+        <ChatInput socket={socketRef.current} postId={postId} user={userMe} />
+      )}
     </div>
   );
 }
