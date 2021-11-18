@@ -9,6 +9,7 @@ import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 import { getCookie } from '../../../util/cookie';
 import Confirm from '../../../common/confirm';
+import { useHistory } from 'react-router';
 
 const ChatMenuStyle = css`
   width: 300px;
@@ -52,6 +53,7 @@ export function ChatMenu(props: propsType) {
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [hostId, setHostId] = useState<number>(-1);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
+  const history = useHistory();
 
   const updateHostId = async () => {
     const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/host`;
@@ -66,6 +68,7 @@ export function ChatMenu(props: propsType) {
   const handleQuitClick = () => {
     props.socket.emit('quitRoom', getCookie('user'), postId);
     setIsConfirmOn(false);
+    history.push(`/post/${postId}`);
   };
 
   return (
