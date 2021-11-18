@@ -12,10 +12,13 @@ import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { fetchGet } from '../../util';
 import { RouteComponentProps } from 'react-router-dom';
+
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
 import LinkPreview from './component/LinkPreview';
+import { useRecoilState } from 'recoil';
+import { loginUserState } from '../../store/login';
 
 type UrlType = {
   postId: number;
@@ -63,6 +66,7 @@ const StyledIconButton = styled(IconButton)`
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isLoad, setIsLoad] = useState(false);
   const deadLineRef = useRef<DeadLineHandle>();
+  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
   const [post, setPost] = useState<PostType>({
     id: 0,
     userId: 0,
@@ -78,12 +82,19 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     participantCnt: 0,
     urls: []
   });
-  const [loginId, setLoginId] = useState<number>();
   useEffect(() => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-    fetchGet(url).then(userLoginId => {
-      if (!isNaN(userLoginId)) setLoginId(userLoginId);
-    });
+    if (!loginUser.isSigned) {
+      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+      fetchGet(url).then(userLogin => {
+        if (!isNaN(userLogin.id)) {
+          setLoginUser({
+            id: userLogin.id,
+            name: userLogin.name,
+            isSigned: true
+          });
+        }
+      });
+    }
   }, []);
   useEffect(() => {
     let es: any = null;
@@ -201,7 +212,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             <FavoriteBorderIcon sx={{ fontSize: 30 }} />
           </StyledIconButton>
           <GroupBuyButton
-            loginId={loginId}
+            login={loginUser}
             postId={Number(match.params.postId)}
             participantCnt={post.participantCnt}
             capacity={post.capacity}

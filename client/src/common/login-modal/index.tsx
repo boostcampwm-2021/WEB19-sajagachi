@@ -87,6 +87,7 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
       if (!isNaN(data.id)) {
         setLoginUser({ id: data.id, name: data.name, isSigned: true });
         setIsLoginModalOn(false);
+        window.location.href = window.location.pathname;
       }
     });
   }

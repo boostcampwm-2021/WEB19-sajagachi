@@ -77,11 +77,11 @@ export function UserList({
   const updateMyId = async () => {
     const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
     const result = await fetchGet(url);
-    if (!isNaN(+result)) setMyId(+result); // note: result can be "jwt expired" or other string value
+    if (!isNaN(result.id)) setMyId(result.id); // note: result can be "jwt expired" or other string value
   };
 
   useEffect(() => {
-    updateMyId();
+    updateMyId(); // 채팅페이지에서 전역 상태로 저장하기 때문에 recoilvalue로 가져와도 됨.
   }, []);
 
   return (

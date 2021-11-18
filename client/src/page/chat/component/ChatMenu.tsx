@@ -74,7 +74,6 @@ export function ChatMenu(props: propsType) {
   const updateFinished = async () => {
     const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/finished`;
     const { finished } = await fetchGet(url);
-    console.log(finished);
     if (finished) setPointViewState(FINISHED);
   };
 
