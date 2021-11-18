@@ -17,169 +17,164 @@ import { fetchPost } from '../../util';
 import { loginUserState } from '../../store/login';
 
 const URL_REGX: RegExp =
-	/^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
+  /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
 const postContainer = css`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 700px;
-	padding-left: 5vw;
-	padding-right: 5vw;
-	padding-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  padding-top: 2vh;
 `;
 
 const inputCommon = css`
-	border: 0px solid;
-	box-sizing: border-box;
-	box-shadow: none;
-	width: 100%;
-	height: 40px;
-	background: transparent;
-	outline: none;
-	color: #000000;
-	font-size: 16px;
-	overflow: hidden;
-	margin-left: 10vw;
-	margin-right: 10vw;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-		Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  border: 0px solid;
+  box-sizing: border-box;
+  box-shadow: none;
+  width: 100%;
+  height: 40px;
+  background: transparent;
+  outline: none;
+  color: #000000;
+  font-size: 16px;
+  overflow: hidden;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 `;
 
 const inputContent = css`
-	${inputCommon}
-	resize: none;
-	min-height: 200px;
-	margin-top: 13px;
-	overflow: visible;
+  ${inputCommon}
+  resize: none;
+  min-height: 200px;
+  margin-top: 13px;
+  overflow: visible;
 `;
 
 const horizonLine = css`
-	background-color: #ebababa0;
-	width: 100%;
-	height: 1px;
-	margin-left: auto;
-	margin-right: auto;
+  background-color: #ebababa0;
+  width: 100%;
+  height: 1px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const urlAddIcon = css`
-	width: 30px;
-	height: 30px;
-	color: #ebabab;
+  width: 30px;
+  height: 30px;
+  color: #ebabab;
 `;
 
 const finishButton = css`
-	align-self: end;
-	margin: 5vh;
+  align-self: end;
+  margin: 5vh;
 `;
 
 const capacityDeadline = css`
-	width: 90%;
-	display: flex;
-	flex-direction: column;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
 `;
 
 function Post() {
-	const loginUser = useRecoilValue(loginUserState);
-	const [title, setTitle] = useState<string>('');
-	const [content, setContent] = useState<string>('');
-	const [urls, setUrls] = useState<string[]>(['']);
-	const [category, setCategory] = useState<number | null>(null);
-	const [capacity, setCapacity] = useState<number>(0);
-	const [deadline, setDeadline] = useState<Date | null>(null);
-	const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
-	const currentLocation = useRecoilValue(locationState);
+  const loginUser = useRecoilValue(loginUserState);
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [urls, setUrls] = useState<string[]>(['']);
+  const [category, setCategory] = useState<number | null>(null);
+  const [capacity, setCapacity] = useState<number>(0);
+  const [deadline, setDeadline] = useState<Date | null>(null);
+  const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
+  const currentLocation = useRecoilValue(locationState);
 
-	useEffect(() => {
-		if (title && content && category !== null) setBtnDisabled(false);
-		else setBtnDisabled(true);
-	}, [title, content, category]);
+  useEffect(() => {
+    if (title && content && category !== null) setBtnDisabled(false);
+    else setBtnDisabled(true);
+  }, [title, content, category]);
 
-	const Line = React.memo(() => {
-		return <div css={horizonLine}></div>;
-	});
+  const Line = React.memo(() => {
+    return <div css={horizonLine}></div>;
+  });
 
-	function createPost(validUrls: string[]) {
-		const body = {
-			userId: loginUser.id,
-			categoryId: category,
-			title: title,
-			content: content,
-			capacity: capacity,
-			deadline: deadline,
-			lat: currentLocation.lat,
-			long: currentLocation.lng,
-			urls: validUrls
-		};
-		fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
-			data => {
-				window.location.href = `/post/${data}`;
-			}
-		);
-	}
+  function createPost(validUrls: string[]) {
+    const body = {
+      userId: loginUser.id,
+      categoryId: category,
+      title: title,
+      content: content,
+      capacity: capacity,
+      deadline: deadline,
+      lat: currentLocation.lat,
+      long: currentLocation.lng,
+      urls: validUrls
+    };
+    fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
+      data => {
+        window.location.href = `/post/${data}`;
+      }
+    );
+  }
 
-	function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
-		setUrls([...urls, '']);
-	}
+  function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
+    setUrls([...urls, '']);
+  }
 
-	function checkUrlValid(): boolean {
-		return urls.some(url => {
-			return url ? !URL_REGX.test(url) : false;
-		});
-	}
+  function checkUrlValid(): boolean {
+    return urls.some(url => {
+      return url ? !URL_REGX.test(url) : false;
+    });
+  }
 
-	function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
-		if (checkUrlValid()) {
-			alert('올바르지 않은 url 형식입니다');
-		} else {
-			const validUrls = new Set(urls.filter(x => x !== ''));
-			createPost(Array.from(validUrls));
-		}
-	}
+  function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
+    if (checkUrlValid()) {
+      alert('올바르지 않은 url 형식입니다');
+    } else {
+      const validUrls = new Set(urls.filter(x => x !== ''));
+      createPost(Array.from(validUrls));
+    }
+  }
 
-	return (
-		<div css={postContainer}>
-			<InputTitle title={title} setTitle={setTitle} />
-			<Line />
-			<InputContent content={content} setContent={setContent} />
-			{urls.map((url, idx) => (
-				<InputUrl idx={idx} urls={urls} setUrls={setUrls} />
-			))}
-			<IconButton
-				sx={{ ml: 'auto', mr: 'auto' }}
-				onClick={handleUrlAddClick}
-			>
-				<AddBoxIcon css={urlAddIcon} />
-			</IconButton>
-			<CheckCategory category={category} setCategory={setCategory} />
-			<div css={capacityDeadline}>
-				<SelectCapacity capacity={capacity} setCapacity={setCapacity} />
-				<DateDeadline deadline={deadline} setDeadline={setDeadline} />
-			</div>
-			<Tooltip
-				TransitionComponent={Zoom}
-				title="제목, 내용, 카테고리를 입력하셔야 합니다."
-			>
-				<span css={finishButton}>
-					<Button
-						style={{
-							backgroundColor: `${
-								btnDisabled ? '#dddddd' : '#ebabab'
-							}`,
-							color: 'white'
-						}}
-						onClick={handleFinishClick}
-						disabled={btnDisabled}
-					>
-						등록
-					</Button>
-				</span>
-			</Tooltip>
-		</div>
-	);
+  return (
+    <div css={postContainer}>
+      <InputTitle title={title} setTitle={setTitle} />
+      <Line />
+      <InputContent content={content} setContent={setContent} />
+      {urls.map((url, idx) => (
+        <InputUrl idx={idx} urls={urls} setUrls={setUrls} />
+      ))}
+      <IconButton sx={{ ml: 'auto', mr: 'auto' }} onClick={handleUrlAddClick}>
+        <AddBoxIcon css={urlAddIcon} />
+      </IconButton>
+      <CheckCategory category={category} setCategory={setCategory} />
+      <div css={capacityDeadline}>
+        <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
+        <DateDeadline deadline={deadline} setDeadline={setDeadline} />
+      </div>
+      <Tooltip
+        TransitionComponent={Zoom}
+        title="제목, 내용, 카테고리를 입력하셔야 합니다."
+      >
+        <span css={finishButton}>
+          <Button
+            style={{
+              backgroundColor: `${btnDisabled ? '#dddddd' : '#ebabab'}`,
+              color: 'white'
+            }}
+            onClick={handleFinishClick}
+            disabled={btnDisabled}
+          >
+            등록
+          </Button>
+        </span>
+      </Tooltip>
+    </div>
+  );
 }
 
 export default Post;

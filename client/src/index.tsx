@@ -6,10 +6,10 @@ import './style.css';
 import 'dotenv/config';
 
 ReactDOM.render(
-	<React.StrictMode>
-		<RecoilRoot>
-			<App />
-		</RecoilRoot>
-	</React.StrictMode>,
-	document.getElementById('root')
+  <React.StrictMode>
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  </React.StrictMode>,
+  document.getElementById('root')
 );

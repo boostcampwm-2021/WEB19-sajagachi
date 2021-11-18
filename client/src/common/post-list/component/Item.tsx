@@ -5,31 +5,31 @@ import { Link } from 'react-router-dom';
 import { ItemContent } from './ItemContent';
 
 const LinkStyle = css`
-	&:focus,
-	&:hover,
-	&:visited,
-	&:link,
-	&:active {
-		text-decoration: none;
-		color: black;
-	}
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    text-decoration: none;
+    color: black;
+  }
 `;
 
 const ItemStyle = css`
-	position: relative;
-	width: 100%;
-	height: 120px;
-	margin-bottom: 15px;
-	border-radius: 10px;
-	box-shadow: 3px 3px 8px 1px #bbbbbb;
+  position: relative;
+  width: 100%;
+  height: 120px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 3px 3px 8px 1px #bbbbbb;
 `;
 
 export default function Item(props: { item: ItemType }) {
-	return (
-		<li css={ItemStyle}>
-			<Link to={`/post/${props.item.id}`} css={LinkStyle}>
-				<ItemContent item={props.item} />
-			</Link>
-		</li>
-	);
+  return (
+    <li css={ItemStyle}>
+      <Link to={`/post/${props.item.id}`} css={LinkStyle}>
+        <ItemContent item={props.item} />
+      </Link>
+    </li>
+  );
 }
