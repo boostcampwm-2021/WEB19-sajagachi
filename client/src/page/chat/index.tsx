@@ -70,6 +70,9 @@ function Chat(props: any) {
         ];
       });
     });
+    socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
+      setParticipants(list);
+    });
     updateParticipants(postId);
     return () => {
       socketRef.current.disconnect();
