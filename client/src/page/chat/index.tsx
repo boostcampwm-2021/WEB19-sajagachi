@@ -34,31 +34,51 @@ type MessageType = {
 };
 
 function Chat(props: any) {
-  const userId = '121212';
+  const userId2 = '121212';
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
   const [chatDatas, setChatDatas] = useState<any>([]);
   const messageEndRef = useRef<HTMLDivElement>(null);
-
+  const [userMe, setUserMe] = useState<ParticipantType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
 
-  const updateParticipants = async (postId: number) => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(url);
-    setParticipants(result);
+  const checkMe = (sender: string) => {
+    console.log(userMe);
+    return sender === String(userMe?.user.id);
   };
 
-  const checkMe = (sender: string) => {
-    return sender === userId;
+  const updateParticipants = async (postId: number) => {
+    const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+    const userLoginId = await fetchGet(loginUrl);
+    const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+    const result = await fetchGet(participantUrl);
+    if (isNaN(userLoginId)) console.log('login 필요합니다.');
+
+    const participantMe = result.find(
+      (participant: ParticipantType) => participant.user.id === userLoginId
+    );
+    if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
+    if (participantMe !== undefined) {
+      // 나중에 이조건 없애주기
+      setChatSocket(participantMe.user.id);
+      setUserMe(participantMe);
+      setParticipants(result);
+    }
+  };
+
+  const setChatSocket = (userId: number) => {
+    socketRef.current.emit('joinRoom', postId, userId);
   };
 
   useEffect(() => {
-    socketRef.current.emit('joinRoom', postId, userId);
+    updateParticipants(postId);
     socketRef.current.on('afterJoin', (msg: string) => {
       console.log(msg);
     });
     socketRef.current.on('receiveMsg', (user: string, msg: string) => {
       setChatDatas((chatDatas: MessageType[]) => {
+        console.log('user: ', user);
+        console.log(typeof user);
         return [
           ...chatDatas,
           {
@@ -70,7 +90,7 @@ function Chat(props: any) {
         ];
       });
     });
-    updateParticipants(postId);
+
     return () => {
       socketRef.current.disconnect();
     };
@@ -101,7 +121,11 @@ function Chat(props: any) {
         })}
         <div key="messageEndDiv" ref={messageEndRef}></div>
       </div>
-      <ChatInput socket={socketRef.current} postId={postId} userId={userId} />
+      <ChatInput
+        socket={socketRef.current}
+        postId={postId}
+        userId={String(userMe?.user.id)}
+      />
     </div>
   );
 }
