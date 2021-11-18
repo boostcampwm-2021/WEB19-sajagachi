@@ -42,6 +42,7 @@ type PostType = {
   capacity: number;
   participantCnt: number;
   urls: UrlType[];
+  isParticipate: boolean;
 };
 
 const detailContainer = css`
@@ -80,7 +81,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     capacity: 0,
     deadline: '',
     participantCnt: 0,
-    urls: []
+    urls: [],
+    isParticipate: false
   });
   useEffect(() => {
     if (!loginUser.isSigned) {
@@ -217,6 +219,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             participantCnt={post.participantCnt}
             capacity={post.capacity}
             finished={post.finished}
+            isParticipate={post.isParticipate}
           />
         </Box>
       </StyledBox>

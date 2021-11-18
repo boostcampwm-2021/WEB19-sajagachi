@@ -2,9 +2,8 @@ import { Server } from 'socket.io';
 import chatService from '../service/chat-service';
 import participantService from '../service/participant-service';
 import userService from '../service/user-service';
-import jwt from 'jsonwebtoken';
-import { TokenType } from '../type';
 import postService from '../service/post-service';
+import { decodeToken } from '../util';
 
 export const joinRoom = (socket: any, io: Server) => {
   socket.on('joinRoom', async (postId: number, userId: number) => {
@@ -25,16 +24,6 @@ export const leaveRoom = (socket: any, io: Server) => {
     const leaveMsg = `user ${userId} has leaved`;
     io.to(String(postId)).emit('afterLeave', leaveMsg);
   });
-};
-
-const decodeToken = (token: string) => {
-  try {
-    const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-    const { id: myId } = jwt.verify(token, secretKey) as TokenType;
-    return myId;
-  } catch {
-    return 'error';
-  }
 };
 
 export const sendMsg = (socket: any, io: Server) => {
@@ -132,12 +121,11 @@ export const kickUser = (socket: any, io: Server) => {
 
 export const quitRoom = (socket: any, io: Server) => {
   socket.on('quitRoom', async (token: string, postId: number) => {
-    const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-    const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+    const myId = decodeToken(token);
     const hostId = await postService.getHost(+postId);
 
     // 호스트가 나가는 경우를 방지
-    if (myId === hostId) {
+    if (myId === hostId || typeof myId === 'string') {
       console.log('error 1');
       return; // 호스트가 나가는 기능은 별도 리스너로 구현
     }
