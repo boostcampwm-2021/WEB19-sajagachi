@@ -92,18 +92,18 @@ export default function ChatList({
         (parent.current?.scrollHeight as number) -
         (parent.current?.scrollTop as number) -
         (parent.current?.clientHeight as number);
-      console.log('recvMessage: ', msg);
-      // setChatDatas((chatDatas: MessageType[]) => {
-      //   return [
-      //     ...chatDatas,
-      //     {
-      //       sender: user,
-      //       msg,
-      //       time: getCurrentTime(),
-      //       isMe
-      //     }
-      //   ];
-      // });
+
+      setChatDatas((chatDatas: MessageType[]) => {
+        return [
+          ...chatDatas,
+          {
+            sender: user,
+            msg,
+            time: getCurrentTime(),
+            isMe
+          }
+        ];
+      });
 
       if (isMe || checkBetweenFromTo(bottom, 0, 3)) {
         messageEndRef.current?.scrollIntoView({

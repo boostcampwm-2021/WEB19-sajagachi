@@ -33,7 +33,7 @@ function ChatInput(props: ChatInputType) {
       props.socket.emit(
         'sendMsg',
         props.postId,
-        props.user,
+        props.user.userId,
         inputRef.current.value
       );
       inputRef.current.value = '';
