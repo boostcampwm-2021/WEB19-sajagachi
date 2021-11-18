@@ -4,8 +4,10 @@ import {
   createParticipant,
   getParticipantPoint
 } from '../controller/participant-controller';
+import { getChats } from '../controller/chat-controller';
 
 const router = express.Router();
+router.get('/:post_id', getChats);
 router.get('/:post_id/participant', getParticipants);
 router.post('/:post_id/participant', createParticipant);
 router.get('/:post_id/participant/:user_id', getParticipantPoint);
