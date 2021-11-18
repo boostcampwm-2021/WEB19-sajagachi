@@ -6,6 +6,7 @@ import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
 import { getCurrentTime } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
+import { UserInfoType } from '../../../type';
 
 const ProgressStyle = {
   color: '#f76a6a',
@@ -23,11 +24,37 @@ const ChatLayout = css`
   padding-right: 20px;
 `;
 
+const StickyHeader = css`
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  position: sticky;
+  top: 14px;
+  & button {
+    font-weight: bold;
+    font-size: 13px;
+    height: 28px;
+    line-height: 27px;
+    padding: 0 16px;
+    z-index: 2;
+    --saf-0: rgba(var(--sk_foreground_low, 29, 28, 29), 0.13);
+    box-shadow: 0 0 0 1px var(--saf-0), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    position: relative;
+    top: -13px;
+    background: white;
+    border: none;
+    outline: none;
+  }
+`;
+
 type MessageType = {
   sender: string;
   msg: string;
   time: string;
   isMe: boolean;
+  created_at: string;
 };
 
 type ResultChat = {
@@ -54,15 +81,16 @@ const checkBetweenFromTo = (target: number, from: number, to: number) => {
 
 export default function ChatList({
   postId,
-  userId,
+  user,
   socket
 }: {
   postId: number;
-  userId: string;
+  user: UserInfoType;
   socket: Socket;
 }) {
   const [isFetch, setIsFetch] = useState(false);
   const [chatDatas, setChatDatas] = useState<any>([]);
+  const isEnd = useRef(false);
   const cursor = useRef<number>();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const loader = useRef(null);
@@ -75,17 +103,41 @@ export default function ChatList({
           sender: String(chat.userId),
           msg: chat.msg,
           time: getAMPMTime(new Date(chat.created_at)),
-          isMe: String(chat.userId) == userId ? true : false
+          isMe: chat.userId === user.userId ? true : false,
+          created_at: chat.created_at
         } as MessageType;
       })
       .reverse();
   };
-  const checkMe = (sender: string) => {
-    return sender === userId;
+  const checkMe = (sender: number) => {
+    return sender === user.userId;
+  };
+
+  const makeSection = (chatDatas: MessageType[]) => {
+    const sections: { [key: string]: MessageType[] } = {};
+    chatDatas.forEach(chat => {
+      const monthDate = MakeDateFormat(new Date(chat.created_at));
+      if (Array.isArray(sections[monthDate])) {
+        sections[monthDate].push(chat);
+      } else {
+        sections[monthDate] = [chat];
+      }
+    });
+    return sections;
+  };
+
+  const MakeDateFormat = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return `${year}-${month >= 10 ? month : '0' + month}-${
+      day >= 10 ? day : '0' + day
+    }`;
   };
 
   useEffect(() => {
-    socket.on('receiveMsg', (user: string, msg: string) => {
+    socket.on('receiveMsg', (user: number, msg: string) => {
       const isMe = checkMe(user);
       const bottom =
         (parent.current?.scrollHeight as number) -
@@ -104,7 +156,7 @@ export default function ChatList({
         ];
       });
 
-      if (isMe || checkBetweenFromTo(bottom, 0, 3)) {
+      if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
         messageEndRef.current?.scrollIntoView({
           behavior: 'auto',
           block: 'start',
@@ -119,7 +171,8 @@ export default function ChatList({
     observer
   ) => {
     const target = entry[0];
-    if (target.isIntersecting) {
+    if (target.isIntersecting && !isEnd.current) {
+      console.log('hi');
       observer.unobserve(target.target);
       setIsFetch(true);
 
@@ -129,9 +182,13 @@ export default function ChatList({
           `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}`,
           createQueryString({
             cursor: cursor.current,
-            limit: 15
+            limit: LIMIT
           })
         );
+        if (result.length < LIMIT) {
+          isEnd.current = true;
+          observer.unobserve(target.target);
+        }
         const manufacturedChats = manufactureChats(result);
         cursor.current = result[result.length - 1].id;
         setChatDatas((chatDatas: MessageType[]) => {
@@ -179,3 +236,5 @@ export default function ChatList({
     </div>
   );
 }
+
+const LIMIT = 20;

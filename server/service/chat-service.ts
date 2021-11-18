@@ -11,7 +11,7 @@ const saveChat = async (userId: number, postId: number, msg: string) => {
     msg
   });
   try {
-    const result = db.manager.save(newChat);
+    db.manager.save(newChat);
   } catch (e) {
     console.log(e);
   }
