@@ -7,6 +7,9 @@ import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
+import { getCookie } from '../../../util/cookie';
+import Confirm from '../../../common/confirm';
+import { useHistory } from 'react-router';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 
@@ -51,6 +54,8 @@ type propsType = {
 export function ChatMenu(props: propsType) {
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [hostId, setHostId] = useState<number>(-1);
+  const [isConfirmOn, setIsConfirmOn] = useState(false);
+  const history = useHistory();
 
   const updateHostId = async () => {
     const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/host`;
@@ -62,6 +67,12 @@ export function ChatMenu(props: propsType) {
     updateHostId();
   }, []);
 
+  const handleQuitClick = () => {
+    props.socket.emit('quitRoom', getCookie('user'), postId);
+    setIsConfirmOn(false);
+    history.push(`/post/${postId}`);
+  };
+
   return (
     <div css={ChatMenuStyle}>
       <Close css={CloseBtnStyle} onClick={() => props.onCloseBtnClicked()} />
@@ -72,8 +83,18 @@ export function ChatMenu(props: propsType) {
       />
       <PointView socket={props.socket} participants={props.participants} />
       <div css={QuitBtnContainerStyle}>
-        <Button css={QuitBtnStyle}>나가기</Button>
+        <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
+          나가기
+        </Button>
       </div>
+      <Confirm
+        on={isConfirmOn}
+        title="채팅방 나가기"
+        onCancel={() => setIsConfirmOn(false)}
+        onConfirm={handleQuitClick}
+      >
+        정말 채팅방을 나가시겠습니까?
+      </Confirm>
     </div>
   );
 }

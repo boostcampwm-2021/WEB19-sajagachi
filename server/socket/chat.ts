@@ -106,3 +106,35 @@ export const kickUser = (socket: any, io: Server) => {
     }
   );
 };
+
+export const quitRoom = (socket: any, io: Server) => {
+  socket.on('quitRoom', async (token: string, postId: number) => {
+    const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
+    const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+    const hostId = await postService.getHost(+postId);
+
+    // 호스트가 나가는 경우를 방지
+    if (myId === hostId) {
+      console.log('error 1');
+      return; // 호스트가 나가는 기능은 별도 리스너로 구현
+    }
+
+    // 타깃 유저를 찾기
+    const targetUser = await participantService.getParticipant(postId, myId);
+    if (!targetUser) {
+      console.log('error 2');
+      return; // target user not exists
+    }
+
+    // 타깃 유저에게 포인트 반환
+    const { point } = targetUser;
+    if (point) userService.addPoint(myId, point);
+
+    // 타깃 유저를 참여자 테이블에서 제거
+    await participantService.deleteParticipant(postId, myId);
+
+    // 변경된 참여자 리스트를 클라이언트에 반환
+    const participants = await participantService.getParticipants(postId);
+    io.to(String(postId)).emit('updateParticipants', participants);
+  });
+};
