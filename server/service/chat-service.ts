@@ -23,18 +23,19 @@ const getChats = async (
   cursor: string | null = null
 ) => {
   try {
-    const whereOption =
-      cursor !== null
-        ? { postId: Number(postId), id: LessThan(Number(cursor)) }
-        : { postId: Number(postId) };
     const db = await getDB().get();
-    const chats = db.manager.find(Chat, {
-      where: whereOption,
-      order: {
-        created_at: 'DESC'
-      },
-      take: Number(limit)
-    });
+    let query = `
+      SELECT chat.id as id, chat.userId as userId, chat.postId as postId, chat.msg as msg, chat.created_at as created_at, chat.img as img, user.name as name 
+      FROM chat
+      LEFT JOIN user
+      ON chat.userId = user.id
+    `;
+    let condition = 'WHERE ';
+    if (cursor === null) condition += `chat.postId = ${postId} `;
+    else condition += `chat.postId = ${postId} AND chat.id < ${cursor} `;
+    condition += `ORDER BY chat.created_at DESC `;
+    condition += `LIMIT ${limit}`;
+    const chats = await db.manager.query(query + condition);
     return chats;
   } catch (e) {
     console.log(e);

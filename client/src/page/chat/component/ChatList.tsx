@@ -22,6 +22,7 @@ type ResultChat = {
   msg: string | null;
   img: string | null;
   created_at: string;
+  name: string;
 };
 
 export default function ChatList({
@@ -45,7 +46,7 @@ export default function ChatList({
     return chats
       .map(chat => {
         return {
-          sender: String(chat.userId),
+          sender: chat.name,
           msg: chat.msg,
           time: getAMPMTime(new Date(chat.created_at)),
           isMe: checkMe(chat.userId),
@@ -59,7 +60,7 @@ export default function ChatList({
   };
 
   useEffect(() => {
-    socket.on('receiveMsg', (user: number, msg: string) => {
+    socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
       const isMe = checkMe(user);
       const bottom =
         (parent.current?.scrollHeight as number) -
@@ -70,7 +71,7 @@ export default function ChatList({
         return [
           ...chatDatas,
           {
-            sender: user,
+            sender: userName,
             msg,
             time: getAMPMTime(new Date()),
             isMe,
@@ -107,10 +108,12 @@ export default function ChatList({
             limit: LIMIT
           })
         );
+
         if (result.length < LIMIT) {
           isEnd.current = true;
           observer.unobserve(target.target);
         }
+
         const manufacturedChats = manufactureChats(result);
         cursor.current = result[result.length - 1].id;
         setChatDatas((chatDatas: MessageType[]) => {

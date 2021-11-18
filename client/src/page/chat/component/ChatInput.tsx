@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
+import { getCookie } from '../../../util/cookie';
 
 type ChatInputType = {
   socket: any;
@@ -12,7 +13,7 @@ type ChatInputType = {
 
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-
+  const cookie = getCookie('user');
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
   };
@@ -27,6 +28,8 @@ function ChatInput(props: ChatInputType) {
         'sendMsg',
         props.postId,
         props.user.userId,
+        props.user.userName,
+        cookie,
         inputRef.current.value
       );
       inputRef.current.value = '';
