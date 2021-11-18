@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { LocationOn } from '@mui/icons-material';
 import { useRecoilState } from 'recoil';
 import { locationState } from '../../../store/location';
-import { getAddressByGeocode } from '../../../util/util';
+import { getAddressByGeocode } from '../../../util';
 import { CircularProgress } from '@mui/material';
 
 const LocationIndicatorStyle = css`

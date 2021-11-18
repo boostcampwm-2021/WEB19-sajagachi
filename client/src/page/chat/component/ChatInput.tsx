@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	isValidElement,
+	useCallback,
+	useEffect,
+	useRef,
+	useState
+} from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -33,23 +39,30 @@ type ChatInputType = {
 };
 
 function ChatInput(props: ChatInputType) {
-	const input = useRef<HTMLInputElement | null>(null);
+	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	const checkEnter = useCallback((event: KeyboardEvent) => {
+	const checkEnter = (event: KeyboardEvent) => {
 		return event.code === 'Enter' || event.code === 'NumpadEnter';
-	}, []);
-
-	const sendInput = useCallback((event: any) => {
-		if (input.current !== null && checkEnter(event)) {
+	};
+	const isValidEvent = (event: any) => {
+		if (event.type === 'click') return true;
+		else if (event.type === 'keypress' && checkEnter(event)) return true;
+		else return false;
+	};
+	const sendMessage = () => {
+		if (inputRef.current !== null && inputRef.current.value !== '') {
 			props.socket.emit(
 				'sendMsg',
 				props.postId,
 				props.userId,
-				input.current.value
+				inputRef.current.value
 			);
-			input.current.value = '';
+			inputRef.current.value = '';
 		}
-	}, []);
+	};
+	const sendInput = (event: any) => {
+		if (isValidEvent(event)) sendMessage();
+	};
 
 	return (
 		<div css={ChatInputDiv}>
@@ -66,7 +79,7 @@ function ChatInput(props: ChatInputType) {
 				type="text"
 				placeholder="메시지를 입력해주세요"
 				onKeyPress={sendInput}
-				ref={input}
+				ref={inputRef}
 			/>
 			<SendIcon
 				sx={{
@@ -75,6 +88,7 @@ function ChatInput(props: ChatInputType) {
 					color: '#ebabab',
 					paddingRight: '10px'
 				}}
+				onClick={sendInput}
 			/>
 		</div>
 	);

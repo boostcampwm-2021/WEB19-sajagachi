@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import githubButton from '../../asset/github-button.png';
 import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
-import { fetchGet, fetchPost } from '../../util/util';
+import { fetchGet, fetchPost } from '../../util';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import { LoginUserType } from '../../type';

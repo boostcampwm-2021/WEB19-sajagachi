@@ -5,7 +5,7 @@ import { UserList } from './UserList';
 import PointView from './PointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
-import { fetchGet, parsePath } from '../../../util/util';
+import { fetchGet, parsePath } from '../../../util';
 
 const ChatMenuStyle = css`
 	width: 300px;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
-import { fetchGet, parsePath } from '../../../util/util';
+import { fetchGet, parsePath } from '../../../util';
 import Confirm from '../../../common/confirm';
 
 const UserListStyle = css`

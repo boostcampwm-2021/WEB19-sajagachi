@@ -4,7 +4,7 @@ import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
-import { fetchGet, parsePath } from '../../../util/util';
+import { fetchGet, parsePath } from '../../../util';
 
 const PointViewStyle = css`
 	position: absolute;

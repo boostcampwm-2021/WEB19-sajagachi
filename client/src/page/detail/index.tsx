@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { fetchGet } from '../../util/util';
+import { fetchGet } from '../../util';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
