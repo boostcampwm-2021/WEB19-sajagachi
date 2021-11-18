@@ -1,53 +1,11 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import MyChatMessage from './MyChatMessage';
 import OtherChatMessage from './OtherChatMsg';
 import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
-import { getCurrentTime } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
 import { UserInfoType } from '../../../type';
-
-const ProgressStyle = {
-  color: '#f76a6a',
-  marginLeft: '5px'
-};
-
-const ChatLayout = css`
-  margin: 5px 0px 0px 0px;
-  height: 79vh;
-  background-color: #ffffff;
-  padding-top: 15px;
-  overflow: scroll;
-  overflow-x: hidden;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
-
-const StickyHeader = css`
-  display: flex;
-  justify-content: center;
-  flex: 1;
-  width: 100%;
-  position: sticky;
-  top: 14px;
-  & button {
-    font-weight: bold;
-    font-size: 13px;
-    height: 28px;
-    line-height: 27px;
-    padding: 0 16px;
-    z-index: 2;
-    --saf-0: rgba(var(--sk_foreground_low, 29, 28, 29), 0.13);
-    box-shadow: 0 0 0 1px var(--saf-0), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
-    border-radius: 24px;
-    position: relative;
-    top: -13px;
-    background: white;
-    border: none;
-    outline: none;
-  }
-`;
 
 type MessageType = {
   sender: string;
@@ -64,19 +22,6 @@ type ResultChat = {
   msg: string | null;
   img: string | null;
   created_at: string;
-};
-
-const getAMPMTime = (date: Date) => {
-  let currentHour = date.getHours();
-  const currentMinutes = date.getMinutes();
-  const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
-  currentHour = currentHour < 12 ? currentHour : currentHour - 12;
-  return strAmPm + currentHour + '시 ' + currentMinutes + '분';
-};
-
-const checkBetweenFromTo = (target: number, from: number, to: number) => {
-  if (target >= from && target <= to) return true;
-  return false;
 };
 
 export default function ChatList({
@@ -103,7 +48,7 @@ export default function ChatList({
           sender: String(chat.userId),
           msg: chat.msg,
           time: getAMPMTime(new Date(chat.created_at)),
-          isMe: chat.userId === user.userId ? true : false,
+          isMe: checkMe(chat.userId),
           created_at: chat.created_at
         } as MessageType;
       })
@@ -111,29 +56,6 @@ export default function ChatList({
   };
   const checkMe = (sender: number) => {
     return sender === user.userId;
-  };
-
-  const makeSection = (chatDatas: MessageType[]) => {
-    const sections: { [key: string]: MessageType[] } = {};
-    chatDatas.forEach(chat => {
-      const monthDate = MakeDateFormat(new Date(chat.created_at));
-      if (Array.isArray(sections[monthDate])) {
-        sections[monthDate].push(chat);
-      } else {
-        sections[monthDate] = [chat];
-      }
-    });
-    return sections;
-  };
-
-  const MakeDateFormat = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-
-    return `${year}-${month >= 10 ? month : '0' + month}-${
-      day >= 10 ? day : '0' + day
-    }`;
   };
 
   useEffect(() => {
@@ -150,7 +72,7 @@ export default function ChatList({
           {
             sender: user,
             msg,
-            time: getCurrentTime(),
+            time: getAMPMTime(new Date()),
             isMe
           }
         ];
@@ -220,20 +142,106 @@ export default function ChatList({
     };
   }, []);
 
+  const chatSections = makeSection(chatDatas);
   return (
     <div css={ChatLayout} ref={parent}>
       {isFetch && <CircularProgress size={25} sx={ProgressStyle} />}
       <div ref={loader} />
-      {chatDatas.map((chat: MessageType) => {
-        return chat.isMe ? (
-          <MyChatMessage msgData={chat} />
-        ) : (
-          <OtherChatMessage msgData={chat} />
+      {Object.entries(chatSections).map(([date, chats]) => {
+        return (
+          <div key={date}>
+            <div css={StickyHeader}>
+              <button>{date}</button>
+            </div>
+            {chats.map((chat: MessageType) => {
+              return chat.isMe ? (
+                <MyChatMessage msgData={chat} />
+              ) : (
+                <OtherChatMessage msgData={chat} />
+              );
+            })}
+          </div>
         );
       })}
-      <div key="messageEndDiv" ref={messageEndRef}></div>
+
+      <div key="messageEndDiv" ref={messageEndRef} />
     </div>
   );
 }
 
 const LIMIT = 20;
+
+const ProgressStyle = {
+  color: '#f76a6a',
+  marginLeft: '5px'
+};
+
+const ChatLayout = css`
+  margin: 5px 0px 0px 0px;
+  height: 79vh;
+  background-color: #ffffff;
+  padding-top: 15px;
+  overflow: scroll;
+  overflow-x: hidden;
+  padding-left: 20px;
+  padding-right: 20px;
+`;
+
+const StickyHeader = css`
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  position: sticky;
+  top: 14px;
+  & button {
+    font-weight: bold;
+    font-size: 13px;
+    height: 28px;
+    line-height: 27px;
+    padding: 0 16px;
+    z-index: 2;
+    border-radius: 24px;
+    position: relative;
+    top: -13px;
+    background: white;
+    border: 1px solid black;
+    outline: none;
+  }
+`;
+
+const getAMPMTime = (date: Date) => {
+  let currentHour = date.getHours();
+  const currentMinutes = date.getMinutes();
+  const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
+  currentHour = currentHour < 12 ? currentHour : currentHour - 12;
+  return strAmPm + currentHour + '시 ' + currentMinutes + '분';
+};
+
+const checkBetweenFromTo = (target: number, from: number, to: number) => {
+  if (target >= from && target <= to) return true;
+  return false;
+};
+
+const MakeDateFormat = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month >= 10 ? month : '0' + month}-${
+    day >= 10 ? day : '0' + day
+  }`;
+};
+
+const makeSection = (chatDatas: MessageType[]) => {
+  const sections: { [key: string]: MessageType[] } = {};
+  chatDatas.forEach(chat => {
+    const monthDate = MakeDateFormat(new Date(chat.created_at));
+    if (Array.isArray(sections[monthDate])) {
+      sections[monthDate].push(chat);
+    } else {
+      sections[monthDate] = [chat];
+    }
+  });
+  return sections;
+};
