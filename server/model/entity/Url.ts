@@ -3,12 +3,12 @@ import { Post } from './Post';
 
 @Entity()
 export class Url {
-	@PrimaryColumn('int')
-	postId!: number;
+  @PrimaryColumn('int')
+  postId!: number;
 
-	@PrimaryColumn('varchar', { length: 200 })
-	url!: string;
+  @PrimaryColumn('varchar', { length: 200 })
+  url!: string;
 
-	@ManyToOne(() => Post, post => post.urls, { onDelete: 'CASCADE' })
-	post!: Post;
+  @ManyToOne(() => Post, post => post.urls, { onDelete: 'CASCADE' })
+  post!: Post;
 }

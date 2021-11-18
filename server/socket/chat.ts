@@ -2,74 +2,139 @@ import { Server } from 'socket.io';
 import chatService from '../service/chat-service';
 import participantService from '../service/participant-service';
 import userService from '../service/user-service';
+import jwt from 'jsonwebtoken';
+import { TokenType } from '../type';
+import postService from '../service/post-service';
 
 export const joinRoom = (socket: any, io: Server) => {
-	socket.on('joinRoom', (postId: number, userId: number) => {
-		console.log('user: ' + userId + ' has entered room: ' + postId);
-		socket.join(String(postId));
-		const joinMsg = `user ${userId} has join room ${postId}`;
-		io.to(String(postId)).emit('afterJoin', joinMsg);
-	});
+  socket.on('joinRoom', (postId: number, userId: number) => {
+    console.log('user: ' + userId + ' has entered room: ' + postId);
+    socket.join(String(postId));
+    const joinMsg = `user ${userId} has join room ${postId}`;
+    io.to(String(postId)).emit('afterJoin', joinMsg);
+  });
 };
 
 export const leaveRoom = (socket: any, io: Server) => {
-	socket.on('leaveRoom', (postId: number, userId: number) => {
-		console.log('user: ' + userId + ' has leaved room: ' + postId);
-		socket.leave(String(postId));
-		const leaveMsg = `user ${userId} has leaved`;
-		io.to(String(postId)).emit('afterLeave', leaveMsg);
-	});
+  socket.on('leaveRoom', (postId: number, userId: number) => {
+    console.log('user: ' + userId + ' has leaved room: ' + postId);
+    socket.leave(String(postId));
+    const leaveMsg = `user ${userId} has leaved`;
+    io.to(String(postId)).emit('afterLeave', leaveMsg);
+  });
 };
 
 export const sendMsg = (socket: any, io: Server) => {
-	socket.on('sendMsg', (postId: number, userId: number, msg: string) => {
-		// 채팅을 보낸 user 정보와 msg를 보내줌 => 객체로 만들어진 시간은 여기서 만들어서 보내줘야할 것 같음
-		chatService.saveChat(userId, postId, msg);
-		io.to(String(postId)).emit('receiveMsg', userId, msg);
-	});
+  socket.on('sendMsg', (postId: number, userId: number, msg: string) => {
+    // 채팅을 보낸 user 정보와 msg를 보내줌 => 객체로 만들어진 시간은 여기서 만들어서 보내줘야할 것 같음
+    chatService.saveChat(userId, postId, msg);
+    io.to(String(postId)).emit('receiveMsg', userId, msg);
+  });
 };
 
 export const confirmPurchase = (socket: any, io: Server) => {
-	socket.on(
-		'point confirm',
-		async (postId: number, userId: number, sendPoint: number) => {
-			const user = await userService.findById(userId);
-			if (user === undefined)
-				socket.emit('purchase error', '사용자 정보 에러');
-			else if (user.point < sendPoint)
-				socket.emit('purchase error', '잔여 포인트 부족');
-			else {
-				userService.usePoint(userId, user.point, sendPoint);
-				participantService.updatePoint(postId, userId, sendPoint);
-				io.to(String(postId)).emit(
-					'purchase confirm',
-					userId,
-					sendPoint
-				);
-			}
-		}
-	);
+  socket.on(
+    'point confirm',
+    async (postId: number, userId: number, sendPoint: number) => {
+      const user = await userService.findById(userId);
+      if (user === undefined) socket.emit('purchase error', '사용자 정보 에러');
+      else if (user.point < sendPoint)
+        socket.emit('purchase error', '잔여 포인트 부족');
+      else {
+        userService.usePoint(userId, user.point, sendPoint);
+        participantService.updatePoint(postId, userId, sendPoint);
+        io.to(String(postId)).emit('purchase confirm', userId, sendPoint);
+      }
+    }
+  );
 };
 
 export const cancelPurchase = (socket: any, io: Server) => {
-	socket.on('point cancel', async (postId: number, userId: number) => {
-		const user = await userService.findById(userId);
-		if (user === undefined)
-			socket.emit('purchase error', '사용자 정보 에러');
-		else {
-			const participant = await participantService.getParticipant(
-				postId,
-				userId
-			);
-			if (participant === undefined)
-				socket.emit('purchase error', '참여 정보 에러');
-			else if (participant.point === null)
-				socket.emit('purchase error', '참여 정보 없음');
-			else {
-				participantService.updatePoint(postId, userId, null);
-				userService.addPoint(userId, participant.point);
-				io.to(String(postId)).emit('purchase cancel', userId);
-			}
-		}
-	});
+  socket.on('point cancel', async (postId: number, userId: number) => {
+    const user = await userService.findById(userId);
+    if (user === undefined) socket.emit('purchase error', '사용자 정보 에러');
+    else {
+      const participant = await participantService.getParticipant(
+        postId,
+        userId
+      );
+      if (participant === undefined)
+        socket.emit('purchase error', '참여 정보 에러');
+      else if (participant.point === null)
+        socket.emit('purchase error', '참여 정보 없음');
+      else {
+        participantService.updatePoint(postId, userId, null);
+        userService.addPoint(userId, participant.point);
+        io.to(String(postId)).emit('purchase cancel', userId);
+      }
+    }
+  });
+};
+
+export const kickUser = (socket: any, io: Server) => {
+  socket.on(
+    'kickUser',
+    async (token: string, postId: number, targetUserId: number) => {
+      const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
+      const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+      const hostId = await postService.getHost(+postId);
+
+      // 권한 체크
+      if (myId !== hostId || hostId === targetUserId) {
+        return; // no authority
+      }
+
+      // 타깃 유저를 찾기
+      const targetUser = await participantService.getParticipant(
+        postId,
+        targetUserId
+      );
+      if (!targetUser) {
+        return; // target user not exists
+      }
+
+      // 타깃 유저에게 포인트 반환
+      const { point } = targetUser;
+      if (point) userService.addPoint(targetUserId, point);
+
+      // 타깃 유저를 참여자 테이블에서 제거
+      await participantService.deleteParticipant(postId, targetUserId);
+
+      // 변경된 참여자 리스트를 클라이언트에 반환
+      const participants = await participantService.getParticipants(postId);
+      io.to(String(postId)).emit('updateParticipants', participants);
+    }
+  );
+};
+
+export const quitRoom = (socket: any, io: Server) => {
+  socket.on('quitRoom', async (token: string, postId: number) => {
+    const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
+    const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+    const hostId = await postService.getHost(+postId);
+
+    // 호스트가 나가는 경우를 방지
+    if (myId === hostId) {
+      console.log('error 1');
+      return; // 호스트가 나가는 기능은 별도 리스너로 구현
+    }
+
+    // 타깃 유저를 찾기
+    const targetUser = await participantService.getParticipant(postId, myId);
+    if (!targetUser) {
+      console.log('error 2');
+      return; // target user not exists
+    }
+
+    // 타깃 유저에게 포인트 반환
+    const { point } = targetUser;
+    if (point) userService.addPoint(myId, point);
+
+    // 타깃 유저를 참여자 테이블에서 제거
+    await participantService.deleteParticipant(postId, myId);
+
+    // 변경된 참여자 리스트를 클라이언트에 반환
+    const participants = await participantService.getParticipants(postId);
+    io.to(String(postId)).emit('updateParticipants', participants);
+  });
 };

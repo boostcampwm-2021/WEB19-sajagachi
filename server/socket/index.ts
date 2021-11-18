@@ -1,23 +1,32 @@
 import { Server } from 'socket.io';
 import 'dotenv/config';
 import { Application } from 'express';
-import { cancelPurchase, confirmPurchase, joinRoom, sendMsg } from './chat';
+import {
+  cancelPurchase,
+  confirmPurchase,
+  joinRoom,
+  sendMsg,
+  kickUser,
+  quitRoom
+} from './chat';
 
 export const socketInit = (server: any, app: Application) => {
-	const io = new Server(server, {
-		cors: {
-			origin: process.env.CLIENT_URL
-		}
-	});
-	app.set('io', io);
-	io.on('connection', (socket: any) => {
-		joinRoom(socket, io);
-		sendMsg(socket, io);
-		confirmPurchase(socket, io);
-		cancelPurchase(socket, io);
+  const io = new Server(server, {
+    cors: {
+      origin: process.env.CLIENT_URL
+    }
+  });
+  app.set('io', io);
+  io.on('connection', (socket: any) => {
+    joinRoom(socket, io);
+    sendMsg(socket, io);
+    confirmPurchase(socket, io);
+    cancelPurchase(socket, io);
+    kickUser(socket, io);
+    quitRoom(socket, io);
 
-		socket.on('disconnect', () => {
-			console.log('socket disconnected!');
-		});
-	});
+    socket.on('disconnect', () => {
+      console.log('socket disconnected!');
+    });
+  });
 };

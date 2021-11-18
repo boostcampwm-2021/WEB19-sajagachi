@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/', parsePreviewLinkData);
 
 const errorHandler = (err: any, req: Request, res: Response, next: any) => {
-	res.status(err.statusCode).json(err.message);
+  res.status(err.statusCode).json(err.message);
 };
 router.use(errorHandler);
 
