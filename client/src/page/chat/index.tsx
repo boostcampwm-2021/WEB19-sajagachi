@@ -84,6 +84,8 @@ function Chat() {
       });
     });
 
+    socketRef.current.emit('enterRoom');
+
     return () => {
       socketRef.current.disconnect();
     };
