@@ -4,6 +4,8 @@ import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
 import { fetchGet, parsePath } from '../../../util';
 import Confirm from '../../../common/confirm';
+import { Socket } from 'socket.io-client';
+import { getCookie } from '../../../util/cookie';
 
 const UserListStyle = css`
   padding: 0 15px;
@@ -68,7 +70,13 @@ type ParticipantType = {
   };
 };
 
-export function UserList({ hostId }: { hostId: number }) {
+export function UserList({
+  socket,
+  hostId
+}: {
+  socket: Socket;
+  hostId: number;
+}) {
   const [myId, setMyId] = useState<number>(-1); // 페이지 컴포넌트에서 가져오도록 변경
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
@@ -100,6 +108,7 @@ export function UserList({ hostId }: { hostId: number }) {
             item={user}
             myId={myId}
             hostId={hostId}
+            socket={socket}
           />
         ))}
       </ul>
@@ -109,13 +118,20 @@ export function UserList({ hostId }: { hostId: number }) {
 function UserListItem({
   item,
   myId,
-  hostId
+  hostId,
+  socket
 }: {
   item: ParticipantType;
   myId: number;
   hostId: number;
+  socket: Socket;
 }) {
+  const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
+  const handleUserKick = () => {
+    socket.emit('kickUser', getCookie('user'), postId, item.user.id);
+    setIsConfirmOn(false);
+  };
 
   return (
     <li css={UserListItemStyle}>
@@ -137,7 +153,7 @@ function UserListItem({
         on={isConfirmOn}
         title="사용자 내보내기"
         onCancel={() => setIsConfirmOn(false)}
-        onConfirm={() => setIsConfirmOn(false)}
+        onConfirm={handleUserKick}
       >
         정말 사용자를 채팅에서 내보내시겠습니까?
       </Confirm>

@@ -61,7 +61,7 @@ export function ChatMenu(props: propsType) {
   return (
     <div css={ChatMenuStyle}>
       <Close css={CloseBtnStyle} onClick={() => props.onCloseBtnClicked()} />
-      <UserList hostId={hostId} />
+      <UserList socket={props.socket} hostId={hostId} />
       <PointView socket={props.socket} />
       <div css={QuitBtnContainerStyle}>
         <Button css={QuitBtnStyle}>나가기</Button>
