@@ -3,9 +3,10 @@ import { Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
 import { fetchPost } from '../../../util';
+import { LoginUserType } from '../../../type';
 
 type GroupBuyButtonType = {
-  loginId: number | undefined;
+  login: LoginUserType;
   postId: number;
   participantCnt: number;
   capacity: number;
@@ -13,7 +14,7 @@ type GroupBuyButtonType = {
 };
 
 export default function GroupBuyButton({
-  loginId,
+  login,
   postId,
   participantCnt,
   capacity,
@@ -26,10 +27,10 @@ export default function GroupBuyButton({
       (capacity !== null ? (participantCnt >= capacity ? true : false) : false)
   );
   const clickHandler = useCallback(async () => {
-    if (loginId === undefined) setIsLoginModalOn(true);
+    if (!login.isSigned) setIsLoginModalOn(true);
     else {
       const postBody = {
-        userId: loginId,
+        userId: login.id,
         postId
       };
       const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;

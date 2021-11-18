@@ -9,6 +9,7 @@ import { fetchGet, getCurrentTime, parsePath } from '../../util';
 import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
+import { useHistory } from 'react-router';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -19,20 +20,31 @@ const ChatContainer = css`
 `;
 
 function Chat() {
+  const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
+  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
 
   const updateParticipants = async (postId: number) => {
     const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-    const userLoginId = await fetchGet(loginUrl);
+    const userLogin = loginUser.isSigned ? loginUser : await fetchGet(loginUrl);
+    if (!loginUser.isSigned) {
+      if (isNaN(userLogin.id)) {
+        history.push(`/post/${postId}`);
+      } else
+        setLoginUser({
+          id: userLogin.id,
+          name: userLogin.name,
+          isSigned: true
+        });
+    }
     const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
     const result = await fetchGet(participantUrl);
-    if (isNaN(userLoginId)) console.log('login 필요합니다.');
 
     const participantMe = result.find(
-      (participant: ParticipantType) => participant.user.id === userLoginId
+      (participant: ParticipantType) => participant.user.id === userLogin.id
     );
     if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
     if (participantMe !== undefined) {
