@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
-import { fetchPost } from '../../../util/util';
+import { fetchPost } from '../../../util';
 
 type GroupBuyButtonType = {
 	loginId: number | undefined;

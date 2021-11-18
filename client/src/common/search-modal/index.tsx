@@ -13,7 +13,7 @@ import {
 	fetchGet,
 	finishedToBool,
 	getAddressByGeocode
-} from '../../util/util';
+} from '../../util';
 import { LocationType } from '../../type';
 
 const searchModal = css`

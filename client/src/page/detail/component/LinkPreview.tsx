@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { Skeleton } from '@mui/material';
 import noImg from '../../../asset/noImg.jpg';
-import { fetchGet } from '../../../util/util';
+import { fetchGet } from '../../../util';
 
 interface PreviewType {
 	title?: string | undefined;
@@ -78,7 +78,12 @@ export default function LinkPreview({ url }: { url: string }) {
 	}, [url]);
 
 	return (
-		<a css={PreviewContainerStyle} target="_blank" href={url}>
+		<a
+			css={PreviewContainerStyle}
+			target="_blank"
+			href={url}
+			rel="noreferrer"
+		>
 			<div style={{ flex: '3', marginRight: '5px' }}>
 				{!isLoading ? (
 					<>

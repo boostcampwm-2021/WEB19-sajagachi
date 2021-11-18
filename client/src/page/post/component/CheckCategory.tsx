@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import Chip from '@mui/material/Chip';
-import { fetchGet } from '../../../util/util';
+import { fetchGet } from '../../../util';
 
 const CategoryStyle = css`
 	width: 90%;

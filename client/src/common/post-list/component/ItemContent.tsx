@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/react';
 import GroupIcon from '@mui/icons-material/Group';
 import { ItemType } from '../../../type';
-import { dateFormat } from '../../../util/util';
+import { dateFormat } from '../../../util';
 import { Chip } from '@mui/material';
 import { Done } from '@mui/icons-material';
 

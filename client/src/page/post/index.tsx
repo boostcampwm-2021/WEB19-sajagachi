@@ -13,7 +13,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import { fetchPost } from '../../util/util';
+import { fetchPost } from '../../util';
 import { loginUserState } from '../../store/login';
 
 const URL_REGX: RegExp =

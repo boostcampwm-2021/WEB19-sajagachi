@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import {
-	createQueryString,
-	decomposeQueryString,
-	fetchGet
-} from '../../util/util';
+import { createQueryString, decomposeQueryString, fetchGet } from '../../util';
 import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';

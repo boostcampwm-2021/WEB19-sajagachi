@@ -5,7 +5,7 @@ import ChatInput from './component/ChatInput';
 import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
 import io from 'socket.io-client';
-import { getCurrentTime } from '../../util/util';
+import { getCurrentTime } from '../../util';
 
 const ChatContainer = css`
 	margin-left: auto;
