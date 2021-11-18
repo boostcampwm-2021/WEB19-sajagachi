@@ -5,7 +5,8 @@ import ChatInput from './component/ChatInput';
 import MyChatMessage from './component/MyChatMessage';
 import OtherChatMessage from './component/OtherChatMsg';
 import io from 'socket.io-client';
-import { getCurrentTime } from '../../util';
+import { fetchGet, getCurrentTime, parsePath } from '../../util';
+import { ParticipantType } from '../../type';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -33,12 +34,20 @@ type MessageType = {
 };
 
 function Chat(props: any) {
-  const userId = props.location.state.userId;
-  const postId = props.location.state.postId;
-
+  const userId = '121212';
+  const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
   const [chatDatas, setChatDatas] = useState<any>([]);
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  const [participants, setParticipants] = useState<ParticipantType[]>([]);
+
+  const updateParticipants = async (postId: number) => {
+    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+    const result = await fetchGet(url);
+    setParticipants(result);
+  };
+
   const checkMe = (sender: string) => {
     return sender === userId;
   };
@@ -61,6 +70,7 @@ function Chat(props: any) {
         ];
       });
     });
+    updateParticipants(postId);
     return () => {
       socketRef.current.disconnect();
     };
@@ -79,6 +89,7 @@ function Chat(props: any) {
       <ChatBar
         title={'타이틀이 들어갈 공간입니당아아아'}
         socket={socketRef.current}
+        participants={participants}
       />
       <div css={ChatLayout}>
         {chatDatas.map((chat: MessageType) => {
