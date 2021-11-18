@@ -125,7 +125,7 @@ function UserListItem({
       {hostId === item.user.id && <img src={crown} css={UserHostCrownStyle} />}
       <img src={item.user.img} css={UserAvatarStyle} />
       <p css={UserNameStyle}>{item.user.name}</p>
-      {hostId === myId && (
+      {hostId === myId && hostId !== item.user.id && (
         <button css={UserKickBtnStyle} onClick={() => setIsConfirmOn(true)}>
           내보내기
         </button>
