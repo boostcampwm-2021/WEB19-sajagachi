@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
-import MyChatMessage from './component/MyChatMessage';
-import OtherChatMessage from './component/OtherChatMsg';
+import ChatList from './component/ChatList';
 import io from 'socket.io-client';
+
 import { fetchGet, getCurrentTime, parsePath } from '../../util';
 import { ParticipantType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
+
 
 const ChatContainer = css`
   margin-left: auto;
@@ -17,32 +18,12 @@ const ChatContainer = css`
   height: 100%;
   position: relative;
 `;
-const ChatLayout = css`
-  margin: 5px 0px 0px 0px;
-  height: 79vh;
-  background-color: #ffffff;
-  padding-top: 15px;
-  overflow: scroll;
-  overflow-x: hidden;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: boolean;
-};
 
 function Chat(props: any) {
   const userId = '121212';
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
-  const [chatDatas, setChatDatas] = useState<any>([]);
-  const messageEndRef = useRef<HTMLDivElement>(null);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
-
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
 
   const updateParticipants = async (postId: number) => {
@@ -51,27 +32,10 @@ function Chat(props: any) {
     setParticipants(result);
   };
 
-  const checkMe = (sender: string) => {
-    return sender === userId;
-  };
-
   useEffect(() => {
     socketRef.current.emit('joinRoom', postId, userId);
     socketRef.current.on('afterJoin', (msg: string) => {
       console.log(msg);
-    });
-    socketRef.current.on('receiveMsg', (user: string, msg: string) => {
-      setChatDatas((chatDatas: MessageType[]) => {
-        return [
-          ...chatDatas,
-          {
-            sender: user,
-            msg,
-            time: getCurrentTime(),
-            isMe: checkMe(user)
-          }
-        ];
-      });
     });
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
@@ -103,18 +67,11 @@ function Chat(props: any) {
     });
 
     updateParticipants(postId);
+
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
-
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    });
-  }, [chatDatas]);
 
   return (
     <div css={ChatContainer}>
@@ -123,16 +80,7 @@ function Chat(props: any) {
         socket={socketRef.current}
         participants={participants}
       />
-      <div css={ChatLayout}>
-        {chatDatas.map((chat: MessageType) => {
-          return chat.isMe ? (
-            <MyChatMessage msgData={chat} />
-          ) : (
-            <OtherChatMessage msgData={chat} />
-          );
-        })}
-        <div key="messageEndDiv" ref={messageEndRef}></div>
-      </div>
+      <ChatList postId={postId} userId={userId} socket={socketRef.current} />
       <ChatInput socket={socketRef.current} postId={postId} userId={userId} />
     </div>
   );
