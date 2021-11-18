@@ -73,7 +73,8 @@ export default function ChatList({
             sender: user,
             msg,
             time: getAMPMTime(new Date()),
-            isMe
+            isMe,
+            created_at: new Date().toString()
           }
         ];
       });
