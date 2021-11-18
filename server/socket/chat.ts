@@ -2,6 +2,9 @@ import { Server } from 'socket.io';
 import chatService from '../service/chat-service';
 import participantService from '../service/participant-service';
 import userService from '../service/user-service';
+import jwt from 'jsonwebtoken';
+import { TokenType } from '../type';
+import postService from '../service/post-service';
 
 export const joinRoom = (socket: any, io: Server) => {
   socket.on('joinRoom', (postId: number, userId: number) => {
@@ -66,4 +69,40 @@ export const cancelPurchase = (socket: any, io: Server) => {
       }
     }
   });
+};
+
+export const kickUser = (socket: any, io: Server) => {
+  socket.on(
+    'kickUser',
+    async (token: string, postId: number, targetUserId: number) => {
+      const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
+      const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+      const hostId = await postService.getHost(+postId);
+
+      // 권한 체크
+      if (myId !== hostId || hostId === targetUserId) {
+        return; // no authority
+      }
+
+      // 타깃 유저를 찾기
+      const targetUser = await participantService.getParticipant(
+        postId,
+        targetUserId
+      );
+      if (!targetUser) {
+        return; // target user not exists
+      }
+
+      // 타깃 유저에게 포인트 반환
+      const { point } = targetUser;
+      if (point) userService.addPoint(targetUserId, point);
+
+      // 타깃 유저를 참여자 테이블에서 제거
+      await participantService.deleteParticipant(postId, targetUserId);
+
+      // 변경된 참여자 리스트를 클라이언트에 반환
+      const participants = await participantService.getParticipants(postId);
+      io.to(String(postId)).emit('updateParticipants', participants);
+    }
+  );
 };

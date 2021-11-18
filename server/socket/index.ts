@@ -1,7 +1,13 @@
 import { Server } from 'socket.io';
 import 'dotenv/config';
 import { Application } from 'express';
-import { cancelPurchase, confirmPurchase, joinRoom, sendMsg } from './chat';
+import {
+  cancelPurchase,
+  confirmPurchase,
+  joinRoom,
+  sendMsg,
+  kickUser
+} from './chat';
 
 export const socketInit = (server: any, app: Application) => {
   const io = new Server(server, {
@@ -15,6 +21,7 @@ export const socketInit = (server: any, app: Application) => {
     sendMsg(socket, io);
     confirmPurchase(socket, io);
     cancelPurchase(socket, io);
+    kickUser(socket, io);
 
     socket.on('disconnect', () => {
       console.log('socket disconnected!');

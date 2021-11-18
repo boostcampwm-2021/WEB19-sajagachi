@@ -8,6 +8,13 @@ import React, {
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { UserInfoType } from '../../../type';
+
+type ChatInputType = {
+  socket: any;
+  postId: number;
+  user: UserInfoType;
+};
 
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -21,12 +28,12 @@ function ChatInput(props: ChatInputType) {
     else return false;
   };
   const sendMessage = () => {
-    console.log(props.userId);
+    console.log(props.user);
     if (inputRef.current !== null && inputRef.current.value !== '') {
       props.socket.emit(
         'sendMsg',
         props.postId,
-        props.userId,
+        props.user,
         inputRef.current.value
       );
       inputRef.current.value = '';
@@ -89,10 +96,5 @@ const ChatInputDiv = css`
   left: 0;
   right: 0;
 `;
-type ChatInputType = {
-  socket: any;
-  postId: number;
-  userId: string;
-};
 
 export default ChatInput;

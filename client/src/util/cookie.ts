@@ -1,7 +1,6 @@
 import { Cookies } from 'react-cookie';
 
-const cookies = new Cookies();
-
 export const getCookie = (name: string) => {
+  const cookies = new Cookies();
   return cookies.get(name);
 };
