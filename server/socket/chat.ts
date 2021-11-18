@@ -7,11 +7,14 @@ import { TokenType } from '../type';
 import postService from '../service/post-service';
 
 export const joinRoom = (socket: any, io: Server) => {
-  socket.on('joinRoom', (postId: number, userId: number) => {
+  socket.on('joinRoom', async (postId: number, userId: number) => {
     console.log('user: ' + userId + ' has entered room: ' + postId);
     socket.join(String(postId));
     const joinMsg = `user ${userId} has join room ${postId}`;
     io.to(String(postId)).emit('afterJoin', joinMsg);
+
+    const participants = await participantService.getParticipants(postId);
+    io.to(String(postId)).emit('updateParticipants', participants);
   });
 };
 
