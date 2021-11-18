@@ -31,4 +31,5 @@ export interface QueryStringType {
   lat?: number;
   long?: number;
   search?: string;
+  cursor?: number;
 }
