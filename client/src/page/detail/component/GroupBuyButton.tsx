@@ -11,6 +11,7 @@ type GroupBuyButtonType = {
   participantCnt: number;
   capacity: number;
   finished: boolean;
+  isParticipate: boolean;
 };
 
 export default function GroupBuyButton({
@@ -18,13 +19,14 @@ export default function GroupBuyButton({
   postId,
   participantCnt,
   capacity,
-  finished
+  finished,
+  isParticipate
 }: GroupBuyButtonType) {
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
   const [buttonState, setButtonState] = useState(
     finished ||
-      (capacity !== null ? (participantCnt >= capacity ? true : false) : false)
+      (capacity !== null && participantCnt >= capacity && !isParticipate)
   );
   const clickHandler = useCallback(async () => {
     if (!login.isSigned) setIsLoginModalOn(true);
@@ -61,7 +63,8 @@ export default function GroupBuyButton({
       >
         {finished
           ? '모집 종료'
-          : `공동 구매 (${participantCnt} / ${capacity ?? ' - '})`}
+          : (isParticipate ? '참여중' : '공동 구매') +
+            ` (${participantCnt} / ${capacity ?? ' - '})`}
       </Button>
       {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
     </>

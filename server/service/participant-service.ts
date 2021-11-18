@@ -63,11 +63,20 @@ const deleteParticipant = async (postId: number, userId: number) => {
   return result;
 };
 
+const checkParticipation = async (postId: number, userId: number) => {
+  const db = await getDB().get();
+  const result = await db.manager.findOne(Participant, {
+    where: { postId, userId }
+  });
+  return !(result === undefined);
+};
+
 export default {
   getParticipantNum,
   getParticipants,
   saveParticipant,
   getParticipant,
   updatePoint,
-  deleteParticipant
+  deleteParticipant,
+  checkParticipation
 };
