@@ -57,8 +57,8 @@ export default function ChatList({
   userId,
   socket
 }: {
-  postId: String;
-  userId: String;
+  postId: number;
+  userId: string;
   socket: Socket;
 }) {
   const [isFetch, setIsFetch] = useState(false);

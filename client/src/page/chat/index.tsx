@@ -10,7 +10,6 @@ import { ParticipantType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 
-
 const ChatContainer = css`
   margin-left: auto;
   margin-right: auto;
@@ -80,7 +79,7 @@ function Chat(props: any) {
         socket={socketRef.current}
         participants={participants}
       />
-      <ChatList postId={postId} userId={userId} socket={socketRef.current} />
+      {/* <ChatList postId={postId} userId={userId} socket={socketRef.current} /> */}
       <ChatInput socket={socketRef.current} postId={postId} userId={userId} />
     </div>
   );
