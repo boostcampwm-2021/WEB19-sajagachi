@@ -31,13 +31,19 @@ export interface QueryStringType {
   lat?: number;
   long?: number;
   search?: string;
+  cursor?: number;
 }
 
 export type ParticipantType = {
-  point: number;
+  point: number | null;
   user: {
     id: number;
     name: string;
     img: string;
   };
+};
+
+export type UserInfoType = {
+  userId: number;
+  userName: string;
 };

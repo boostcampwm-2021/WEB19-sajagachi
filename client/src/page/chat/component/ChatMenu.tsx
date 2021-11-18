@@ -10,6 +10,8 @@ import { ParticipantType } from '../../../type';
 import { getCookie } from '../../../util/cookie';
 import Confirm from '../../../common/confirm';
 import { useHistory } from 'react-router';
+import { useRecoilValue } from 'recoil';
+import { loginUserState } from '../../../store/login';
 
 const ChatMenuStyle = css`
   width: 300px;
@@ -79,7 +81,7 @@ export function ChatMenu(props: propsType) {
         hostId={hostId}
         participants={props.participants}
       />
-      <PointView socket={props.socket} />
+      <PointView socket={props.socket} participants={props.participants} />
       <div css={QuitBtnContainerStyle}>
         <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
           나가기

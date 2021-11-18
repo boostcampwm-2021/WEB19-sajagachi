@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
-import MyChatMessage from './component/MyChatMessage';
-import OtherChatMessage from './component/OtherChatMsg';
+import ChatList from './component/ChatList';
 import io from 'socket.io-client';
+
 import { fetchGet, getCurrentTime, parsePath } from '../../util';
-import { ParticipantType } from '../../type';
+import { ParticipantType, UserInfoType } from '../../type';
+import { useRecoilState } from 'recoil';
+import { loginUserState } from '../../store/login';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -15,96 +17,93 @@ const ChatContainer = css`
   height: 100%;
   position: relative;
 `;
-const ChatLayout = css`
-  margin: 5px 0px 0px 0px;
-  height: 79vh;
-  background-color: #ffffff;
-  padding-top: 15px;
-  overflow: scroll;
-  overflow-x: hidden;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
 
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: boolean;
-};
-
-function Chat(props: any) {
-  const userId = '121212';
+function Chat() {
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
-  const [chatDatas, setChatDatas] = useState<any>([]);
-  const messageEndRef = useRef<HTMLDivElement>(null);
-
+  const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
 
   const updateParticipants = async (postId: number) => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(url);
-    setParticipants(result);
+    const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+    const userLoginId = await fetchGet(loginUrl);
+    const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+    const result = await fetchGet(participantUrl);
+    if (isNaN(userLoginId)) console.log('login 필요합니다.');
+
+    const participantMe = result.find(
+      (participant: ParticipantType) => participant.user.id === userLoginId
+    );
+    if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
+    if (participantMe !== undefined) {
+      // 나중에 이조건 없애주기
+      setChatSocket(participantMe.user.id);
+      setUserMe({
+        userId: participantMe.user.id,
+        userName: participantMe.user.name
+      });
+      setParticipants(result);
+    }
   };
 
-  const checkMe = (sender: string) => {
-    return sender === userId;
+  const setChatSocket = (userId: number) => {
+    socketRef.current.emit('joinRoom', postId, userId);
   };
 
   useEffect(() => {
-    socketRef.current.emit('joinRoom', postId, userId);
+    updateParticipants(postId);
     socketRef.current.on('afterJoin', (msg: string) => {
       console.log(msg);
-    });
-    socketRef.current.on('receiveMsg', (user: string, msg: string) => {
-      setChatDatas((chatDatas: MessageType[]) => {
-        return [
-          ...chatDatas,
-          {
-            sender: user,
-            msg,
-            time: getCurrentTime(),
-            isMe: checkMe(user)
-          }
-        ];
-      });
     });
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
     });
-    updateParticipants(postId);
+
+    socketRef.current.on(
+      'purchase confirm',
+      (confirmUserId: number, sendPoint: number) => {
+        setParticipants(prev => {
+          const newParticipants = [...prev];
+          const confirmUser = newParticipants.find(
+            participant => participant.user.id === confirmUserId
+          );
+          if (confirmUser) confirmUser.point = sendPoint;
+          return newParticipants;
+        });
+      }
+    );
+
+    socketRef.current.on('purchase cancel', (cancelUserId: number) => {
+      setParticipants(prev => {
+        const newParticipants = [...prev];
+        const cancelUser = newParticipants.find(
+          participant => participant.user.id === cancelUserId
+        );
+        if (cancelUser) cancelUser.point = null;
+        return newParticipants;
+      });
+    });
+
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    });
-  }, [chatDatas]);
-
   return (
     <div css={ChatContainer}>
-      <ChatBar
-        title={'타이틀이 들어갈 공간입니당아아아'}
-        socket={socketRef.current}
-        participants={participants}
-      />
-      <div css={ChatLayout}>
-        {chatDatas.map((chat: MessageType) => {
-          return chat.isMe ? (
-            <MyChatMessage msgData={chat} />
-          ) : (
-            <OtherChatMessage msgData={chat} />
-          );
-        })}
-        <div key="messageEndDiv" ref={messageEndRef}></div>
-      </div>
-      <ChatInput socket={socketRef.current} postId={postId} userId={userId} />
+      {participants && (
+        <ChatBar
+          title={'타이틀이 들어갈 공간입니당아아아'}
+          socket={socketRef.current}
+          participants={participants}
+        />
+      )}
+      {userMe && (
+        <ChatList postId={postId} user={userMe} socket={socketRef.current} />
+      )}
+      {userMe && (
+        <ChatInput socket={socketRef.current} postId={postId} user={userMe} />
+      )}
     </div>
   );
 }
