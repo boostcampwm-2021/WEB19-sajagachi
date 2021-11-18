@@ -8,9 +8,10 @@ import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import { CircularProgress, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/system';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
 import LocationIndicator from './component/LocationIndicator';
+import { loginUserState } from '../../store/login';
 
 const theme = createTheme({
   palette: {
@@ -39,9 +40,25 @@ function Main() {
   const [alert, setAlert] = useState(false);
   const [isFetch, setIsFetch] = useState(false);
   const location = useRecoilValue(locationState);
+  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
 
   let offset = useRef(0);
   const loader = useRef(null);
+
+  useEffect(() => {
+    if (!loginUser.isSigned) {
+      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+      fetchGet(url).then(userLogin => {
+        if (!isNaN(userLogin.id)) {
+          setLoginUser({
+            id: userLogin.id,
+            name: userLogin.name,
+            isSigned: true
+          });
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setItems([]);
