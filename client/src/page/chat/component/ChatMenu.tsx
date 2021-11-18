@@ -6,6 +6,7 @@ import PointView from './PointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
+import { ParticipantType } from '../../../type';
 
 const ChatMenuStyle = css`
   width: 300px;
@@ -42,6 +43,7 @@ const QuitBtnStyle = css`
 type propsType = {
   onCloseBtnClicked: Function;
   socket: Socket;
+  participants: ParticipantType[];
 };
 
 export function ChatMenu(props: propsType) {

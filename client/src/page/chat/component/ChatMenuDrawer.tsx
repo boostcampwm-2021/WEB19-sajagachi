@@ -4,6 +4,7 @@ import { SwipeableDrawer } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ChatMenu } from './ChatMenu';
 import { Socket } from 'socket.io-client';
+import { ParticipantType } from '../../../type';
 
 const BlurredBackground = css`
   position: fixed;
@@ -17,6 +18,7 @@ const BlurredBackground = css`
 
 type propsType = {
   socket: Socket;
+  participants: ParticipantType[];
 };
 
 export function ChatMenuDrawer(props: propsType) {
@@ -45,6 +47,7 @@ export function ChatMenuDrawer(props: propsType) {
         <ChatMenu
           onCloseBtnClicked={() => setIsMenuOn(false)}
           socket={props.socket}
+          participants={props.participants}
         />
       </SwipeableDrawer>
     </>

@@ -12,11 +12,6 @@ type GroupBuyButtonType = {
   finished: boolean;
 };
 
-const DUMMY_USER = {
-  id: 80206884,
-  name: 'J119_안병웅'
-};
-
 export default function GroupBuyButton({
   loginId,
   postId,
@@ -42,11 +37,7 @@ export default function GroupBuyButton({
       if (result === '해당 공구는 정원이 가득 찼습니다.') {
         alert(result);
         setButtonState(true);
-      } else
-        history.push(`/chat/${postId}`, {
-          userId: loginId,
-          postId
-        });
+      } else history.push(`/chat/${postId}`);
     }
   }, [history]);
   return (
