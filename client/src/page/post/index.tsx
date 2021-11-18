@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import { fetchPost } from '../../util';
 import { loginUserState } from '../../store/login';
+import { useHistory } from 'react-router';
 
 const URL_REGX: RegExp =
   /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
@@ -83,6 +84,7 @@ const capacityDeadline = css`
 `;
 
 function Post() {
+  const history = useHistory();
   const loginUser = useRecoilValue(loginUserState);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -116,7 +118,7 @@ function Post() {
     };
     fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
       data => {
-        window.location.href = `/post/${data}`;
+        history.push(`/post/${data}`);
       }
     );
   }

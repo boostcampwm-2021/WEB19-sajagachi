@@ -172,7 +172,6 @@ export default function ChatList({
   ) => {
     const target = entry[0];
     if (target.isIntersecting && !isEnd.current) {
-      console.log('hi');
       observer.unobserve(target.target);
       setIsFetch(true);
 

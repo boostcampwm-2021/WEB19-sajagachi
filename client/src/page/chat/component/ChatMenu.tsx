@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { Close } from '@mui/icons-material';
 import { UserList } from './UserList';
 import PointView from './PointView';
+import HostPointView from './HostPointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
@@ -52,19 +53,34 @@ type propsType = {
 };
 
 export function ChatMenu(props: propsType) {
+  const FINISHED = 0;
+  const HOST = 1;
+  const NOT_HOST = 2;
+
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [hostId, setHostId] = useState<number>(-1);
+  const loginUser = useRecoilValue(loginUserState);
+  const [pointViewState, setPointViewState] = useState(NOT_HOST);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
   const history = useHistory();
 
   const updateHostId = async () => {
     const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/host`;
     const result = await fetchGet(url);
+    if (+result === loginUser.id) setPointViewState(HOST);
     setHostId(result);
+  };
+
+  const updateFinished = async () => {
+    const url = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/finished`;
+    const { finished } = await fetchGet(url);
+    console.log(finished);
+    if (finished) setPointViewState(FINISHED);
   };
 
   useEffect(() => {
     updateHostId();
+    updateFinished();
   }, []);
 
   const handleQuitClick = () => {
@@ -81,7 +97,22 @@ export function ChatMenu(props: propsType) {
         hostId={hostId}
         participants={props.participants}
       />
-      <PointView socket={props.socket} participants={props.participants} />
+      {
+        [
+          <></>,
+          <HostPointView
+            socket={props.socket}
+            hostId={hostId}
+            participants={props.participants}
+          />,
+          <PointView
+            socket={props.socket}
+            hostId={hostId}
+            participants={props.participants}
+          />
+        ][pointViewState]
+      }
+
       <div css={QuitBtnContainerStyle}>
         <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
           나가기

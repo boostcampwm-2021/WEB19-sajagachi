@@ -53,3 +53,31 @@ export const getHost = async (req: Request, res: Response, next: Function) => {
     next({ statusCode: 500, message: err.message });
   }
 };
+
+export const getPostFinished = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  try {
+    const { postId } = req.params;
+    const finished = await postService.getFinished(+postId);
+    res.json(finished);
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
+
+export const finishPost = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  try {
+    const { postId } = req.params;
+    await postService.updatePostFinished(+postId);
+    res.status(200).send();
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
