@@ -8,7 +8,7 @@ export const login = async (req: Request, res: Response, next: Function) => {
   try {
     let user = await userService.findById(req.body.userId);
     if (user === undefined) user = await userService.signUp(req.body.userId);
-    res.cookie('user', createToken(user), { httpOnly: true });
+    res.cookie('user', createToken(user));
     res.status(201).json({ id: user.id, name: user.name });
   } catch (err: any) {
     next({ statusCode: 401, message: err.message });

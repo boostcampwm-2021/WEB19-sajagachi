@@ -5,6 +5,7 @@ import sseRouter from './sse';
 import linkPreviewRouter from './linkPreview';
 import chatRouter from './chat';
 import loginRouter from './login';
+import userRouter from './user';
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use('/chat', chatRouter);
 router.use('/sse', sseRouter);
 router.use('/previewData', linkPreviewRouter);
 router.use('/login', loginRouter);
+router.use('/user', userRouter);
 
 export default router;

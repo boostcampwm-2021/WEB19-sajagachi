@@ -6,6 +6,9 @@ import PointView from './PointView';
 import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
+import { ParticipantType } from '../../../type';
+import { useRecoilValue } from 'recoil';
+import { loginUserState } from '../../../store/login';
 
 const ChatMenuStyle = css`
   width: 300px;
@@ -42,6 +45,7 @@ const QuitBtnStyle = css`
 type propsType = {
   onCloseBtnClicked: Function;
   socket: Socket;
+  participants: ParticipantType[];
 };
 
 export function ChatMenu(props: propsType) {
@@ -61,8 +65,12 @@ export function ChatMenu(props: propsType) {
   return (
     <div css={ChatMenuStyle}>
       <Close css={CloseBtnStyle} onClick={() => props.onCloseBtnClicked()} />
-      <UserList hostId={hostId} />
-      <PointView socket={props.socket} />
+      <UserList
+        socket={props.socket}
+        hostId={hostId}
+        participants={props.participants}
+      />
+      <PointView socket={props.socket} participants={props.participants} />
       <div css={QuitBtnContainerStyle}>
         <Button css={QuitBtnStyle}>나가기</Button>
       </div>

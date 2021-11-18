@@ -33,3 +33,12 @@ export interface QueryStringType {
   search?: string;
   cursor?: number;
 }
+
+export type ParticipantType = {
+  point: number | null;
+  user: {
+    id: number;
+    name: string;
+    img: string;
+  };
+};

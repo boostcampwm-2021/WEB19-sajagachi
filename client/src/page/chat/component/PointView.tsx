@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 import { fetchGet, parsePath } from '../../../util';
+import { ParticipantType } from '../../../type';
 
 const PointViewStyle = css`
   position: absolute;
@@ -71,6 +72,7 @@ const leftPointStyle = css`
 
 type PointState = {
   socket: Socket;
+  participants: ParticipantType[];
 };
 
 function PointView(props: PointState) {
@@ -83,17 +85,18 @@ function PointView(props: PointState) {
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
   useEffect(() => {
+    const me = props.participants.find(participant => {
+      return participant.user.id === loginUser.id;
+    }) as ParticipantType;
+    if (me.point !== null && me.point !== undefined) {
+      setMyPoint(String(me.point));
+      setPurchase(true);
+    } else setPurchase(false);
     fetchGet(
-      `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant/${loginUser.id}`
-    ).then(data => {
-      setLeftPoint(data.leftPoint);
-      setDisabled(false);
-      if (data.purchasePoint) {
-        setMyPoint(data.purchasePoint);
-        setPurchase(true);
-      }
-    });
-  }, [purchase]);
+      `${process.env.REACT_APP_SERVER_URL}/api/user/${loginUser.id}`
+    ).then(data => setLeftPoint(data.point));
+    setDisabled(false);
+  }, [props.participants]);
 
   useEffect(() => {
     socket.on('purchase error', msg => {
@@ -101,24 +104,8 @@ function PointView(props: PointState) {
       console.log(msg);
     });
 
-    socket.on('purchase confirm', (userId: number, sendPoint: number) => {
-      if (userId === loginUser.id) {
-        setPurchase(true);
-        setDisabled(false);
-      }
-    });
-
-    socket.on('purchase cancel', (userId: number) => {
-      if (userId === loginUser.id) {
-        setPurchase(false);
-        setDisabled(false);
-      }
-    });
-
     return () => {
       socket.off('purchase error');
-      socket.off('purchase confirm');
-      socket.off('purchase cancel');
     };
   }, []);
 

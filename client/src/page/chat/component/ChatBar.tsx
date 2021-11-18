@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { ChatMenuDrawer } from './ChatMenuDrawer';
 import { Socket } from 'socket.io-client';
+import { ParticipantType } from '../../../type';
 const ChatBarLayout = css`
   display: flex;
   flex-direction: row;
@@ -26,6 +27,7 @@ const TitleStyle = css`
 type ChatBarType = {
   title: string;
   socket: Socket;
+  participants: ParticipantType[];
 };
 
 function ChatBar(props: ChatBarType) {
@@ -41,7 +43,7 @@ function ChatBar(props: ChatBarType) {
         }}
       />
       <div css={TitleStyle}>{props.title}</div>
-      <ChatMenuDrawer socket={props.socket} />
+      <ChatMenuDrawer socket={props.socket} participants={props.participants} />
     </div>
   );
 }
