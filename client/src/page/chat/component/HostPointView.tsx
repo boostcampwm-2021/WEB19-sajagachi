@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
-import { useRecoilValue } from 'recoil';
-import { loginUserState } from '../../../store/login';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 
@@ -72,23 +70,27 @@ type PointState = {
 function HostPointView(props: PointState) {
   const socket = props.socket;
   const [allPoint, setAllPoint] = useState<number>();
-  const [disabled, setDisabled] = useState<boolean>(true);
+  const [disabled, setDisabled] = useState<boolean>(false);
   const [finished, setFinished] = useState(false);
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
   const isAllReady = (participantss: ParticipantType[]) => {
-    return participantss.every(participant => {
-      return (
-        participant.user.id === +props.hostId || Number(participant.point) > 0
-      );
-    });
+    return (
+      participantss.length > 1 &&
+      participantss.every(participant => {
+        return (
+          participant.user.id === +props.hostId || Number(participant.point) > 0
+        );
+      })
+    );
+  };
+  const setBtn = () => {
+    if (isAllReady(props.participants)) setDisabled(false);
+    else setDisabled(true);
   };
 
   useEffect(() => {
-    if (props.participants.length > 1 && isAllReady(props.participants))
-      setDisabled(false);
-    else setDisabled(true);
-
+    setBtn();
     setAllPoint(
       props.participants.reduce((sum, cur) => {
         return sum + Number(cur.point);
@@ -97,6 +99,7 @@ function HostPointView(props: PointState) {
   }, [props.participants]);
 
   useEffect(() => {
+    setBtn();
     setFinished(false);
   });
 
