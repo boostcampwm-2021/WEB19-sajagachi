@@ -7,6 +7,8 @@ import OtherChatMessage from './component/OtherChatMsg';
 import io from 'socket.io-client';
 import { fetchGet, getCurrentTime, parsePath } from '../../util';
 import { ParticipantType } from '../../type';
+import { useRecoilState } from 'recoil';
+import { loginUserState } from '../../store/login';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -39,6 +41,7 @@ function Chat(props: any) {
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
   const [chatDatas, setChatDatas] = useState<any>([]);
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
 
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
 
@@ -73,6 +76,32 @@ function Chat(props: any) {
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
     });
+
+    socketRef.current.on(
+      'purchase confirm',
+      (confirmUserId: number, sendPoint: number) => {
+        setParticipants(prev => {
+          const newParticipants = [...prev];
+          const confirmUser = newParticipants.find(
+            participant => participant.user.id === confirmUserId
+          );
+          if (confirmUser) confirmUser.point = sendPoint;
+          return newParticipants;
+        });
+      }
+    );
+
+    socketRef.current.on('purchase cancel', (cancelUserId: number) => {
+      setParticipants(prev => {
+        const newParticipants = [...prev];
+        const cancelUser = newParticipants.find(
+          participant => participant.user.id === cancelUserId
+        );
+        if (cancelUser) cancelUser.point = null;
+        return newParticipants;
+      });
+    });
+
     updateParticipants(postId);
     return () => {
       socketRef.current.disconnect();

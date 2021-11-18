@@ -34,7 +34,7 @@ export interface QueryStringType {
 }
 
 export type ParticipantType = {
-  point: number;
+  point: number | null;
   user: {
     id: number;
     name: string;
