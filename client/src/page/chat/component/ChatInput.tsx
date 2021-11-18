@@ -1,10 +1,4 @@
-import React, {
-  isValidElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { useRef } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -28,7 +22,6 @@ function ChatInput(props: ChatInputType) {
     else return false;
   };
   const sendMessage = () => {
-    console.log(props.user);
     if (inputRef.current !== null && inputRef.current.value !== '') {
       props.socket.emit(
         'sendMsg',

@@ -91,11 +91,13 @@ function Chat() {
 
   return (
     <div css={ChatContainer}>
-      <ChatBar
-        title={'타이틀이 들어갈 공간입니당아아아'}
-        socket={socketRef.current}
-        participants={participants}
-      />
+      {participants && (
+        <ChatBar
+          title={'타이틀이 들어갈 공간입니당아아아'}
+          socket={socketRef.current}
+          participants={participants}
+        />
+      )}
       {userMe && (
         <ChatList postId={postId} user={userMe} socket={socketRef.current} />
       )}
