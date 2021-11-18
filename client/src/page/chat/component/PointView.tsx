@@ -72,6 +72,7 @@ const leftPointStyle = css`
 
 type PointState = {
   socket: Socket;
+  hostId: number;
   participants: ParticipantType[];
 };
 
@@ -113,7 +114,7 @@ function PointView(props: PointState) {
     const input = Number(e.target.value);
     if (isNaN(input) || input < 0 || input % 1 !== 0) return;
     setMyPoint(e.target.value);
-    if (Number(myPoint) > 0) setDisabled(false);
+    if (input > 0) setDisabled(false);
     else setDisabled(true);
   };
 

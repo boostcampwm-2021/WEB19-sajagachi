@@ -24,7 +24,7 @@ export const checkLogin = async (
     const { id } = verifyToken(req.cookies.user) as TokenType;
     if (id) {
       const user = await userService.findById(id);
-      if (user) res.status(200).json(id);
+      if (user) res.status(200).json({ id: user.id, name: user.name });
       else next({ statusCode: 401, message: 'unauthorized' });
     } else next({ statusCode: 401, message: 'unauthorized' });
   } catch (err: any) {

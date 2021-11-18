@@ -111,6 +111,15 @@ const getHost = async (postId: number) => {
   return result.userId;
 };
 
+const getFinished = async (postId: number) => {
+  const db = await getDB().get();
+  const finished = await db.manager.find(Post, {
+    select: ['finished'],
+    where: { id: postId }
+  });
+  return finished[0];
+};
+
 export default {
   savePost,
   getPosts,
@@ -118,5 +127,6 @@ export default {
   updatePostFinished,
   getCapacity,
   saveUrls,
-  getHost
+  getHost,
+  getFinished
 };

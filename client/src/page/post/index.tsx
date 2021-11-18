@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
 import InputTitle from './component/InputTitle';
 import InputContent from './component/InputContent';
@@ -13,8 +13,10 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import { fetchPost } from '../../util';
+import { fetchGet, fetchPost } from '../../util';
 import { loginUserState } from '../../store/login';
+import { useHistory } from 'react-router';
+import LoginModal from '../../common/login-modal';
 
 const URL_REGX: RegExp =
   /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
@@ -83,7 +85,8 @@ const capacityDeadline = css`
 `;
 
 function Post() {
-  const loginUser = useRecoilValue(loginUserState);
+  const history = useHistory();
+  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [urls, setUrls] = useState<string[]>(['']);
@@ -97,6 +100,23 @@ function Post() {
     if (title && content && category !== null) setBtnDisabled(false);
     else setBtnDisabled(true);
   }, [title, content, category]);
+
+  useEffect(() => {
+    if (!loginUser.isSigned) {
+      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+      fetchGet(url).then(userLogin => {
+        if (!isNaN(userLogin.id)) {
+          setLoginUser({
+            id: userLogin.id,
+            name: userLogin.name,
+            isSigned: true
+          });
+        } else {
+          history.push('/');
+        }
+      });
+    }
+  }, []);
 
   const Line = React.memo(() => {
     return <div css={horizonLine}></div>;
@@ -116,7 +136,7 @@ function Post() {
     };
     fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
       data => {
-        window.location.href = `/post/${data}`;
+        history.push(`/post/${data}`);
       }
     );
   }
