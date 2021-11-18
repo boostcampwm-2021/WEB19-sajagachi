@@ -8,9 +8,9 @@ import { socketInit } from './socket';
 const http = require('http');
 
 const corsOption = {
-	origin: process.env.CLIENT_URL,
-	optionsSuccessStatus: 200,
-	credentials: true
+  origin: process.env.CLIENT_URL,
+  optionsSuccessStatus: 200,
+  credentials: true
 };
 
 const app = express();
@@ -27,6 +27,6 @@ app.use('/api', router);
 app.use('/sse', sseRouter);
 
 const server = app.listen(port, () =>
-	console.log(`Server listening at port ${port}`)
+  console.log(`Server listening at port ${port}`)
 );
 socketInit(server, app);
