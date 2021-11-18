@@ -7,6 +7,8 @@ import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
+import { useRecoilValue } from 'recoil';
+import { loginUserState } from '../../../store/login';
 
 const ChatMenuStyle = css`
   width: 300px;
@@ -68,7 +70,7 @@ export function ChatMenu(props: propsType) {
         hostId={hostId}
         participants={props.participants}
       />
-      <PointView socket={props.socket} />
+      <PointView socket={props.socket} participants={props.participants} />
       <div css={QuitBtnContainerStyle}>
         <Button css={QuitBtnStyle}>나가기</Button>
       </div>
