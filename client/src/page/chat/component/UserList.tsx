@@ -4,6 +4,9 @@ import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
 import { fetchGet, parsePath } from '../../../util';
 import Confirm from '../../../common/confirm';
+import { Socket } from 'socket.io-client';
+import { getCookie } from '../../../util/cookie';
+import { ParticipantType } from '../../../type';
 
 const UserListStyle = css`
   padding: 0 15px;
@@ -59,16 +62,15 @@ const UserPointStyle = css`
   }
 `;
 
-type ParticipantType = {
-  point: number;
-  user: {
-    id: number;
-    name: string;
-    img: string;
-  };
-};
-
-export function UserList({ hostId }: { hostId: number }) {
+export function UserList({
+  socket,
+  hostId,
+  participants
+}: {
+  socket: Socket;
+  hostId: number;
+  participants: ParticipantType[];
+}) {
   const [myId, setMyId] = useState<number>(-1); // 페이지 컴포넌트에서 가져오도록 변경
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
@@ -78,15 +80,7 @@ export function UserList({ hostId }: { hostId: number }) {
     if (!isNaN(+result)) setMyId(+result); // note: result can be "jwt expired" or other string value
   };
 
-  const [participants, setParticipants] = useState<ParticipantType[]>([]);
-  const updateParticipants = async (postId: number) => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(url);
-    setParticipants(result);
-  };
-
   useEffect(() => {
-    updateParticipants(postId);
     updateMyId();
   }, []);
 
@@ -100,29 +94,38 @@ export function UserList({ hostId }: { hostId: number }) {
             item={user}
             myId={myId}
             hostId={hostId}
+            socket={socket}
           />
         ))}
       </ul>
     </div>
   );
 }
+
 function UserListItem({
   item,
   myId,
-  hostId
+  hostId,
+  socket
 }: {
   item: ParticipantType;
   myId: number;
   hostId: number;
+  socket: Socket;
 }) {
+  const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
+  const handleUserKick = () => {
+    socket.emit('kickUser', getCookie('user'), postId, item.user.id);
+    setIsConfirmOn(false);
+  };
 
   return (
     <li css={UserListItemStyle}>
       {hostId === item.user.id && <img src={crown} css={UserHostCrownStyle} />}
       <img src={item.user.img} css={UserAvatarStyle} />
       <p css={UserNameStyle}>{item.user.name}</p>
-      {hostId === myId && (
+      {hostId === myId && hostId !== item.user.id && (
         <button css={UserKickBtnStyle} onClick={() => setIsConfirmOn(true)}>
           내보내기
         </button>
@@ -137,7 +140,7 @@ function UserListItem({
         on={isConfirmOn}
         title="사용자 내보내기"
         onCancel={() => setIsConfirmOn(false)}
-        onConfirm={() => setIsConfirmOn(false)}
+        onConfirm={handleUserKick}
       >
         정말 사용자를 채팅에서 내보내시겠습니까?
       </Confirm>

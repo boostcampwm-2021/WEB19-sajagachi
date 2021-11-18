@@ -57,10 +57,17 @@ const updatePoint = async (
   return result;
 };
 
+const deleteParticipant = async (postId: number, userId: number) => {
+  const db = await getDB().get();
+  const result = await db.manager.delete(Participant, { postId, userId });
+  return result;
+};
+
 export default {
   getParticipantNum,
   getParticipants,
   saveParticipant,
   getParticipant,
-  updatePoint
+  updatePoint,
+  deleteParticipant
 };
