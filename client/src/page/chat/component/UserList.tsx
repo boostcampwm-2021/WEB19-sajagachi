@@ -6,6 +6,7 @@ import { fetchGet, parsePath } from '../../../util';
 import Confirm from '../../../common/confirm';
 import { Socket } from 'socket.io-client';
 import { getCookie } from '../../../util/cookie';
+import { ParticipantType } from '../../../type';
 
 const UserListStyle = css`
   padding: 0 15px;
@@ -61,21 +62,14 @@ const UserPointStyle = css`
   }
 `;
 
-type ParticipantType = {
-  point: number;
-  user: {
-    id: number;
-    name: string;
-    img: string;
-  };
-};
-
 export function UserList({
   socket,
-  hostId
+  hostId,
+  participants
 }: {
   socket: Socket;
   hostId: number;
+  participants: ParticipantType[];
 }) {
   const [myId, setMyId] = useState<number>(-1); // 페이지 컴포넌트에서 가져오도록 변경
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
@@ -86,15 +80,7 @@ export function UserList({
     if (!isNaN(+result)) setMyId(+result); // note: result can be "jwt expired" or other string value
   };
 
-  const [participants, setParticipants] = useState<ParticipantType[]>([]);
-  const updateParticipants = async (postId: number) => {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(url);
-    setParticipants(result);
-  };
-
   useEffect(() => {
-    updateParticipants(postId);
     updateMyId();
   }, []);
 
@@ -115,6 +101,7 @@ export function UserList({
     </div>
   );
 }
+
 function UserListItem({
   item,
   myId,
