@@ -24,13 +24,31 @@ export const leaveRoom = (socket: any, io: Server) => {
   });
 };
 
+const decodeToken = (token: string) => {
+  try {
+    const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
+    const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+    return myId;
+  } catch {
+    return 'error';
+  }
+};
+
 export const sendMsg = (socket: any, io: Server) => {
   socket.on(
     'sendMsg',
-    (postId: number, userId: number, userName: string, msg: string) => {
-      // 채팅을 보낸 user 정보와 msg를 보내줌 => 객체로 만들어진 시간은 여기서 만들어서 보내줘야할 것 같음
-      chatService.saveChat(userId, postId, msg);
-      io.to(String(postId)).emit('receiveMsg', userId, userName, msg);
+    (
+      postId: number,
+      userId: number,
+      userName: string,
+      token: string,
+      msg: string
+    ) => {
+      // 이렇게 Token을 Verify 해주는데 다시 추가적으로 에러처리를 해야할까요?
+      if (decodeToken(token) === userId) {
+        chatService.saveChat(userId, postId, msg);
+        io.to(String(postId)).emit('receiveMsg', userId, userName, msg);
+      }
     }
   );
 };
@@ -78,8 +96,7 @@ export const kickUser = (socket: any, io: Server) => {
   socket.on(
     'kickUser',
     async (token: string, postId: number, targetUserId: number) => {
-      const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-      const { id: myId } = jwt.verify(token, secretKey) as TokenType;
+      const myId = decodeToken(token);
       const hostId = await postService.getHost(+postId);
 
       // 권한 체크

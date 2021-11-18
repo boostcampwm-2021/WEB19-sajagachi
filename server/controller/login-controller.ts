@@ -37,7 +37,7 @@ const createToken = (user: User) => {
   return jwt.sign({ id: user.id }, secretKey);
 };
 
-const verifyToken = (token: string) => {
+export const verifyToken = (token: string) => {
   const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
   return jwt.verify(token, secretKey);
 };
