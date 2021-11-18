@@ -86,7 +86,8 @@ export function ChatMenu(props: propsType) {
   const handleQuitClick = () => {
     props.socket.emit('quitRoom', getCookie('user'), postId);
     setIsConfirmOn(false);
-    history.push(`/post/${postId}`);
+    history.replace(`/post/${postId}`);
+    history.goBack();
   };
 
   return (
