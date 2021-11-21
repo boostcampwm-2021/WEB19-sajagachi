@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
 import { getCookie } from '../../../util/cookie';
+import axios from 'axios';
 
 type ChatInputType = {
   socket: any;
@@ -13,7 +14,19 @@ type ChatInputType = {
 
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cookie = getCookie('user');
+
+  const uploadFile = async (e: any) => {
+    const img = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', img);
+    const res = await axios.post(
+      `http://localhost:5001/img/upload/${props.postId}`,
+      formData
+    );
+    console.log(res);
+  };
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
   };
@@ -39,8 +52,19 @@ function ChatInput(props: ChatInputType) {
     if (isValidEvent(event)) sendMessage();
   };
 
+  const imgUpload = (event: any) => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
   return (
     <div css={ChatInputDiv}>
+      <input
+        accept=".png, .jpg"
+        type="file"
+        onChange={uploadFile}
+        style={{ display: 'none' }}
+        ref={fileInputRef}
+      />
       <AddCircleIcon
         sx={{
           width: '40px',
@@ -48,6 +72,7 @@ function ChatInput(props: ChatInputType) {
           color: '#ebabab',
           paddingLeft: '10px'
         }}
+        onClick={imgUpload}
       />
       <input
         css={ChatInputStyle}
