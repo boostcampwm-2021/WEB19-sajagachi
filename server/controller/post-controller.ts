@@ -26,11 +26,15 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
   try {
     const post = await postService.getPost(req.params.postId);
     const userId = decodeToken(req.cookies.user);
-    if (userId === 'error') throw new Error('쿠키가 유효하지 않습니다.');
-    const isParticipate: boolean = await participantService.checkParticipation(
-      Number(req.params.postId),
-      userId
-    );
+    // 쿠키가 없을경우 즉 로그인이 되어있지 않을경우 isParticipate를 false처리해준다.
+    let isParticipate: boolean;
+    if (userId === 'error') isParticipate = false;
+    else {
+      isParticipate = await participantService.checkParticipation(
+        Number(req.params.postId),
+        userId
+      );
+    }
 
     const participantCnt = await participantService.getParticipantNum(
       Number(req.params.postId)
