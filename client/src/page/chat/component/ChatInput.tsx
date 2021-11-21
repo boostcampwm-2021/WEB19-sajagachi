@@ -17,8 +17,8 @@ function ChatInput(props: ChatInputType) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cookie = getCookie('user');
 
-  const uploadFile = async (e: any) => {
-    const img = e.target.files[0];
+  const uploadFile = async (event: any) => {
+    const img = event.target.files[0];
     const formData = new FormData();
     formData.append('file', img);
     const res = await axios.post(
@@ -52,7 +52,7 @@ function ChatInput(props: ChatInputType) {
     if (isValidEvent(event)) sendMessage();
   };
 
-  const imgUpload = (event: any) => {
+  const imgUpload = () => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
