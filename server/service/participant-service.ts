@@ -75,7 +75,7 @@ const finishPost = async (postId: number, hostId: number) => {
   const db = await getDB().get();
   const sql = `
   UPDATE user SET point = point + (SELECT SUM(p.point) as sum
-                          FROM participant
+                          FROM participant p
                           WHERE postId = ${postId}
                           GROUP BY postId)
   WHERE id = ${hostId}
