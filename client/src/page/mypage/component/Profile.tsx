@@ -6,9 +6,10 @@ import { loginUserState } from '../../../store/login';
 import { fetchGet } from '../../../util';
 
 const ProfileStyle = css`
-  padding-top: 20px;
+  height: 260px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -71,7 +72,9 @@ export default function Profile() {
     loginUser.isSigned && updateUser(loginUser.id);
   }, [loginUser]);
 
-  if (!user) return <div></div>;
+  if (!user) {
+    return <div css={ProfileStyle}></div>;
+  }
 
   return (
     <div css={ProfileStyle}>

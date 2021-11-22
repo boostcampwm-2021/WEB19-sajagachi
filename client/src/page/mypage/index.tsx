@@ -8,11 +8,14 @@ import { fetchGet } from '../../util';
 import footprintImg from '../../asset/footprint.png';
 
 const MyPageStyle = css`
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
   height: 100%;
   background-image: url('${footprintImg}');
   background-repeat: no-repeat;
   background-position: 50% 15px;
-  background-size: 330px;
+  background-size: 90%;
 `;
 
 export default function MyPage() {
