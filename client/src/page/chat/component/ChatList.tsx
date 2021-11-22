@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import MyChatMessage from './MyChatMessage';
 import OtherChatMessage from './OtherChatMsg';
+import SystemMessage from './SystemMessage';
 import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
@@ -11,7 +12,7 @@ type MessageType = {
   sender: string;
   msg: string;
   time: string;
-  isMe: boolean;
+  isMe: number;
   created_at: string;
 };
 
@@ -49,19 +50,25 @@ export default function ChatList({
           sender: chat.name,
           msg: chat.msg,
           time: getAMPMTime(new Date(chat.created_at)),
-          isMe: checkMe(chat.userId),
+          isMe: checkSender(chat.userId),
           created_at: chat.created_at
         } as MessageType;
       })
       .reverse();
   };
-  const checkMe = (sender: number) => {
-    return sender === user.userId;
+  const checkSender = (sender: number) => {
+    if (sender === SENDER_TYPE.SYSTEM) {
+      return SENDER_TYPE.SYSTEM;
+    } else if (sender === user.userId) {
+      return SENDER_TYPE.ME;
+    } else {
+      return SENDER_TYPE.OTHER;
+    }
   };
 
   useEffect(() => {
     socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
-      const isMe = checkMe(user);
+      const isMe = checkSender(user);
       const bottom =
         (parent.current?.scrollHeight as number) -
         (parent.current?.scrollTop as number) -
@@ -158,11 +165,13 @@ export default function ChatList({
               <button>{date}</button>
             </div>
             {chats.map((chat: MessageType) => {
-              return chat.isMe ? (
-                <MyChatMessage msgData={chat} />
-              ) : (
-                <OtherChatMessage msgData={chat} />
-              );
+              if (chat.isMe === SENDER_TYPE.SYSTEM) {
+                return <SystemMessage msgData={chat} />;
+              } else if (chat.isMe === SENDER_TYPE.ME) {
+                return <MyChatMessage msgData={chat} />;
+              } else {
+                return <OtherChatMessage msgData={chat} />;
+              }
             })}
           </div>
         );
@@ -248,4 +257,10 @@ const makeSection = (chatDatas: MessageType[]) => {
     }
   });
   return sections;
+};
+
+const SENDER_TYPE = {
+  SYSTEM: 0,
+  ME: 1,
+  OTHER: 2
 };

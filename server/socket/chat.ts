@@ -58,6 +58,7 @@ export const confirmPurchase = (socket: any, io: Server) => {
         userService.usePoint(userId, user.point, sendPoint);
         participantService.updatePoint(postId, userId, sendPoint);
         io.to(String(postId)).emit('purchase confirm', userId, sendPoint);
+        processSystemMsg(io, SYSTEM_MSG_TYPE.CONFIRM_PURCHASE, postId, userId);
       }
     }
   );
@@ -80,6 +81,7 @@ export const cancelPurchase = (socket: any, io: Server) => {
         participantService.updatePoint(postId, userId, null);
         userService.addPoint(userId, participant.point);
         io.to(String(postId)).emit('purchase cancel', userId);
+        processSystemMsg(io, SYSTEM_MSG_TYPE.CANCEL_PURCHASE, postId, userId);
       }
     }
   });
@@ -116,6 +118,10 @@ export const kickUser = (socket: any, io: Server) => {
       // 변경된 참여자 리스트를 클라이언트에 반환
       const participants = await participantService.getParticipants(postId);
       io.to(String(postId)).emit('updateParticipants', participants);
+      processSystemMsg(io, SYSTEM_MSG_TYPE.KICKED, postId, targetUserId);
+
+      // 강제퇴장 당한 클라이언트에게 이벤트 전달
+      io.to(String(postId)).emit('getOut', targetUserId);
     }
   );
 };
@@ -148,6 +154,7 @@ export const quitRoom = (socket: any, io: Server) => {
     // 변경된 참여자 리스트를 클라이언트에 반환
     const participants = await participantService.getParticipants(postId);
     io.to(String(postId)).emit('updateParticipants', participants);
+    processSystemMsg(io, SYSTEM_MSG_TYPE.QUIT, postId, myId);
   });
 };
 
@@ -168,4 +175,41 @@ export const finishRoom = (socket: any, io: Server) => {
       await queryRunner.release();
     }
   });
+};
+
+const SYSTEM_ID = 0;
+const SYSTEM_NAME = 'System';
+export const SYSTEM_MSG_TYPE = {
+  JOIN: 0,
+  CONFIRM_PURCHASE: 1,
+  CANCEL_PURCHASE: 2,
+  KICKED: 3,
+  QUIT: 4
+};
+const createSystemMsg = (msgType: number, userId: number) => {
+  switch (msgType) {
+    case SYSTEM_MSG_TYPE.JOIN:
+      return `${userId}님이 채팅방에 참가하셨습니다.`;
+    case SYSTEM_MSG_TYPE.CONFIRM_PURCHASE:
+      return `${userId}님이 공동 구매를 확정하셨습니다.`;
+    case SYSTEM_MSG_TYPE.CANCEL_PURCHASE:
+      return `${userId}님이 공동 구매를 취소하셨습니다.`;
+    case SYSTEM_MSG_TYPE.KICKED:
+      return `${userId}님이 강퇴당하셨습니다.`;
+    case SYSTEM_MSG_TYPE.QUIT:
+      return `${userId}님이 채팅방을 나가셨습니다.`;
+    default:
+      return '';
+  }
+};
+
+export const processSystemMsg = (
+  io: Server,
+  type: number,
+  postId: number,
+  userId: number
+) => {
+  const msg = createSystemMsg(type, userId);
+  chatService.saveChat(SYSTEM_ID, postId, msg);
+  io.to(String(postId)).emit('receiveMsg', SYSTEM_ID, SYSTEM_NAME, msg);
 };

@@ -6,6 +6,12 @@ import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 import Confirm from '../../../common/confirm';
 
+type PointState = {
+  socket: Socket;
+  hostId: number;
+  participants: ParticipantType[];
+};
+
 function HostPointView(props: PointState) {
   const socket = props.socket;
   const [allPoint, setAllPoint] = useState<number>();
@@ -78,12 +84,9 @@ function HostPointView(props: PointState) {
 export default React.memo(HostPointView);
 //
 const HostPointViewStyle = css`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
   width: 95%;
-  bottom: 120px;
-  padding: 0 15px;
+  margin-bottom: 90px;
+  padding: 0 10px;
 
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;
@@ -112,9 +115,3 @@ const PointBtnStyle = (disabled: boolean) => css`
     background-color: ${disabled ? '#b6e3e9' : '#fdafab'};
   }
 `;
-
-type PointState = {
-  socket: Socket;
-  hostId: number;
-  participants: ParticipantType[];
-};

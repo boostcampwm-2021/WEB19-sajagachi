@@ -16,6 +16,10 @@ import { loginUserState } from '../../../store/login';
 import FinishedPointView from './FinishedPointView';
 
 const ChatMenuStyle = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
   width: 300px;
   height: 100vh;
   padding-top: 30px;
@@ -30,16 +34,9 @@ const CloseBtnStyle = css`
   right: 10px;
 `;
 
-const QuitBtnContainerStyle = css`
-  position: absolute;
-  bottom: 10px;
-  left: 5px;
-  right: 5px;
-  text-align: center;
-`;
-
 const QuitBtnStyle = css`
   width: 95%;
+  margin-bottom: 10px;
   color: #ffffff;
   background-color: #f76a6a;
   &:hover {
@@ -122,11 +119,9 @@ export function ChatMenu(props: propsType) {
         ][pointViewState]
       }
 
-      <div css={QuitBtnContainerStyle}>
-        <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
-          나가기
-        </Button>
-      </div>
+      <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
+        나가기
+      </Button>
       <Confirm
         on={isConfirmOn}
         title="채팅방 나가기"

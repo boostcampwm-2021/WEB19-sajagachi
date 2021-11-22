@@ -2,12 +2,9 @@ import React from 'react';
 import { css } from '@emotion/react';
 
 const FinishedPointViewStyle = css`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
   width: 95%;
-  bottom: 120px;
-  padding: 0 15px;
+  margin-bottom: 90px;
+  padding: 0 10px;
   display: flex;
   justify-content: center;
 

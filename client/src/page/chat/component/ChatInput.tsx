@@ -4,7 +4,6 @@ import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
 import { getCookie } from '../../../util/cookie';
-import axios from 'axios';
 
 type ChatInputType = {
   socket: any;
@@ -21,11 +20,14 @@ function ChatInput(props: ChatInputType) {
     const img = event.target.files[0];
     const formData = new FormData();
     formData.append('file', img);
-    const res = await axios.post(
-      `http://localhost:5001/img/upload/${props.postId}`,
-      formData
+    const options = {
+      method: 'POST',
+      body: formData
+    };
+    const res = await fetch(
+      `${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`,
+      options
     );
-    console.log(res);
   };
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
