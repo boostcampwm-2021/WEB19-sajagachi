@@ -33,7 +33,7 @@ const CloseBtnStyle = css`
   right: 10px;
 `;
 
-const QuitBtnStyle = css`
+const QuitBtnStyle = (finished: boolean) => css`
   width: 95%;
   margin-bottom: 10px;
   color: #ffffff;
@@ -41,6 +41,15 @@ const QuitBtnStyle = css`
   &:hover {
     background-color: #f76a6a;
   }
+
+  ${finished
+    ? `
+    background-color: #cfcfcf;
+    &:hover {
+      background-color: #cfcfcf;
+    }
+    `
+    : ''}
 `;
 
 type propsType = {
@@ -79,7 +88,17 @@ export function ChatMenu(props: propsType) {
     updateFinished();
   }, []);
 
+  const isQuitBtnDisabled = () => {
+    if (loginUser.id === hostId) return true;
+    else if (pointViewState === FINISHED) return true;
+    return false;
+  };
+
   const handleQuitClick = () => {
+    isQuitBtnDisabled() || setIsConfirmOn(true);
+  };
+
+  const handleQuitConfirm = () => {
     props.socket.emit('quitRoom', getCookie('user'), postId);
     setIsConfirmOn(false);
     history.replace(`/post/${postId}`);
@@ -110,14 +129,14 @@ export function ChatMenu(props: propsType) {
         ][pointViewState]
       }
 
-      <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
+      <Button css={QuitBtnStyle(isQuitBtnDisabled())} onClick={handleQuitClick}>
         나가기
       </Button>
       <Confirm
         on={isConfirmOn}
         title="채팅방 나가기"
         onCancel={() => setIsConfirmOn(false)}
-        onConfirm={handleQuitClick}
+        onConfirm={handleQuitConfirm}
       >
         정말 채팅방을 나가시겠습니까?
       </Confirm>
