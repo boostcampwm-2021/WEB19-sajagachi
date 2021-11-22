@@ -85,6 +85,10 @@ export function ChatMenu(props: propsType) {
     props.socket.on('finishPost', () => {
       setPointViewState(FINISHED);
     });
+
+    return () => {
+      props.socket.off('finishPost');
+    };
   }, []);
 
   const handleQuitClick = () => {
