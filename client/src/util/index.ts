@@ -30,8 +30,7 @@ export const fetchGet = async (url: string | undefined, query: string = '') => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
+      Cache: 'no-cache'
     },
     credentials: 'include'
   };
@@ -46,8 +45,7 @@ export const fetchPost = async (url: string, body: any) => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
+      Cache: 'no-cache'
     },
     credentials: 'include',
     body: JSON.stringify(body)
