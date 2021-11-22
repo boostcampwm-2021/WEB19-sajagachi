@@ -25,7 +25,7 @@ export default function GroupBuyButton({
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
   const [buttonState, setButtonState] = useState(
-    finished ||
+    (finished && !isParticipate) ||
       (capacity !== null && participantCnt >= capacity && !isParticipate)
   );
   const clickHandler = useCallback(async () => {
@@ -64,7 +64,9 @@ export default function GroupBuyButton({
         onClick={clickHandler}
       >
         {finished
-          ? '모집 종료'
+          ? isParticipate
+            ? '공구마감 / 참여중'
+            : '모집 종료'
           : (isParticipate ? '참여중' : '공동 구매') +
             ` (${participantCnt} / ${capacity ?? ' - '})`}
       </Button>
