@@ -4,6 +4,7 @@ import participantService from '../service/participant-service';
 import userService from '../service/user-service';
 import postService from '../service/post-service';
 import { decodeToken } from '../util';
+import { getDB } from '../db/db';
 
 export const joinRoom = (socket: any, io: Server) => {
   socket.on('joinRoom', async (postId: number, userId: number) => {
@@ -148,4 +149,32 @@ export const quitRoom = (socket: any, io: Server) => {
     const participants = await participantService.getParticipants(postId);
     io.to(String(postId)).emit('updateParticipants', participants);
   });
+};
+
+export const finishRoom = (socket: any, io: Server) => {
+  socket.on('takePoint', async (postId: number) => {
+    const queryRunner = (await getDB().get()).createQueryRunner();
+    try {
+      await queryRunner.startTransaction();
+      Promise.all([
+        takeAllPoint(postId),
+        postService.updatePostFinished(postId)
+      ])
+        .then(async result => {
+          await queryRunner.commitTransaction();
+          io.to(String(postId)).emit('finishPost');
+        })
+        .catch((err: any) => {
+          throw new Error();
+        });
+    } catch (err: any) {
+      queryRunner.rollbackTransaction();
+      socket.emit('purchase error', '정상적으로 종료되지 않았습니다.');
+    }
+  });
+};
+
+const takeAllPoint = async (postId: number) => {
+  const hostId = await postService.getHost(postId);
+  return participantService.finishPost(postId, hostId);
 };

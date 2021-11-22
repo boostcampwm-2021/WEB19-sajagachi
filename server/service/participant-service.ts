@@ -71,6 +71,19 @@ const checkParticipation = async (postId: number, userId: number) => {
   return !(result === undefined);
 };
 
+const finishPost = async (postId: number, hostId: number) => {
+  const db = await getDB().get();
+  const sql = `
+  UPDATE user SET point = point + (SELECT SUM(p.point) as sum
+                          FROM participant
+                          WHERE postId = ${postId}
+                          GROUP BY postId)
+  WHERE id = ${hostId}
+  `;
+  const result = await db.manager.query(sql);
+  return result;
+};
+
 export default {
   getParticipantNum,
   getParticipants,
@@ -78,5 +91,6 @@ export default {
   getParticipant,
   updatePoint,
   deleteParticipant,
-  checkParticipation
+  checkParticipation,
+  finishPost
 };
