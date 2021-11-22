@@ -115,6 +115,9 @@ export const kickUser = (socket: any, io: Server) => {
       // 변경된 참여자 리스트를 클라이언트에 반환
       const participants = await participantService.getParticipants(postId);
       io.to(String(postId)).emit('updateParticipants', participants);
+
+      // 강제퇴장 당한 클라이언트에게 이벤트 전달
+      io.to(String(postId)).emit('getOut', targetUserId);
     }
   );
 };
