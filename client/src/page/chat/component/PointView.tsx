@@ -89,6 +89,10 @@ function PointView(props: PointState) {
     const me = props.participants.find(participant => {
       return participant.user.id === loginUser.id;
     }) as ParticipantType;
+    if (!me) {
+      setDisabled(true);
+      return;
+    }
     if (me.point !== null && me.point !== undefined) {
       setMyPoint(String(me.point));
       setPurchase(true);
