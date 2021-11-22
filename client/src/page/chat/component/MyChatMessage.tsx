@@ -5,7 +5,7 @@ type MessageType = {
   sender: string;
   msg: string;
   time: string;
-  isMe: boolean;
+  isMe: number;
 };
 
 const MessageStyle = css`
