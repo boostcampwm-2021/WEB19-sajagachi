@@ -17,6 +17,20 @@ const saveChat = async (userId: number, postId: number, msg: string) => {
   }
 };
 
+const saveImg = async (userId: number, postId: number, img: string) => {
+  const db = await getDB().get();
+  const newImg = db.manager.create(Chat, {
+    userId,
+    postId,
+    img
+  });
+  try {
+    return await db.manager.save(newImg);
+  } catch (e) {
+    return 'error';
+  }
+};
+
 const getChats = async (
   postId: string,
   limit: string | undefined,
@@ -42,4 +56,4 @@ const getChats = async (
   }
 };
 
-export default { saveChat, getChats };
+export default { saveChat, getChats, saveImg };

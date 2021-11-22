@@ -4,6 +4,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
+import { decodeToken } from '../util';
 
 export const getChats = async (req: Request, res: Response, next: Function) => {
   try {
@@ -74,11 +75,14 @@ export const upload = multer({
 });
 
 export const uploadImage = async (req: Request, res: Response, next: any) => {
-  if (req.file === undefined) throw new Error('파일이 없습니다');
-  const filename = req.path.split('/')[2] + '_' + req.file.filename;
-  console.log(filename);
-  res.json({ url: filename });
-  // if (req.file) res.json({ url: `/img/${req.file.filename}` });
+  if (req.file === undefined) throw new Error('파일이 없습니다'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
+  const postId = req.path.split('/')[2];
+  const filename = postId + '/' + req.file.filename;
+  const userId = decodeToken(req.cookies.user);
+  if (userId === 'error') throw new Error('token으로 user데이터 받기 오류'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
+
+  const savedImg = await chatService.saveImg(userId, +postId, filename);
+  if (savedImg) res.json({ savedImg });
 };
 
 fs.readdir('upload', (error: any) => {

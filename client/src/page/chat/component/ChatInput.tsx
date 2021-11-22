@@ -22,6 +22,7 @@ function ChatInput(props: ChatInputType) {
     formData.append('file', img);
     const options = {
       method: 'POST',
+      credentials: 'include' as RequestCredentials,
       body: formData
     };
     const res = await fetch(
