@@ -95,6 +95,11 @@ export default function ChatList({
         });
       }
     });
+    socket.on('sendImg', (user: number, userName: string, img: string) => {
+      console.log(user);
+      console.log(userName);
+      console.log(img);
+    });
   }, []);
 
   const handleObserver: IntersectionObserverCallback = async (
