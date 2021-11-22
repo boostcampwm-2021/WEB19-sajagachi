@@ -7,69 +7,6 @@ import { loginUserState } from '../../../store/login';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 
-const PointViewStyle = css`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-  width: 95%;
-  bottom: 120px;
-  padding: 0 15px;
-
-  & > h1 {
-    font-family: 'Noto Sans KR Medium', sans-serif;
-    font-size: 16px;
-  }
-
-  & > ul {
-    list-style: none;
-    padding-left: 0;
-  }
-`;
-
-const PointContainer = css`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
-const PointInputStyle = css`
-  border: 0px solid;
-  border-bottom: 2px solid #f97d63;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 70%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  padding: 10px;
-  &:-webkit-outer-spin-button,
-  &:-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
-
-const PointBtnStyle = (purchase: boolean, disabled: boolean) => css`
-  width: 15%;
-  background-color: ${purchase
-    ? `#b6e3e9${disabled ? '99' : ''}`
-    : `#fdafab${disabled ? '99' : ''}`};
-  color: white;
-  &:hover {
-    background-color: ${purchase ? '#b6e3e9' : '#fdafab'};
-  }
-`;
-
-const leftPointStyle = css`
-  font-size: 9px;
-  color: #cccccc;
-`;
-
 type PointState = {
   socket: Socket;
   hostId: number;
@@ -150,3 +87,66 @@ function PointView(props: PointState) {
 }
 
 export default React.memo(PointView);
+
+const PointViewStyle = css`
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 95%;
+  bottom: 120px;
+  padding: 0 15px;
+
+  & > h1 {
+    font-family: 'Noto Sans KR Medium', sans-serif;
+    font-size: 16px;
+  }
+
+  & > ul {
+    list-style: none;
+    padding-left: 0;
+  }
+`;
+
+const PointContainer = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const PointInputStyle = css`
+  border: 0px solid;
+  border-bottom: 2px solid #f97d63;
+  box-sizing: border-box;
+  box-shadow: none;
+  width: 70%;
+  height: 40px;
+  background: transparent;
+  outline: none;
+  color: #000000;
+  font-size: 16px;
+  overflow: hidden;
+  padding: 10px;
+  &:-webkit-outer-spin-button,
+  &:-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
+
+const PointBtnStyle = (purchase: boolean, disabled: boolean) => css`
+  width: 15%;
+  background-color: ${purchase
+    ? `#b6e3e9${disabled ? '99' : ''}`
+    : `#fdafab${disabled ? '99' : ''}`};
+  color: white;
+  &:hover {
+    background-color: ${purchase ? '#b6e3e9' : '#fdafab'};
+  }
+`;
+
+const leftPointStyle = css`
+  font-size: 9px;
+  color: #cccccc;
+`;
