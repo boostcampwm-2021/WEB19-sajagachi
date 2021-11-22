@@ -10,6 +10,7 @@ import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
+import Alert from '../../common/alert';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -26,6 +27,7 @@ function Chat() {
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const [isAlertOn, setIsAlertOn] = useState(false);
 
   const updateParticipants = async (postId: number) => {
     const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
@@ -96,12 +98,20 @@ function Chat() {
       });
     });
 
-    socketRef.current.emit('enterRoom');
+    socketRef.current.on('getOut', (targetUserId: number) => {
+      if (loginUser.id === targetUserId) {
+        setIsAlertOn(true);
+      }
+    });
 
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
+
+  const handleAlertClose = () => {
+    history.goBack();
+  };
 
   return (
     <div css={ChatContainer}>
@@ -118,6 +128,9 @@ function Chat() {
       {userMe && (
         <ChatInput socket={socketRef.current} postId={postId} user={userMe} />
       )}
+      <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
+        호스트가 당신을 내보냈습니다.
+      </Alert>
     </div>
   );
 }

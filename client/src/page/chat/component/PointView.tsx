@@ -8,12 +8,9 @@ import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 
 const PointViewStyle = css`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
   width: 95%;
-  bottom: 120px;
-  padding: 0 15px;
+  margin-bottom: 90px;
+  padding: 0 10px;
 
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;
@@ -89,6 +86,10 @@ function PointView(props: PointState) {
     const me = props.participants.find(participant => {
       return participant.user.id === loginUser.id;
     }) as ParticipantType;
+    if (!me) {
+      setDisabled(true);
+      return;
+    }
     if (me.point !== null && me.point !== undefined) {
       setMyPoint(String(me.point));
       setPurchase(true);
