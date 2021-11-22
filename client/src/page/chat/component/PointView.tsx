@@ -10,7 +10,7 @@ import { ParticipantType } from '../../../type';
 const PointViewStyle = css`
   width: 95%;
   margin-bottom: 90px;
-  padding: 0 15px;
+  padding: 0 10px;
 
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;

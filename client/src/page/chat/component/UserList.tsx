@@ -9,11 +9,13 @@ import { getCookie } from '../../../util/cookie';
 import { ParticipantType } from '../../../type';
 
 const UserListStyle = css`
-  padding: 0 15px;
+  width: 95%;
+  padding: 0 10px;
   flex-grow: 1;
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;
     font-size: 16px;
