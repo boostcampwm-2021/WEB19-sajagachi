@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
+import { useRecoilValue } from 'recoil';
+import { loginUserState } from '../../../store/login';
+import { fetchGet } from '../../../util';
 
 const ProfileStyle = css`
   padding-top: 20px;
@@ -48,16 +51,35 @@ const BtnStyle = (color: string) => css`
   border: none;
 `;
 
+type UserType = {
+  id: number;
+  name: string;
+  img: string;
+  point: number;
+};
+
 export default function Profile() {
+  const loginUser = useRecoilValue(loginUserState);
+  const [user, setUser] = useState<UserType>();
+  const updateUser = async (userId: number) => {
+    const url = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}`;
+    const userData = await fetchGet(url);
+    setUser(userData);
+  };
+
+  useEffect(() => {
+    loginUser.isSigned && updateUser(loginUser.id);
+  }, [loginUser]);
+
+  if (!user) return <div></div>;
+
   return (
     <div css={ProfileStyle}>
-      <img
-        css={ImageStyle}
-        src="https://imgix.bustle.com/rehost/2016/9/13/cdeb5e9c-34ac-4ba0-96a6-a878a5187414.png"
-      />
-      <h1 css={NameStyle}>Simba</h1>
+      <img css={ImageStyle} src={user.img} />
+      <h1 css={NameStyle}>{user.name}</h1>
       <p css={PointStyle}>
-        <MonetizationOn /> 50000
+        <MonetizationOn />
+        {user.point}
       </p>
       <div css={BtnSetStyle}>
         <button css={BtnStyle('#4b976a')}>충전</button>
