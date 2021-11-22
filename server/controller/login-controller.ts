@@ -4,11 +4,17 @@ import { TokenType } from '../type';
 import { User } from '../model/entity/User';
 import jwt from 'jsonwebtoken';
 
+declare module 'express-session' {
+  interface SessionData {
+    userId: number;
+  }
+}
+
 export const login = async (req: Request, res: Response, next: Function) => {
   try {
     let user = await userService.findById(req.body.userId);
     if (user === undefined) user = await userService.signUp(req.body.userId);
-    res.cookie('user', createToken(user));
+    req.session.userId = user.id;
     res.status(201).json({ id: user.id, name: user.name });
   } catch (err: any) {
     next({ statusCode: 401, message: err.message });
@@ -21,7 +27,7 @@ export const checkLogin = async (
   next: Function
 ) => {
   try {
-    const { id } = verifyToken(req.cookies.user) as TokenType;
+    const id = req.session.userId;
     if (id) {
       const user = await userService.findById(id);
       if (user) res.status(200).json({ id: user.id, name: user.name });
@@ -30,14 +36,4 @@ export const checkLogin = async (
   } catch (err: any) {
     next({ statusCode: 401, message: err.message });
   }
-};
-
-const createToken = (user: User) => {
-  const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-  return jwt.sign({ id: user.id }, secretKey);
-};
-
-export const verifyToken = (token: string) => {
-  const secretKey: jwt.Secret = String(process.env.JWT_SECRET);
-  return jwt.verify(token, secretKey);
 };
