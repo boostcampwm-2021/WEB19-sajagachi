@@ -104,7 +104,7 @@ function HostPointView(props: PointState) {
   });
 
   const handlePointBtnClick = () => {
-    socket.emit(`post finish`, postId);
+    socket.emit(`takePoint`, postId);
     setDisabled(false);
     setFinished(true);
   };
