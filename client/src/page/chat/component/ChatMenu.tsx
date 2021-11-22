@@ -80,6 +80,10 @@ export function ChatMenu(props: propsType) {
   useEffect(() => {
     updateHostId();
     updateFinished();
+
+    props.socket.on('finishPost', () => {
+      setPointViewState(FINISHED);
+    });
   }, []);
 
   const handleQuitClick = () => {
