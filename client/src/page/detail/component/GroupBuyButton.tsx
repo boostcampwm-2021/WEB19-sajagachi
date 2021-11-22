@@ -30,7 +30,9 @@ export default function GroupBuyButton({
   );
   const clickHandler = useCallback(async () => {
     if (!login.isSigned) setIsLoginModalOn(true);
-    else {
+    else if (isParticipate) {
+      history.push(`/chat/${postId}`);
+    } else {
       const postBody = {
         userId: login.id,
         postId
