@@ -156,7 +156,7 @@ export const quitRoom = (socket: any, io: Server) => {
 
 const SYSTEM_ID = 0;
 const SYSTEM_NAME = 'System';
-const SYSTEM_MSG_TYPE = {
+export const SYSTEM_MSG_TYPE = {
   JOIN: 0,
   CONFIRM_PURCHASE: 1,
   CANCEL_PURCHASE: 2,
@@ -180,7 +180,7 @@ const createSystemMsg = (msgType: number, userId: number) => {
   }
 };
 
-const processSystemMsg = (
+export const processSystemMsg = (
   io: Server,
   type: number,
   postId: number,
