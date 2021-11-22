@@ -133,7 +133,7 @@ export const quitRoom = (socket: any, io: Server) => {
     }
 
     // 공동 구매가 끝난 채팅방을 나갈 수 없음
-    const finished = await postService.getFinished(+postId);
+    const { finished } = await postService.getFinished(+postId);
     if (finished) return;
 
     // 타깃 유저를 찾기
