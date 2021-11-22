@@ -48,6 +48,7 @@ export const resizeImg = async (
         fs.writeFile(req.file.path, buffer, err => {
           if (err) throw err;
         });
+        next();
       });
   } catch (err) {
     console.log(err);
@@ -60,17 +61,24 @@ export const upload = multer({
       cb(null, req.path.substr(1));
     },
     filename(req, file, cb) {
-      const ext = path.extname(file.originalname);
-      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+      const dir = req.path.substr(1);
+      fs.readdir(dir, (err, files) => {
+        if (err) throw new Error('파일 개수 세는 중 에러가 발생했습니다.');
+        const ext = path.extname(file.originalname);
+        cb(null, path.basename(String(files.length + 1), ext) + ext);
+      });
     }
   })
   // 큰 파일 사이즈에 대한 에러처리 확인하기
   // limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-export const uploadImage = (req: Request, res: Response, next: any) => {
-  console.log(req.file);
-  if (req.file) res.json({ url: `/img/${req.file.filename}` });
+export const uploadImage = async (req: Request, res: Response, next: any) => {
+  if (req.file === undefined) throw new Error('파일이 없습니다');
+  const filename = req.path.split('/')[2] + '_' + req.file.filename;
+  console.log(filename);
+  res.json({ url: filename });
+  // if (req.file) res.json({ url: `/img/${req.file.filename}` });
 };
 
 fs.readdir('upload', (error: any) => {

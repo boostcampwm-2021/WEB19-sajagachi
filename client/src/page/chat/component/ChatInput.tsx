@@ -28,6 +28,7 @@ function ChatInput(props: ChatInputType) {
       `${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`,
       options
     );
+    console.log(await res.json());
   };
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
