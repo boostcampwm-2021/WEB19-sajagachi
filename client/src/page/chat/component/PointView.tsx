@@ -62,6 +62,7 @@ function PointView(props: PointState) {
   };
 
   const handleSubmitPointBtnClick = () => {
+    setIsConfirmOn(false);
     setDisabled(true);
     if (!purchase)
       socket.emit('point confirm', postId, loginUser.id, Number(myPoint));
@@ -90,11 +91,13 @@ function PointView(props: PointState) {
       <span css={leftPointStyle}>잔여 포인트 : {leftPoint}</span>
       <Confirm
         on={isConfirmOn}
-        title="포인트 제출하기"
+        title={!purchase ? '포인트 제출하기' : '제출 취소하기'}
         onCancel={() => setIsConfirmOn(false)}
         onConfirm={handleSubmitPointBtnClick}
       >
-        정말 {myPoint} 포인트를 내시겠습니까?
+        {!purchase
+          ? `정말 ${myPoint}포인트를 제출하시겠습니까?`
+          : `정말 포인트 제출을 취소하시겠습니까?`}
       </Confirm>
     </div>
   );

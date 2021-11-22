@@ -50,6 +50,7 @@ function HostPointView(props: PointState) {
   });
 
   const handleTakePointBtnClick = () => {
+    setIsConfirmOn(false);
     socket.emit(`takePoint`, postId);
     setDisabled(false);
     setFinished(true);
