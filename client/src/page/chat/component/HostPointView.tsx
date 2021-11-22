@@ -4,12 +4,14 @@ import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
 import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
+import Confirm from '../../../common/confirm';
 
 function HostPointView(props: PointState) {
   const socket = props.socket;
   const [allPoint, setAllPoint] = useState<number>();
   const [disabled, setDisabled] = useState<boolean>(false);
   const [finished, setFinished] = useState(false);
+  const [isConfirmOn, setIsConfirmOn] = useState(false);
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
   const isAllReady = (participantss: ParticipantType[]) => {
@@ -41,7 +43,7 @@ function HostPointView(props: PointState) {
     setFinished(false);
   });
 
-  const handlePointBtnClick = () => {
+  const handleTakePointBtnClick = () => {
     socket.emit(`takePoint`, postId);
     setDisabled(false);
     setFinished(true);
@@ -53,7 +55,7 @@ function HostPointView(props: PointState) {
       <div css={PointContainer}>
         <Button
           css={PointBtnStyle(disabled)}
-          onClick={handlePointBtnClick}
+          onClick={() => setIsConfirmOn(true)}
           disabled={disabled}
         >
           {!disabled
@@ -61,6 +63,14 @@ function HostPointView(props: PointState) {
             : `${finished ? '공구 완료!' : '아직 불가능!'}`}
         </Button>
       </div>
+      <Confirm
+        on={isConfirmOn}
+        title="포인트 가져오기"
+        onCancel={() => setIsConfirmOn(false)}
+        onConfirm={handleTakePointBtnClick}
+      >
+        정말 {allPoint} 포인트를 가져오시겠습니까?
+      </Confirm>
     </div>
   );
 }

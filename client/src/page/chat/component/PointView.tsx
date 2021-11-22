@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
+import Confirm from '../../../common/confirm';
 
 type PointState = {
   socket: Socket;
@@ -19,6 +20,7 @@ function PointView(props: PointState) {
   const [disabled, setDisabled] = useState<boolean>(true);
   const [purchase, setPurchase] = useState<boolean>(false);
   const [leftPoint, setLeftPoint] = useState<number>();
+  const [isConfirmOn, setIsConfirmOn] = useState(false);
   const loginUser = useRecoilValue(loginUserState);
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
@@ -55,7 +57,7 @@ function PointView(props: PointState) {
     else setDisabled(true);
   };
 
-  const handlePointBtnClick = () => {
+  const handleSubmitPointBtnClick = () => {
     setDisabled(true);
     if (!purchase)
       socket.emit('point confirm', postId, loginUser.id, Number(myPoint));
@@ -75,13 +77,21 @@ function PointView(props: PointState) {
         />
         <Button
           css={PointBtnStyle(purchase, disabled)}
-          onClick={handlePointBtnClick}
+          onClick={() => setIsConfirmOn(true)}
           disabled={disabled}
         >
           {purchase ? '취소' : '확정'}
         </Button>
       </div>
       <span css={leftPointStyle}>잔여 포인트 : {leftPoint}</span>
+      <Confirm
+        on={isConfirmOn}
+        title="포인트 제출하기"
+        onCancel={() => setIsConfirmOn(false)}
+        onConfirm={handleSubmitPointBtnClick}
+      >
+        정말 {myPoint} 포인트를 내시겠습니까?
+      </Confirm>
     </div>
   );
 }
