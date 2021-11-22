@@ -129,14 +129,16 @@ export const quitRoom = (socket: any, io: Server) => {
 
     // 호스트가 나가는 경우를 방지
     if (myId === hostId || typeof myId === 'string') {
-      console.log('error 1');
       return; // 호스트가 나가는 기능은 별도 리스너로 구현
     }
+
+    // 공동 구매가 끝난 채팅방을 나갈 수 없음
+    const finished = await postService.getFinished(+postId);
+    if (finished) return;
 
     // 타깃 유저를 찾기
     const targetUser = await participantService.getParticipant(postId, myId);
     if (!targetUser) {
-      console.log('error 2');
       return; // target user not exists
     }
 
