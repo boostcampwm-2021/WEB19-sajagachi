@@ -7,7 +7,8 @@ import {
   joinRoom,
   sendMsg,
   kickUser,
-  quitRoom
+  quitRoom,
+  finishRoom
 } from './chat';
 
 export const socketInit = (server: any, app: Application) => {
@@ -24,6 +25,7 @@ export const socketInit = (server: any, app: Application) => {
     cancelPurchase(socket, io);
     kickUser(socket, io);
     quitRoom(socket, io);
+    finishRoom(socket, io);
 
     socket.on('disconnect', () => {
       console.log('socket disconnected!');

@@ -13,6 +13,7 @@ import Confirm from '../../../common/confirm';
 import { useHistory } from 'react-router';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
+import FinishedPointView from './FinishedPointView';
 
 const ChatMenuStyle = css`
   display: flex;
@@ -86,6 +87,14 @@ export function ChatMenu(props: propsType) {
   useEffect(() => {
     updateHostId();
     updateFinished();
+
+    props.socket.on('finishPost', () => {
+      setPointViewState(FINISHED);
+    });
+
+    return () => {
+      props.socket.off('finishPost');
+    };
   }, []);
 
   const isQuitBtnDisabled = () => {
@@ -115,7 +124,7 @@ export function ChatMenu(props: propsType) {
       />
       {
         [
-          <></>,
+          <FinishedPointView />,
           <HostPointView
             socket={props.socket}
             hostId={hostId}
