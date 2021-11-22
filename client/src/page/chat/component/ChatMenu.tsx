@@ -15,6 +15,9 @@ import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 
 const ChatMenuStyle = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
   width: 300px;
   height: 100vh;
   padding-top: 30px;
@@ -30,10 +33,7 @@ const CloseBtnStyle = css`
 `;
 
 const QuitBtnContainerStyle = css`
-  position: absolute;
-  bottom: 10px;
-  left: 5px;
-  right: 5px;
+  margin-bottom: 10px;
   text-align: center;
 `;
 

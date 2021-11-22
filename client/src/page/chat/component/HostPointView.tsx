@@ -6,11 +6,8 @@ import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 
 const HostPointViewStyle = css`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
   width: 95%;
-  bottom: 120px;
+  margin-bottom: 90px;
   padding: 0 15px;
 
   & > h1 {

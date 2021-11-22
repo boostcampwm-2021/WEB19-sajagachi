@@ -10,7 +10,10 @@ import { ParticipantType } from '../../../type';
 
 const UserListStyle = css`
   padding: 0 15px;
-
+  flex-grow: 1;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;
     font-size: 16px;
@@ -19,6 +22,8 @@ const UserListStyle = css`
   & > ul {
     list-style: none;
     padding-left: 0;
+    margin-top: 0;
+    overflow-y: scroll;
   }
 `;
 
