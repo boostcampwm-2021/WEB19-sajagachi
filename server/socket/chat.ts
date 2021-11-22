@@ -154,27 +154,18 @@ export const quitRoom = (socket: any, io: Server) => {
 export const finishRoom = (socket: any, io: Server) => {
   socket.on('takePoint', async (postId: number) => {
     const queryRunner = (await getDB().get()).createQueryRunner();
+    await queryRunner.startTransaction();
     try {
-      await queryRunner.startTransaction();
-      Promise.all([
-        takeAllPoint(postId),
-        postService.updatePostFinished(postId)
-      ])
-        .then(async result => {
-          await queryRunner.commitTransaction();
-          io.to(String(postId)).emit('finishPost');
-        })
-        .catch((err: any) => {
-          throw new Error();
-        });
+      const hostId = await postService.getHost(postId);
+      await participantService.finishPost(postId, hostId);
+      await postService.updatePostFinished(postId);
+      await queryRunner.commitTransaction();
+      io.to(String(postId)).emit('finishPost');
     } catch (err: any) {
-      queryRunner.rollbackTransaction();
+      await queryRunner.rollbackTransaction();
       socket.emit('purchase error', '정상적으로 종료되지 않았습니다.');
+    } finally {
+      await queryRunner.release();
     }
   });
-};
-
-const takeAllPoint = async (postId: number) => {
-  const hostId = await postService.getHost(postId);
-  return participantService.finishPost(postId, hostId);
 };
