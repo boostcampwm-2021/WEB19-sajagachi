@@ -4,7 +4,6 @@ import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
 import { getCookie } from '../../../util/cookie';
-import axios from 'axios';
 
 type ChatInputType = {
   socket: any;
