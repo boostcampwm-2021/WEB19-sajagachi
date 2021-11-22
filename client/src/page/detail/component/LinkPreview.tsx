@@ -31,9 +31,11 @@ export default function LinkPreview({ url }: { url: string }) {
       <div style={{ flex: '3', marginRight: '5px' }}>
         {!isLoading ? (
           <>
-            <h4 css={PreviewTitleStyle}>{metadata.title}</h4>
-            <p css={PreviewDescStyle}>{metadata.description}</p>
-            <p css={PreviewDomainStyle}>{metadata.hostname}</p>
+            <h4 css={PreviewTitleStyle}>
+              {metadata ? metadata.title : '알 수 없음'}
+            </h4>
+            <p css={PreviewDescStyle}>{metadata && metadata.description}</p>
+            <p css={PreviewDomainStyle}>{metadata && metadata.hostname}</p>
           </>
         ) : (
           <>
@@ -44,9 +46,9 @@ export default function LinkPreview({ url }: { url: string }) {
       </div>
       {!isLoading ? (
         <img
-          src={metadata.image ? metadata.image : noImg}
+          src={metadata && metadata.image ? metadata.image : noImg}
           style={{ maxWidth: '30%', maxHeight: 64 }}
-          alt={metadata.title}
+          alt={metadata && metadata.title}
         />
       ) : (
         <div style={{ flex: '1' }}>
