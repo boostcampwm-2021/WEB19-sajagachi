@@ -20,7 +20,7 @@ const MessageStyle = css`
 
 const DirectionSelector = css`
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
   align-items: flex-end;
 `;
 
