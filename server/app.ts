@@ -21,10 +21,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
-
+app.use('/img', express.static('upload'));
 app.use('/api', router);
 app.use('/sse', sseRouter);
-
 const server = app.listen(port, () =>
   console.log(`Server listening at port ${port}`)
 );
