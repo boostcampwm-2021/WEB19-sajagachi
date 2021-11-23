@@ -49,3 +49,29 @@ export const createParticipant = async (
     next({ statusCode: 500, message: err.message });
   }
 };
+
+export const getParticipationPosts = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  try {
+    const { userId } = req.params;
+    const participationPosts = await participantService.getParticipationPosts(
+      Number(userId)
+    );
+    const result = await Promise.all(
+      participationPosts.map(async (post: any) => {
+        const participantCnt = await participantService.getParticipantNum(
+          post.id
+        );
+        post.participantCnt = participantCnt;
+        return post;
+      })
+    );
+    console.log(result);
+    return res.json(result);
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
