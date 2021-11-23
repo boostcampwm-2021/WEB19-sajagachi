@@ -55,4 +55,5 @@ export interface MessageType {
   time: string;
   isMe: number;
   created_at: string;
+  modalOn?: Function;
 }

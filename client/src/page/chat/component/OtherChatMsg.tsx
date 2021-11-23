@@ -12,6 +12,8 @@ const MessageStyle = css`
 `;
 const ImageStyle = css`
   margin: 4px 0px;
+  max-width: 200px;
+  max-height: 200px;
 `;
 const DirectionSelector = css`
   display: flex;
@@ -33,6 +35,9 @@ const SenderStyle = css`
 `;
 
 function OtherChatMessage(props: { msgData: MessageType }) {
+  const handleImageClick = () => {
+    if (props.msgData.modalOn) props.msgData.modalOn(props.msgData.img);
+  };
   return (
     <>
       <div css={DirectionSelector}>
@@ -40,8 +45,13 @@ function OtherChatMessage(props: { msgData: MessageType }) {
       </div>
       <div css={DirectionSelector}>
         {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
-        {props.msgData.img && (
-          <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} />
+        {props.msgData.img && props.msgData.modalOn && (
+          <img
+            css={ImageStyle}
+            src={props.msgData.img}
+            alt={'chatImg'}
+            onClick={handleImageClick}
+          />
         )}
         <span css={MessageTimeStyle}>{props.msgData.time}</span>
       </div>
