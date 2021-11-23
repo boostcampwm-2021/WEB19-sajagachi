@@ -4,6 +4,7 @@ import { MonetizationOn } from '@mui/icons-material';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 import { fetchGet } from '../../../util';
+import ChargePointModal from './ChargePointModal';
 
 const ProfileStyle = css`
   height: 260px;
@@ -60,6 +61,7 @@ type UserType = {
 };
 
 export default function Profile() {
+  const [isPointModalOn, setIsPointModalOn] = useState(false);
   const loginUser = useRecoilValue(loginUserState);
   const [user, setUser] = useState<UserType>();
   const updateUser = async (userId: number) => {
@@ -85,9 +87,20 @@ export default function Profile() {
         {user.point}
       </p>
       <div css={BtnSetStyle}>
-        <button css={BtnStyle('#4b976a')}>충전</button>
+        <button
+          css={BtnStyle('#4b976a')}
+          onClick={() => setIsPointModalOn(true)}
+        >
+          충전
+        </button>
         <button css={BtnStyle('#45abd7')}>반환</button>
       </div>
+      {isPointModalOn && (
+        <ChargePointModal
+          onClose={() => setIsPointModalOn(false)}
+          updateUser={() => updateUser(loginUser.id)}
+        />
+      )}
     </div>
   );
 }
