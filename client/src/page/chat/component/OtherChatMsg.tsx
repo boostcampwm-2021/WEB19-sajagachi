@@ -1,12 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/react';
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: number;
-};
+import { MessageType } from '../../../type';
 
 const MessageStyle = css`
   margin: 4px 0px;
@@ -16,7 +10,11 @@ const MessageStyle = css`
   background-color: #e5e5ea;
   font-size: 18px;
 `;
-
+const ImageStyle = css`
+  margin: 4px 0px;
+  max-width: 200px;
+  max-height: 200px;
+`;
 const DirectionSelector = css`
   display: flex;
   justify-content: flex-start;
@@ -37,13 +35,24 @@ const SenderStyle = css`
 `;
 
 function OtherChatMessage(props: { msgData: MessageType }) {
+  const handleImageClick = () => {
+    if (props.msgData.modalOn) props.msgData.modalOn(props.msgData.img);
+  };
   return (
     <>
       <div css={DirectionSelector}>
         <span css={SenderStyle}>{props.msgData.sender}</span>
       </div>
       <div css={DirectionSelector}>
-        <p css={MessageStyle}>{props.msgData.msg}</p>
+        {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
+        {props.msgData.img && props.msgData.modalOn && (
+          <img
+            css={ImageStyle}
+            src={props.msgData.img}
+            alt={'chatImg'}
+            onClick={handleImageClick}
+          />
+        )}
         <span css={MessageTimeStyle}>{props.msgData.time}</span>
       </div>
     </>

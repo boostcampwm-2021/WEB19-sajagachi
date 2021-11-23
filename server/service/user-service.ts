@@ -42,4 +42,13 @@ const addPoint = async (id: number, point: number) => {
   return result;
 };
 
-export default { findById, signUp, usePoint, addPoint };
+const getName = async (id: number) => {
+  const db = await getDB().get();
+  const result = await db.manager.findOne(User, {
+    select: ['name'],
+    where: { id }
+  });
+  if (!result) throw new Error('user Not found');
+  return result.name;
+};
+export default { findById, signUp, usePoint, addPoint, getName };

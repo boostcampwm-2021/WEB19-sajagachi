@@ -19,10 +19,8 @@ router.post(
   '/upload/:postId',
   checkDirectory,
   upload.single('file'),
-  resizeImg,
   uploadImage
 );
-
 const errorHandler = (err: any, req: any, res: any, next: any) => {
   res.status(err.statusCode).json(err.message);
 };

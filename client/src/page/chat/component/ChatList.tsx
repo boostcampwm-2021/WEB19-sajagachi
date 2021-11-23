@@ -6,16 +6,8 @@ import SystemMessage from './SystemMessage';
 import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
-import { UserInfoType } from '../../../type';
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: number;
-  created_at: string;
-};
-
+import { UserInfoType, MessageType } from '../../../type';
+import ImageModal from './ImageModal';
 type ResultChat = {
   id: number;
   userId: number;
@@ -37,6 +29,7 @@ export default function ChatList({
 }) {
   const [isFetch, setIsFetch] = useState(false);
   const [chatDatas, setChatDatas] = useState<any>([]);
+  const [imageModalOn, setImageModalOn] = useState('');
   const isEnd = useRef(false);
   const cursor = useRef<number>();
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -46,13 +39,24 @@ export default function ChatList({
   const manufactureChats = (chats: Array<ResultChat>): Array<MessageType> => {
     return chats
       .map(chat => {
-        return {
-          sender: chat.name,
-          msg: chat.msg,
-          time: getAMPMTime(new Date(chat.created_at)),
-          isMe: checkSender(chat.userId),
-          created_at: chat.created_at
-        } as MessageType;
+        if (chat.img === null) {
+          return {
+            sender: chat.name,
+            msg: chat.msg,
+            time: getAMPMTime(new Date(chat.created_at)),
+            isMe: checkSender(chat.userId),
+            created_at: chat.created_at
+          } as MessageType;
+        } else {
+          return {
+            sender: chat.name,
+            img: process.env.REACT_APP_IMAGE_URL + '' + chat.img,
+            time: getAMPMTime(new Date(chat.created_at)),
+            isMe: checkSender(chat.userId),
+            created_at: chat.created_at,
+            modalOn: setImageModalOn
+          } as MessageType;
+        }
       })
       .reverse();
   };
@@ -87,6 +91,33 @@ export default function ChatList({
         ];
       });
 
+      if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
+        messageEndRef.current?.scrollIntoView({
+          behavior: 'auto',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    });
+    socket.on('sendImg', (user: number, userName: string, img: string) => {
+      const isMe = checkSender(user);
+      const bottom =
+        (parent.current?.scrollHeight as number) -
+        (parent.current?.scrollTop as number) -
+        (parent.current?.clientHeight as number);
+      setChatDatas((chatDatas: MessageType[]) => {
+        return [
+          ...chatDatas,
+          {
+            sender: userName,
+            img: process.env.REACT_APP_IMAGE_URL + img,
+            time: getAMPMTime(new Date()),
+            isMe,
+            created_at: new Date().toString(),
+            modalOn: setImageModalOn
+          }
+        ];
+      });
       if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
         messageEndRef.current?.scrollIntoView({
           behavior: 'auto',
@@ -155,30 +186,36 @@ export default function ChatList({
 
   const chatSections = makeSection(chatDatas);
   return (
-    <div css={ChatLayout} ref={parent}>
-      {isFetch && <CircularProgress size={25} sx={ProgressStyle} />}
-      <div ref={loader} />
-      {Object.entries(chatSections).map(([date, chats]) => {
-        return (
-          <div key={date}>
-            <div css={StickyHeader}>
-              <button>{date}</button>
+    <>
+      <div css={ChatLayout} ref={parent}>
+        {isFetch && <CircularProgress size={25} sx={ProgressStyle} />}
+        <div ref={loader} />
+        {Object.entries(chatSections).map(([date, chats]) => {
+          return (
+            <div key={date}>
+              <div css={StickyHeader}>
+                <button>{date}</button>
+              </div>
+              {chats.map((chat: MessageType) => {
+                if (chat.isMe === SENDER_TYPE.SYSTEM) {
+                  return <SystemMessage msgData={chat} />;
+                } else if (chat.isMe === SENDER_TYPE.ME) {
+                  return <MyChatMessage msgData={chat} />;
+                } else {
+                  return <OtherChatMessage msgData={chat} />;
+                }
+              })}
             </div>
-            {chats.map((chat: MessageType) => {
-              if (chat.isMe === SENDER_TYPE.SYSTEM) {
-                return <SystemMessage msgData={chat} />;
-              } else if (chat.isMe === SENDER_TYPE.ME) {
-                return <MyChatMessage msgData={chat} />;
-              } else {
-                return <OtherChatMessage msgData={chat} />;
-              }
-            })}
-          </div>
-        );
-      })}
+          );
+        })}
 
-      <div key="messageEndDiv" ref={messageEndRef} />
-    </div>
+        <div key="messageEndDiv" ref={messageEndRef} />
+      </div>
+
+      {imageModalOn !== '' && (
+        <ImageModal imageUrl={imageModalOn} setImageModalOn={setImageModalOn} />
+      )}
+    </>
   );
 }
 

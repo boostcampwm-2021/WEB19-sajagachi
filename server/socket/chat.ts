@@ -29,6 +29,16 @@ export const sendMsg = (socket: any, io: Server) => {
   });
 };
 
+export const sendImg = (
+  io: Server,
+  postId: number,
+  userId: number,
+  userName: string,
+  img: string
+) => {
+  io.to(String(postId)).emit('sendImg', userId, userName, img);
+};
+
 export const confirmPurchase = (socket: any, io: Server) => {
   socket.on(
     'pointConfirm',

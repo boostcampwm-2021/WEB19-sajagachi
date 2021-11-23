@@ -104,7 +104,6 @@ const getHost = async (postId: number) => {
     select: ['userId'],
     where: { id: postId }
   });
-
   if (!result) throw new Error('post not found');
   return result.userId;
 };

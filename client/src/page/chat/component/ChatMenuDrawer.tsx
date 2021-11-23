@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { ChatMenu } from './ChatMenu';
 import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
+import { IconButton } from '@mui/material';
 
 const BlurredBackground = css`
   position: fixed;
@@ -27,16 +28,18 @@ export function ChatMenuDrawer(props: propsType) {
 
   return (
     <>
-      <MenuIcon
-        sx={{
-          paddingTop: '20px',
-          width: '30px',
-          height: '3.4rem',
-          marginRight: '10px',
-          color: '#FFFFFF'
-        }}
-        onClick={toggleDrawer}
-      />
+      <IconButton aria-label="chat menu">
+        <MenuIcon
+          sx={{
+            paddingTop: '5px',
+            width: '30px',
+            height: '3.4rem',
+            marginRight: '10px',
+            color: '#FFFFFF'
+          }}
+          onClick={toggleDrawer}
+        />
+      </IconButton>
       {isMenuOn && <div css={BlurredBackground}></div>}
       <SwipeableDrawer
         anchor="right"
