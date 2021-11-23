@@ -53,7 +53,7 @@ function Chat() {
     if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
     if (participantMe !== undefined) {
       // 나중에 이조건 없애주기
-      setChatSocket(participantMe.user.id);
+      setChatSocket();
       setUserMe({
         userId: participantMe.user.id,
         userName: participantMe.user.name
@@ -62,8 +62,8 @@ function Chat() {
     }
   };
 
-  const setChatSocket = (userId: number) => {
-    socketRef.current.emit('joinRoom', postId, userId);
+  const setChatSocket = () => {
+    socketRef.current.emit('joinRoom', postId);
   };
 
   useEffect(() => {
