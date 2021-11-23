@@ -1,9 +1,7 @@
 import { Request } from 'express';
-import { title } from 'process';
 import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
-import { Url } from '../model/entity/Url';
-import { PostColumn, getPostsOption } from '../type';
+import { getPostsOption } from '../type';
 
 const savePost = async (body: Request['body']): Promise<number> => {
   const db = await getDB().get();
@@ -106,7 +104,6 @@ const getHost = async (postId: number) => {
     select: ['userId'],
     where: { id: postId }
   });
-
   if (!result) throw new Error('post not found');
   return result.userId;
 };

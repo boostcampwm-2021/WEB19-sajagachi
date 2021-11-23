@@ -42,6 +42,7 @@ type PostType = {
   capacity: number;
   participantCnt: number;
   urls: UrlType[];
+  isParticipate: boolean;
 };
 
 const detailContainer = css`
@@ -65,6 +66,7 @@ const StyledIconButton = styled(IconButton)`
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isLoad, setIsLoad] = useState(false);
+  const [isNeedServerTime, setIsNeedServerTime] = useState(true);
   const deadLineRef = useRef<DeadLineHandle>();
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
   const [post, setPost] = useState<PostType>({
@@ -80,7 +82,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     capacity: 0,
     deadline: '',
     participantCnt: 0,
-    urls: []
+    urls: [],
+    isParticipate: false
   });
   useEffect(() => {
     if (!loginUser.isSigned) {
@@ -101,19 +104,19 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     fetchGet(
       `${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
     ).then(post => {
-      if (!post.finished) {
+      if (!post.finished && post.deadline !== null) {
         es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
         es.onmessage = function (e: MessageEvent) {
+          if (isNeedServerTime) {
+            setIsNeedServerTime(false);
+          }
           if (deadLineRef.current) {
-            if (post.deadline === null) {
-              deadLineRef.current.setDeadLine('기한 없음');
-              return;
-            }
             const end = new Date(post.deadline);
             const server = new Date(parseInt(e.data, 10));
-            end.setDate(end.getDate());
             if (server >= end) {
               deadLineRef.current.setDeadLine('기한 마감');
+              setPost({ ...post, finished: true });
+              es.close();
               return;
             } else {
               const t = end.getTime() - server.getTime();
@@ -132,6 +135,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             }
           }
         };
+      } else {
+        setIsNeedServerTime(false);
       }
       setPost({ ...post });
       setIsLoad(true);
@@ -141,7 +146,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
         es.close();
       }
     };
-  }, [deadLineRef.current]);
+  }, []);
   return isLoad ? (
     <div css={detailContainer}>
       <Card
@@ -171,7 +176,11 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             }}
           >
             <Typography variant="body1">작성자| {post.userId}</Typography>
-            <DeadLine ref={deadLineRef} />
+            <DeadLine
+              ref={deadLineRef}
+              isNeedServerTime={isNeedServerTime}
+              deadline={post.deadline}
+            />
           </Box>
           <Card
             sx={{
@@ -217,6 +226,8 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             participantCnt={post.participantCnt}
             capacity={post.capacity}
             finished={post.finished}
+            isParticipate={post.isParticipate}
+            isNeedServerTime={isNeedServerTime}
           />
         </Box>
       </StyledBox>

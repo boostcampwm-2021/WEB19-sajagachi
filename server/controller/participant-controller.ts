@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
-import userService from '../service/user-service';
+import { SYSTEM_MSG_TYPE, processSystemMsg } from '../socket/chat';
 
 export const getParticipants = async (
   req: Request,
@@ -36,6 +36,12 @@ export const createParticipant = async (
     const createdParticipant = await participantService.saveParticipant(
       req.body.userId,
       req.body.postId
+    );
+    processSystemMsg(
+      req.app.get('io'),
+      SYSTEM_MSG_TYPE.JOIN,
+      req.body.postId,
+      String(req.session.userName)
     );
     res.json(createdParticipant);
   } catch (err: any) {

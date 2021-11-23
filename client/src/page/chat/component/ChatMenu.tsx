@@ -8,13 +8,17 @@ import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
-import { getCookie } from '../../../util/cookie';
 import Confirm from '../../../common/confirm';
 import { useHistory } from 'react-router';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
+import FinishedPointView from './FinishedPointView';
 
 const ChatMenuStyle = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
   width: 300px;
   height: 100vh;
   padding-top: 30px;
@@ -29,21 +33,23 @@ const CloseBtnStyle = css`
   right: 10px;
 `;
 
-const QuitBtnContainerStyle = css`
-  position: absolute;
-  bottom: 10px;
-  left: 5px;
-  right: 5px;
-  text-align: center;
-`;
-
-const QuitBtnStyle = css`
+const QuitBtnStyle = (finished: boolean) => css`
   width: 95%;
+  margin-bottom: 10px;
   color: #ffffff;
   background-color: #f76a6a;
   &:hover {
     background-color: #f76a6a;
   }
+
+  ${finished
+    ? `
+    background-color: #cfcfcf;
+    &:hover {
+      background-color: #cfcfcf;
+    }
+    `
+    : ''}
 `;
 
 type propsType = {
@@ -80,10 +86,28 @@ export function ChatMenu(props: propsType) {
   useEffect(() => {
     updateHostId();
     updateFinished();
+
+    props.socket.on('finishPost', () => {
+      setPointViewState(FINISHED);
+    });
+
+    return () => {
+      props.socket.off('finishPost');
+    };
   }, []);
 
+  const isQuitBtnDisabled = () => {
+    if (loginUser.id === hostId) return true;
+    else if (pointViewState === FINISHED) return true;
+    return false;
+  };
+
   const handleQuitClick = () => {
-    props.socket.emit('quitRoom', getCookie('user'), postId);
+    isQuitBtnDisabled() || setIsConfirmOn(true);
+  };
+
+  const handleQuitConfirm = () => {
+    props.socket.emit('quitRoom', postId);
     setIsConfirmOn(false);
     history.replace(`/post/${postId}`);
     history.goBack();
@@ -99,7 +123,7 @@ export function ChatMenu(props: propsType) {
       />
       {
         [
-          <></>,
+          <FinishedPointView />,
           <HostPointView
             socket={props.socket}
             hostId={hostId}
@@ -113,16 +137,14 @@ export function ChatMenu(props: propsType) {
         ][pointViewState]
       }
 
-      <div css={QuitBtnContainerStyle}>
-        <Button css={QuitBtnStyle} onClick={() => setIsConfirmOn(true)}>
-          나가기
-        </Button>
-      </div>
+      <Button css={QuitBtnStyle(isQuitBtnDisabled())} onClick={handleQuitClick}>
+        나가기
+      </Button>
       <Confirm
         on={isConfirmOn}
         title="채팅방 나가기"
         onCancel={() => setIsConfirmOn(false)}
-        onConfirm={handleQuitClick}
+        onConfirm={handleQuitConfirm}
       >
         정말 채팅방을 나가시겠습니까?
       </Confirm>

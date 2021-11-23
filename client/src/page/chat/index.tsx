@@ -10,6 +10,7 @@ import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
+import Alert from '../../common/alert';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -22,10 +23,13 @@ const ChatContainer = css`
 function Chat() {
   const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
-  const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
+  const socketRef = useRef<any>(
+    io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true })
+  );
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const [isAlertOn, setIsAlertOn] = useState(false);
 
   const updateParticipants = async (postId: number) => {
     const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
@@ -49,7 +53,7 @@ function Chat() {
     if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
     if (participantMe !== undefined) {
       // 나중에 이조건 없애주기
-      setChatSocket(participantMe.user.id);
+      setChatSocket();
       setUserMe({
         userId: participantMe.user.id,
         userName: participantMe.user.name
@@ -58,8 +62,8 @@ function Chat() {
     }
   };
 
-  const setChatSocket = (userId: number) => {
-    socketRef.current.emit('joinRoom', postId, userId);
+  const setChatSocket = () => {
+    socketRef.current.emit('joinRoom', postId);
   };
 
   useEffect(() => {
@@ -96,12 +100,20 @@ function Chat() {
       });
     });
 
-    socketRef.current.emit('enterRoom');
+    socketRef.current.on('getOut', (targetUserId: number) => {
+      if (loginUser.id === targetUserId) {
+        setIsAlertOn(true);
+      }
+    });
 
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
+
+  const handleAlertClose = () => {
+    history.goBack();
+  };
 
   return (
     <div css={ChatContainer}>
@@ -118,6 +130,9 @@ function Chat() {
       {userMe && (
         <ChatInput socket={socketRef.current} postId={postId} user={userMe} />
       )}
+      <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
+        호스트가 당신을 내보냈습니다.
+      </Alert>
     </div>
   );
 }

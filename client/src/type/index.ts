@@ -47,3 +47,13 @@ export type UserInfoType = {
   userId: number;
   userName: string;
 };
+
+export interface MessageType {
+  sender: string;
+  msg?: string;
+  img?: string;
+  time: string;
+  isMe: number;
+  created_at: string;
+  modalOn?: Function;
+}

@@ -6,6 +6,7 @@ import Post from './page/post';
 import Detail from './page/detail';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Chat from './page/chat';
+import MyPage from './page/mypage';
 
 const theme = createTheme({
   typography: {
@@ -24,6 +25,7 @@ const App = () => {
             <Route exact path="/post" component={Post} />
             <Route path="/post/:postId" component={Detail} />
             <Route path="/chat" component={Chat} />
+            <Route exact path="/mypage" component={MyPage} />
           </Switch>
         </Router>
       </ThemeProvider>

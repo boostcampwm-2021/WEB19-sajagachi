@@ -63,11 +63,34 @@ const deleteParticipant = async (postId: number, userId: number) => {
   return result;
 };
 
+const checkParticipation = async (postId: number, userId: number) => {
+  const db = await getDB().get();
+  const result = await db.manager.findOne(Participant, {
+    where: { postId, userId }
+  });
+  return !(result === undefined);
+};
+
+const finishPost = async (postId: number, hostId: number) => {
+  const db = await getDB().get();
+  const sql = `
+  UPDATE user SET point = point + (SELECT SUM(p.point) as sum
+                          FROM participant p
+                          WHERE postId = ${postId}
+                          GROUP BY postId)
+  WHERE id = ${hostId}
+  `;
+  const result = await db.manager.query(sql);
+  return result;
+};
+
 export default {
   getParticipantNum,
   getParticipants,
   saveParticipant,
   getParticipant,
   updatePoint,
-  deleteParticipant
+  deleteParticipant,
+  checkParticipation,
+  finishPost
 };

@@ -9,7 +9,12 @@ import { getCookie } from '../../../util/cookie';
 import { ParticipantType } from '../../../type';
 
 const UserListStyle = css`
-  padding: 0 15px;
+  width: 95%;
+  padding: 0 10px;
+  flex-grow: 1;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
 
   & > h1 {
     font-family: 'Noto Sans KR Medium', sans-serif;
@@ -19,6 +24,8 @@ const UserListStyle = css`
   & > ul {
     list-style: none;
     padding-left: 0;
+    margin-top: 0;
+    overflow-y: scroll;
   }
 `;
 
@@ -116,7 +123,7 @@ function UserListItem({
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
   const handleUserKick = () => {
-    socket.emit('kickUser', getCookie('user'), postId, item.user.id);
+    socket.emit('kickUser', postId, item.user.id);
     setIsConfirmOn(false);
   };
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
+import { decodeToken } from '../util';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
@@ -24,10 +25,21 @@ export const getPosts = async (req: Request, res: Response, next: Function) => {
 export const getPost = async (req: Request, res: Response, next: Function) => {
   try {
     const post = await postService.getPost(req.params.postId);
+    const userId = req.session.userId;
+    // 쿠키가 없을경우 즉 로그인이 되어있지 않을경우 isParticipate를 false처리해준다.
+    let isParticipate: boolean;
+    if (userId === undefined) isParticipate = false;
+    else {
+      isParticipate = await participantService.checkParticipation(
+        Number(req.params.postId),
+        userId
+      );
+    }
+
     const participantCnt = await participantService.getParticipantNum(
       Number(req.params.postId)
     );
-    res.json({ ...post, participantCnt });
+    res.json({ ...post, participantCnt, isParticipate });
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });
   }

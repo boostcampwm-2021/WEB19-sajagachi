@@ -1,8 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
+
+import IconButton from '@mui/material/IconButton';
+
 
 type ChatInputType = {
   socket: any;
@@ -12,7 +15,23 @@ type ChatInputType = {
 
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const uploadFile = async (event: any) => {
+    const img = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', img);
+    const options = {
+      method: 'POST',
+      credentials: 'include' as RequestCredentials,
+      body: formData
+    };
+    const res = await fetch(
+      `${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`,
+      options
+    );
+    console.log(await res.json());
+  };
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
   };
@@ -23,12 +42,7 @@ function ChatInput(props: ChatInputType) {
   };
   const sendMessage = () => {
     if (inputRef.current !== null && inputRef.current.value !== '') {
-      props.socket.emit(
-        'sendMsg',
-        props.postId,
-        props.user.userId,
-        inputRef.current.value
-      );
+      props.socket.emit('sendMsg', props.postId, inputRef.current.value);
       inputRef.current.value = '';
     }
   };
@@ -36,16 +50,32 @@ function ChatInput(props: ChatInputType) {
     if (isValidEvent(event)) sendMessage();
   };
 
+  const imgUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
   return (
     <div css={ChatInputDiv}>
-      <AddCircleIcon
-        sx={{
-          width: '40px',
-          height: '40px',
-          color: '#ebabab',
-          paddingLeft: '10px'
-        }}
+      <input
+        accept=".png, .jpg"
+        type="file"
+        onChange={uploadFile}
+        style={{ display: 'none' }}
+        ref={fileInputRef}
       />
+      <IconButton
+        aria-label="image add"
+        sx={{ width: '40px', height: '40px' }}
+        onClick={imgUpload}
+      >
+        <AddCircleIcon
+          sx={{
+            width: '30px',
+            height: '30px',
+            color: '#ebabab'
+          }}
+        />
+      </IconButton>
       <input
         css={ChatInputStyle}
         type="text"
@@ -53,15 +83,24 @@ function ChatInput(props: ChatInputType) {
         onKeyPress={sendInput}
         ref={inputRef}
       />
-      <SendIcon
+      <IconButton
+        aria-label="send message"
         sx={{
           width: '40px',
           height: '40px',
           color: '#ebabab',
-          paddingRight: '10px'
+          marginRight: '5px'
         }}
         onClick={sendInput}
-      />
+      >
+        <SendIcon
+          sx={{
+            width: '30px',
+            height: '30px',
+            color: '#ebabab'
+          }}
+        />
+      </IconButton>
     </div>
   );
 }
