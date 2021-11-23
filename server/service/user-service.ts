@@ -10,12 +10,12 @@ const findById = async (id: number): Promise<User | undefined> => {
   return user;
 };
 
-const signUp = async (id: number): Promise<User> => {
+const signUp = async (id: number, name: string): Promise<User> => {
   const db = await getDB().get();
   const newUser = db.manager.create(User, {
     id: id,
-    name: `horong`,
-    img: `https://user-images.githubusercontent.com/53253189/141759551-188bcdf4-5ef3-481e-959b-af124fe48a33.png`
+    name: name,
+    img: `https://github.com/${name}.png`
   });
   const createUser = await db.manager.save(newUser);
   return createUser;

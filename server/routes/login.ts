@@ -1,9 +1,9 @@
 import express from 'express';
-import { checkLogin, login } from '../controller/login-controller';
+import { checkLogin, githubLogin } from '../controller/login-controller';
 
 const router = express.Router();
 
-router.post('/', login);
+router.get('/auth', githubLogin);
 router.get('/', checkLogin);
 
 const errorHandler = (err: any, req: any, res: any, next: any) => {
