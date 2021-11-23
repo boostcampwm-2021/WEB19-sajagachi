@@ -9,3 +9,26 @@ export const getUser = async (req: Request, res: Response, next: Function) => {
     next({ statusCode: 500, message: err.message });
   }
 };
+
+export const updatePoint = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  try {
+    const { user_id } = req.params;
+    const user = await userService.findById(+user_id);
+    if (!user) throw new Error('user not found');
+
+    const point = +req.body.point;
+    if (!point) throw new Error('invalid point');
+    if (point > 0) await userService.addPoint(+user_id, point);
+    else {
+      if (user.point + point < 0) throw new Error('not enough points');
+      await userService.usePoint(+user_id, user.point, -point);
+    }
+    res.json('success');
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
