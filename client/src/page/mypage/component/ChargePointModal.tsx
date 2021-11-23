@@ -101,6 +101,8 @@ export default function ChargePointModal(props: ChargePointModalProps) {
             value={point}
             onChange={handleChange}
             css={InputNumberStyle}
+            min="1"
+            step="1"
           />
           <Button type="submit" css={SubmitStyle}>
             충전
