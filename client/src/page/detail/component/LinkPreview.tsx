@@ -10,6 +10,55 @@ interface PreviewType {
   hostname?: string | undefined;
   image?: string | undefined;
 }
+
+export default function LinkPreview({ url }: { url: string }) {
+  const [metadata, setMetadata] = useState<PreviewType>({});
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const getMetadata = async (url: string) => {
+      const response = await fetchGet(
+        `${process.env.REACT_APP_SERVER_URL}/api/previewData`,
+        `url=${url}`
+      );
+      setMetadata(response.metadata);
+      setIsLoading(false);
+    };
+    getMetadata(url);
+  }, [url]);
+
+  return (
+    <a css={PreviewContainerStyle} target="_blank" href={url} rel="noreferrer">
+      <div style={{ flex: '3', marginRight: '5px' }}>
+        {!isLoading ? (
+          <>
+            <h4 css={PreviewTitleStyle}>
+              {metadata ? metadata.title : '알 수 없음'}
+            </h4>
+            <p css={PreviewDescStyle}>{metadata && metadata.description}</p>
+            <p css={PreviewDomainStyle}>{metadata && metadata.hostname}</p>
+          </>
+        ) : (
+          <>
+            <Skeleton />
+            <Skeleton width="60%" />
+          </>
+        )}
+      </div>
+      {!isLoading ? (
+        <img
+          src={metadata && metadata.image ? metadata.image : noImg}
+          style={{ maxWidth: '30%', maxHeight: 64 }}
+          alt={metadata && metadata.title}
+        />
+      ) : (
+        <div style={{ flex: '1' }}>
+          <Skeleton variant="rectangular" height={64} />
+        </div>
+      )}
+    </a>
+  );
+}
+
 const PreviewContainerStyle = css`
   display: flex;
   align-items: center;
@@ -60,49 +109,3 @@ const PreviewDomainStyle = css`
   max-width: 60vw;
   color: #404040;
 `;
-
-export default function LinkPreview({ url }: { url: string }) {
-  const [metadata, setMetadata] = useState<PreviewType>({});
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const getMetadata = async (url: string) => {
-      const response = await fetchGet(
-        `${process.env.REACT_APP_SERVER_URL}/api/previewData`,
-        `url=${url}`
-      );
-      setMetadata(response.metadata);
-      setIsLoading(false);
-    };
-    getMetadata(url);
-  }, [url]);
-
-  return (
-    <a css={PreviewContainerStyle} target="_blank" href={url} rel="noreferrer">
-      <div style={{ flex: '3', marginRight: '5px' }}>
-        {!isLoading ? (
-          <>
-            <h4 css={PreviewTitleStyle}>{metadata.title}</h4>
-            <p css={PreviewDescStyle}>{metadata.description}</p>
-            <p css={PreviewDomainStyle}>{metadata.hostname}</p>
-          </>
-        ) : (
-          <>
-            <Skeleton />
-            <Skeleton width="60%" />
-          </>
-        )}
-      </div>
-      {!isLoading ? (
-        <img
-          src={metadata.image ? metadata.image : noImg}
-          style={{ maxWidth: '30%', maxHeight: 64 }}
-          alt={metadata.title}
-        />
-      ) : (
-        <div style={{ flex: '1' }}>
-          <Skeleton variant="rectangular" height={64} />
-        </div>
-      )}
-    </a>
-  );
-}

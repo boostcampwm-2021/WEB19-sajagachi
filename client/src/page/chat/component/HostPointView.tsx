@@ -1,62 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
-import { fetchGet, parsePath } from '../../../util';
+import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
-
-const HostPointViewStyle = css`
-  width: 95%;
-  margin-bottom: 90px;
-  padding: 0 10px;
-
-  & > h1 {
-    font-family: 'Noto Sans KR Medium', sans-serif;
-    font-size: 16px;
-  }
-
-  & > ul {
-    list-style: none;
-    padding-left: 0;
-  }
-`;
-
-const PointContainer = css`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
-const PointInputStyle = css`
-  border: 0px solid;
-  border-bottom: 2px solid #f97d63;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 70%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  padding: 10px;
-  &:-webkit-outer-spin-button,
-  &:-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
-
-const PointBtnStyle = (disabled: boolean) => css`
-  width: 100%;
-  background-color: ${disabled ? `#b6e3e9` : `#fdafab`};
-  color: white;
-  &:hover {
-    background-color: ${disabled ? '#b6e3e9' : '#fdafab'};
-  }
-`;
+import Confirm from '../../../common/confirm';
 
 type PointState = {
   socket: Socket;
@@ -69,6 +17,7 @@ function HostPointView(props: PointState) {
   const [allPoint, setAllPoint] = useState<number>();
   const [disabled, setDisabled] = useState<boolean>(false);
   const [finished, setFinished] = useState(false);
+  const [isConfirmOn, setIsConfirmOn] = useState(false);
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
 
   const isAllReady = (participantss: ParticipantType[]) => {
@@ -98,10 +47,16 @@ function HostPointView(props: PointState) {
   useEffect(() => {
     setBtn();
     setFinished(false);
+    socket.on('finishError', console.log);
+
+    return () => {
+      socket.off('finishError');
+    };
   });
 
-  const handlePointBtnClick = () => {
-    socket.emit(`post finish`, postId);
+  const handleTakePointBtnClick = () => {
+    setIsConfirmOn(false);
+    socket.emit(`takePoint`, postId);
     setDisabled(false);
     setFinished(true);
   };
@@ -112,7 +67,7 @@ function HostPointView(props: PointState) {
       <div css={PointContainer}>
         <Button
           css={PointBtnStyle(disabled)}
-          onClick={handlePointBtnClick}
+          onClick={() => setIsConfirmOn(true)}
           disabled={disabled}
         >
           {!disabled
@@ -120,9 +75,49 @@ function HostPointView(props: PointState) {
             : `${finished ? '공구 완료!' : '아직 불가능!'}`}
         </Button>
       </div>
+      <Confirm
+        on={isConfirmOn}
+        title="포인트 가져오기"
+        onCancel={() => setIsConfirmOn(false)}
+        onConfirm={handleTakePointBtnClick}
+      >
+        정말 {allPoint} 포인트를 가져오시겠습니까?
+      </Confirm>
     </div>
   );
 }
 
 export default React.memo(HostPointView);
 //
+const HostPointViewStyle = css`
+  width: 95%;
+  margin-bottom: 90px;
+  padding: 0 10px;
+
+  & > h1 {
+    font-family: 'Noto Sans KR Medium', sans-serif;
+    font-size: 16px;
+  }
+
+  & > ul {
+    list-style: none;
+    padding-left: 0;
+  }
+`;
+
+const PointContainer = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const PointBtnStyle = (disabled: boolean) => css`
+  width: 100%;
+  background-color: ${disabled ? `#b6e3e9` : `#fdafab`};
+  color: white;
+  &:hover {
+    background-color: ${disabled ? '#b6e3e9' : '#fdafab'};
+  }
+`;
