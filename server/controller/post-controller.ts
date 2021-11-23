@@ -92,3 +92,13 @@ export const finishPost = async (
     next({ statusCode: 500, message: err.message });
   }
 };
+
+export const getTitle = async (req: Request, res: Response, next: Function) => {
+  try {
+    const { postId } = req.params;
+    const title = await postService.getTitle(+postId);
+    res.json(title);
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};

@@ -30,7 +30,7 @@ function Chat() {
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
   const [isAlertOn, setIsAlertOn] = useState(false);
-
+  const [title, setTitle] = useState('');
   const updateParticipants = async (postId: number) => {
     const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
     const userLogin = loginUser.isSigned ? loginUser : await fetchGet(loginUrl);
@@ -50,10 +50,13 @@ function Chat() {
     const participantMe = result.find(
       (participant: ParticipantType) => participant.user.id === userLogin.id
     );
-    if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
+    if (participantMe === undefined) history.goBack();
+
     if (participantMe !== undefined) {
-      // 나중에 이조건 없애주기
       setChatSocket();
+      const titleUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/title`;
+      const resultTitle = await fetchGet(titleUrl);
+      setTitle(resultTitle);
       setUserMe({
         userId: participantMe.user.id,
         userName: participantMe.user.name
@@ -119,7 +122,7 @@ function Chat() {
     <div css={ChatContainer}>
       {participants && (
         <ChatBar
-          title={'타이틀이 들어갈 공간입니당아아아'}
+          title={title}
           socket={socketRef.current}
           participants={participants}
         />

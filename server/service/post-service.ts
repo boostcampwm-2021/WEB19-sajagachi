@@ -117,6 +117,16 @@ const getFinished = async (postId: number) => {
   return finished[0];
 };
 
+const getTitle = async (postId: number) => {
+  const db = await getDB().get();
+  const result = await db.manager.findOne(Post, {
+    select: ['title'],
+    where: { id: postId }
+  });
+  if (result === undefined) throw new Error('post not found');
+  return result.title;
+};
+
 export default {
   savePost,
   getPosts,
@@ -125,5 +135,6 @@ export default {
   getCapacity,
   saveUrls,
   getHost,
-  getFinished
+  getFinished,
+  getTitle
 };
