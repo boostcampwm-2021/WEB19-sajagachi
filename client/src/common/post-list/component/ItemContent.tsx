@@ -10,8 +10,8 @@ import { locationState } from '../../../store/location';
 
 function isFinished(item: ItemType) {
   const now = new Date();
-  if (!item.deadline) return false;
-  return item.finished || new Date(item.deadline) <= now;
+  if (item.finished) return true;
+  return item.deadline !== undefined && new Date(item.deadline) <= now;
 }
 
 const categoryColor: any = {

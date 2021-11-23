@@ -72,24 +72,10 @@ type ModalState = {
 };
 
 function LoginModal({ setIsLoginModalOn }: ModalState) {
-  const history = useHistory();
-  const [id, setId] = useState<string>();
-  const [loginUser, setLoginUser] =
-    useRecoilState<LoginUserType>(loginUserState);
-
-  function handleIdChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setId(e.target.value);
-  }
-
   function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-    fetchPost(url, { userId: id }).then(data => {
-      if (!isNaN(data.id)) {
-        setLoginUser({ id: data.id, name: data.name, isSigned: true });
-        setIsLoginModalOn(false);
-        window.location.href = window.location.pathname;
-      }
-    });
+    const url = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`;
+    setIsLoginModalOn(false);
+    window.location.assign(url);
   }
 
   function handleOutsideClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -104,12 +90,6 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
     >
       <div css={modal}>
         <h1 css={loginText}>로그인</h1>
-        <input
-          type="text"
-          css={InputText}
-          onChange={handleIdChange}
-          value={id}
-        />
         <IconButton css={loginButton} onClick={handleLoginBtnClick}>
           <img src={githubIcon} alt="로그인" css={githubImage}></img>
         </IconButton>
