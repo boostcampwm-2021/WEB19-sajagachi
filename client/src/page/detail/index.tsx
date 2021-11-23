@@ -243,9 +243,6 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
         }}
       >
         <Box sx={{ display: 'flex', p: 1 }}>
-          <StyledIconButton sx={{ bgcolor: 'white', p: 1, m: 1 }}>
-            <FavoriteBorderIcon sx={{ fontSize: 30 }} />
-          </StyledIconButton>
           <GroupBuyButton
             login={loginUser}
             postId={Number(match.params.postId)}
