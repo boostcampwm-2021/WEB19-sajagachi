@@ -4,7 +4,6 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { decodeToken } from '../util';
 import userService from '../service/user-service';
 import { Server } from 'socket.io';
 import { sendImg } from '../socket/chat';
@@ -80,17 +79,20 @@ export const upload = multer({
 export const uploadImage = async (req: Request, res: Response, next: any) => {
   try {
     if (req.file === undefined) throw new Error('파일이 없습니다'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
+    const session = req.session;
     const postId = req.path.split('/')[2];
     const filename = postId + '/' + req.file.filename;
-    const userId = decodeToken(req.cookies.user);
-    if (userId === 'error') throw new Error('token으로 user데이터 받기 오류'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
-    const userName = await userService.getName(userId);
-    if (userName === undefined) throw new Error('user Name 받기 오류'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
+    if (!session.userId || !session.userName)
+      throw new Error('session 정보 없음');
     const io: Server = req.app.get('io');
-    sendImg(io, +postId, +userId, userName, filename);
+    sendImg(io, +postId, session.userId, session.userName, filename);
 
     // 나중에 사용 예정
-    const savedImg = await chatService.saveImg(userId, +postId, filename);
+    const savedImg = await chatService.saveImg(
+      session.userId,
+      +postId,
+      filename
+    );
     if (savedImg) res.json({ savedImg });
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });

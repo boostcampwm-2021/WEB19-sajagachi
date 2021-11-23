@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
-import { decodeToken } from '../util';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
