@@ -88,10 +88,10 @@ export const uploadImage = async (req: Request, res: Response, next: any) => {
     if (userName === undefined) throw new Error('user Name 받기 오류'); // REMOVE_SOON 에러처리가 제대로 안되어서 이렇게 해놓습니다
     const io: Server = req.app.get('io');
     sendImg(io, +postId, +userId, userName, filename);
-    res.json('ok');
+
     // 나중에 사용 예정
-    // const savedImg = await chatService.saveImg(userId, +postId, filename);
-    // if (savedImg) res.json({ savedImg });
+    const savedImg = await chatService.saveImg(userId, +postId, filename);
+    if (savedImg) res.json({ savedImg });
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });
   }
