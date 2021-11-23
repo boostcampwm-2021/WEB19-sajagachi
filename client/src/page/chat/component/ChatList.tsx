@@ -38,13 +38,23 @@ export default function ChatList({
   const manufactureChats = (chats: Array<ResultChat>): Array<MessageType> => {
     return chats
       .map(chat => {
-        return {
-          sender: chat.name,
-          msg: chat.msg,
-          time: getAMPMTime(new Date(chat.created_at)),
-          isMe: checkSender(chat.userId),
-          created_at: chat.created_at
-        } as MessageType;
+        if (chat.img === null) {
+          return {
+            sender: chat.name,
+            msg: chat.msg,
+            time: getAMPMTime(new Date(chat.created_at)),
+            isMe: checkSender(chat.userId),
+            created_at: chat.created_at
+          } as MessageType;
+        } else {
+          return {
+            sender: chat.name,
+            img: process.env.REACT_APP_IMAGE_URL + '' + chat.img,
+            time: getAMPMTime(new Date(chat.created_at)),
+            isMe: checkSender(chat.userId),
+            created_at: chat.created_at
+          } as MessageType;
+        }
       })
       .reverse();
   };

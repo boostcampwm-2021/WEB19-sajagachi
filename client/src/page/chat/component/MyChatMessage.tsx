@@ -36,7 +36,6 @@ function MyChatMessage(props: { msgData: MessageType }) {
       {props.msgData.img && (
         <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} />
       )}
-      {console.log(props.msgData.img)}
     </div>
   );
 }
