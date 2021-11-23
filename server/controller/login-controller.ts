@@ -48,6 +48,16 @@ export const checkLogin = async (
   }
 };
 
+export const logout = async (req: Request, res: Response, next: Function) => {
+  try {
+    req.session.destroy(() => {
+      res.json('success');
+    });
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
+
 const getGithubAccessToken = async (code: any) => {
   const url = `https://github.com/login/oauth/access_token`;
   const githubResponse = await axios.post(

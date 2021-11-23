@@ -6,9 +6,10 @@ import { loginUserState } from '../../../store/login';
 import { fetchGet } from '../../../util';
 import ChargePointModal from './ChargePointModal';
 import ReturnPointModal from './ReturnPointModal';
+import LogoutButton from './LogoutButton';
 
 const ProfileStyle = css`
-  height: 260px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -84,6 +85,7 @@ export default function Profile() {
     <div css={ProfileStyle}>
       <img css={ImageStyle} src={user.img} />
       <h1 css={NameStyle}>{user.name}</h1>
+      <LogoutButton />
       <p css={PointStyle}>
         <MonetizationOn />
         {user.point}
