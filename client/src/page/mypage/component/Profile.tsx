@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 import { fetchGet } from '../../../util';
 import ChargePointModal from './ChargePointModal';
+import ReturnPointModal from './ReturnPointModal';
 
 const ProfileStyle = css`
   height: 260px;
@@ -61,7 +62,8 @@ type UserType = {
 };
 
 export default function Profile() {
-  const [isPointModalOn, setIsPointModalOn] = useState(false);
+  const [isChargePointModalOn, setIsChargePointModalOn] = useState(false);
+  const [isReturnPointModalOn, setIsReturnPointModalOn] = useState(false);
   const loginUser = useRecoilValue(loginUserState);
   const [user, setUser] = useState<UserType>();
   const updateUser = async (userId: number) => {
@@ -89,15 +91,26 @@ export default function Profile() {
       <div css={BtnSetStyle}>
         <button
           css={BtnStyle('#4b976a')}
-          onClick={() => setIsPointModalOn(true)}
+          onClick={() => setIsChargePointModalOn(true)}
         >
           충전
         </button>
-        <button css={BtnStyle('#45abd7')}>반환</button>
+        <button
+          css={BtnStyle('#45abd7')}
+          onClick={() => setIsReturnPointModalOn(true)}
+        >
+          반환
+        </button>
       </div>
-      {isPointModalOn && (
+      {isChargePointModalOn && (
         <ChargePointModal
-          onClose={() => setIsPointModalOn(false)}
+          onClose={() => setIsChargePointModalOn(false)}
+          updateUser={() => updateUser(loginUser.id)}
+        />
+      )}
+      {isReturnPointModalOn && (
+        <ReturnPointModal
+          onClose={() => setIsReturnPointModalOn(false)}
           updateUser={() => updateUser(loginUser.id)}
         />
       )}
