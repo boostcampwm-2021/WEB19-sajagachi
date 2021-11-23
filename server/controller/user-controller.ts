@@ -22,9 +22,11 @@ export const updatePoint = async (
 
     const point = +req.body.point;
     if (!point) throw new Error('invalid point');
-    console.log(point);
     if (point > 0) await userService.addPoint(+user_id, point);
-    else await userService.usePoint(+user_id, user.point, -point);
+    else {
+      if (user.point + point < 0) throw new Error('not enough points');
+      await userService.usePoint(+user_id, user.point, -point);
+    }
     res.json('success');
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });

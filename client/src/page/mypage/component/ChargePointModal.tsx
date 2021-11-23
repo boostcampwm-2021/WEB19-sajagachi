@@ -103,6 +103,7 @@ export default function ChargePointModal(props: ChargePointModalProps) {
             css={InputNumberStyle}
             min="1"
             step="1"
+            required
           />
           <Button type="submit" css={SubmitStyle}>
             충전
