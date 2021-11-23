@@ -48,3 +48,33 @@ export const createParticipant = async (
     next({ statusCode: 500, message: err.message });
   }
 };
+
+export const getParticipationPosts = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  try {
+    const { userId } = req.params;
+    const { limit, cursor } = req.query;
+    console.log(cursor);
+    const participationPosts = await participantService.getParticipationPosts(
+      Number(userId),
+      limit as string,
+      cursor as string
+    );
+    const result: any = await Promise.all(
+      participationPosts.map(async (post: any) => {
+        const participantCnt = await participantService.getParticipantNum(
+          post.id
+        );
+        post.participantCnt = participantCnt;
+        return post;
+      })
+    );
+    if (result.length === 0) return res.json({ result });
+    return res.json({ result, nextCursor: result[result.length - 1]['id'] });
+  } catch (err: any) {
+    next({ statusCode: 500, message: err.message });
+  }
+};
