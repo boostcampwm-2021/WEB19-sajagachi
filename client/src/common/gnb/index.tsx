@@ -4,15 +4,17 @@ import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { locationState } from '../../store/location';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import SearchModalDrawer from './component/SearchModalDrawer';
 import { withRouter } from 'react-router-dom';
 import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
 import Alert from '../alert';
-import { Backdrop } from '@mui/material';
+import { Avatar, Backdrop } from '@mui/material';
 import LoadingUI from './component/LoadingUI';
+import { loginUserState } from '../../store/login';
+import { fetchGet } from '../../util';
 
 const gnbBackground = css`
   z-index: 1;
@@ -49,6 +51,9 @@ const logo = css`
 const btn = css`
   width: 2.43rem;
   height: 2.43rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const btnIcon = css`
@@ -64,6 +69,18 @@ function Gnb() {
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
   const [isAlertOn, setIsAlertOn] = useState(false);
   const [isBackdropOn, setIsBackropOn] = useState(false);
+  const loginUser = useRecoilValue(loginUserState);
+
+  const [profileImg, setProfileImg] = useState('');
+  const updateProfileImg = async (userId: number) => {
+    const url = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}`;
+    const { img } = await fetchGet(url);
+    setProfileImg(img);
+  };
+
+  useEffect(() => {
+    loginUser.isSigned && updateProfileImg(loginUser.id);
+  }, [loginUser]);
 
   useEffect(() => {
     const onSuccess = (pos: any) => {
@@ -136,9 +153,16 @@ function Gnb() {
           }}
         >
           <SearchModalDrawerWithRouter />
-          <IconButton css={btn} onClick={handleLoginClick}>
-            <AccountCircleIcon css={btnIcon} />
-          </IconButton>
+          {loginUser.isSigned ? (
+            <Link to="/mypage" css={btn}>
+              <Avatar src={profileImg} css={btnIcon} />
+            </Link>
+          ) : (
+            <IconButton css={btn} onClick={handleLoginClick}>
+              <AccountCircleIcon css={btnIcon} />
+            </IconButton>
+          )}
+
           {isLoginModalOn && (
             <LoginModal setIsLoginModalOn={setIsLoginModalOn} />
           )}

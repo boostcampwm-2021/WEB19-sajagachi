@@ -23,7 +23,9 @@ const ChatContainer = css`
 function Chat() {
   const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
-  const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
+  const socketRef = useRef<any>(
+    io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true })
+  );
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
@@ -51,7 +53,7 @@ function Chat() {
     if (participantMe === undefined) console.log('참여하지 않은 채팅방입니다.');
     if (participantMe !== undefined) {
       // 나중에 이조건 없애주기
-      setChatSocket(participantMe.user.id);
+      setChatSocket();
       setUserMe({
         userId: participantMe.user.id,
         userName: participantMe.user.name
@@ -60,8 +62,8 @@ function Chat() {
     }
   };
 
-  const setChatSocket = (userId: number) => {
-    socketRef.current.emit('joinRoom', postId, userId);
+  const setChatSocket = () => {
+    socketRef.current.emit('joinRoom', postId);
   };
 
   useEffect(() => {
