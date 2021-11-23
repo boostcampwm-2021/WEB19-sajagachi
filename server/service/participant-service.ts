@@ -84,6 +84,14 @@ const finishPost = async (postId: number, hostId: number) => {
   return result;
 };
 
+const getParticipationPosts = async (userId: number) => {
+  const db = await getDB().get();
+  const sql = `select p.id, p.title, p.content, p.capacity, p.deadline, p.finished, p.lat, p.long, category.name as category from (select postId from participant where userId = ${userId}) pa left join post p on pa.postId = p.id LEFT JOIN category
+	ON p.categoryId = category.id`;
+  const result = await db.manager.query(sql);
+  return result;
+};
+
 export default {
   getParticipantNum,
   getParticipants,
@@ -92,5 +100,6 @@ export default {
   updatePoint,
   deleteParticipant,
   checkParticipation,
-  finishPost
+  finishPost,
+  getParticipationPosts
 };
