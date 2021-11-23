@@ -28,6 +28,7 @@
 		"recoil": "^0.4.1",
 		"socket.io": "^4.3.2",
 		"socket.io-client": "^4.3.2",
+		"swr": "^1.0.1",
 		"typescript": "^4.4.4",
 		"web-vitals": "^1.1.2"
 	},
