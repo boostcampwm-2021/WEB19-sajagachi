@@ -6,7 +6,8 @@ import {
   IconButton,
   CircularProgress,
   Chip,
-  Box
+  Box,
+  Avatar
 } from '@mui/material';
 import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -23,6 +24,13 @@ import { loginUserState } from '../../store/login';
 type UrlType = {
   postId: number;
   url: string;
+};
+
+type UserType = {
+  id: number;
+  name: string;
+  img: string;
+  point: number;
 };
 
 type MatchParams = {
@@ -42,6 +50,7 @@ type PostType = {
   capacity: number;
   participantCnt: number;
   urls: UrlType[];
+  user: UserType;
   isParticipate: boolean;
 };
 
@@ -83,6 +92,12 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     deadline: '',
     participantCnt: 0,
     urls: [],
+    user: {
+      id: 0,
+      name: '',
+      img: '',
+      point: 0
+    },
     isParticipate: false
   });
   useEffect(() => {
@@ -175,7 +190,18 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
               mt: 2
             }}
           >
-            <Typography variant="body1">작성자| {post.userId}</Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                display: 'flex'
+              }}
+            >
+              <Avatar
+                src={post.user.img}
+                sx={{ width: 32, height: 32, marginRight: 1 }}
+              />
+              {post.user.name}
+            </Typography>
             <DeadLine
               ref={deadLineRef}
               isNeedServerTime={isNeedServerTime}
