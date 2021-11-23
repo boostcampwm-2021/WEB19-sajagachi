@@ -7,13 +7,15 @@ const ImageModalContainer = css`
   left: 0;
   right: 0;
   bottom: 0;
+  max-width: 100vw;
+  max-height: 100vh;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
   z-index: 4;
 `;
 const ImageStyle = css`
-  max-width: 100vw;
-  max-height: 100vh;
+  max-width: 90vw;
+  max-height: 80vh;
   position: fixed;
   left: 50%;
   top: 50%;
@@ -29,7 +31,6 @@ function ImageModal({ imageUrl, setImageModalOn }: ImageModalType) {
     if (e.target === e.currentTarget) setImageModalOn('');
   };
   return (
-    // <div css={ImageModalContainer}>{imageUrl}</div>
     <div css={ImageModalContainer} onClick={handleOutsideClick}>
       <img css={ImageStyle} src={imageUrl} alt="modal_image" />
     </div>
