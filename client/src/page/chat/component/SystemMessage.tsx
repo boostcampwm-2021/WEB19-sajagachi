@@ -1,12 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/react';
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: number;
-};
+import { MessageType } from '../../../type';
 
 export default function SystemMessage(props: { msgData: MessageType }) {
   return (

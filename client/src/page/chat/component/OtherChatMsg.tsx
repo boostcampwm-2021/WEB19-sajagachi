@@ -1,12 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/react';
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: number;
-};
+import { MessageType } from '../../../type';
 
 const MessageStyle = css`
   margin: 4px 0px;
@@ -16,7 +10,9 @@ const MessageStyle = css`
   background-color: #e5e5ea;
   font-size: 18px;
 `;
-
+const ImageStyle = css`
+  margin: 4px 0px;
+`;
 const DirectionSelector = css`
   display: flex;
   justify-content: flex-start;
@@ -43,7 +39,10 @@ function OtherChatMessage(props: { msgData: MessageType }) {
         <span css={SenderStyle}>{props.msgData.sender}</span>
       </div>
       <div css={DirectionSelector}>
-        <p css={MessageStyle}>{props.msgData.msg}</p>
+        {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
+        {props.msgData.img && (
+          <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} />
+        )}
         <span css={MessageTimeStyle}>{props.msgData.time}</span>
       </div>
     </>

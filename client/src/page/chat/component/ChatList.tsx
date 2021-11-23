@@ -6,15 +6,7 @@ import SystemMessage from './SystemMessage';
 import { Socket } from 'socket.io-client';
 import { createQueryString, fetchGet } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
-import { UserInfoType } from '../../../type';
-
-type MessageType = {
-  sender: string;
-  msg: string;
-  time: string;
-  isMe: number;
-  created_at: string;
-};
+import { UserInfoType, MessageType } from '../../../type';
 
 type ResultChat = {
   id: number;
@@ -96,9 +88,30 @@ export default function ChatList({
       }
     });
     socket.on('sendImg', (user: number, userName: string, img: string) => {
-      console.log(user);
-      console.log(userName);
-      console.log(img);
+      const isMe = checkSender(user);
+      const bottom =
+        (parent.current?.scrollHeight as number) -
+        (parent.current?.scrollTop as number) -
+        (parent.current?.clientHeight as number);
+      setChatDatas((chatDatas: MessageType[]) => {
+        return [
+          ...chatDatas,
+          {
+            sender: userName,
+            img: process.env.REACT_APP_IMAGE_URL + img,
+            time: getAMPMTime(new Date()),
+            isMe,
+            created_at: new Date().toString()
+          }
+        ];
+      });
+      if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
+        messageEndRef.current?.scrollIntoView({
+          behavior: 'auto',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
     });
   }, []);
 
