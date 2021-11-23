@@ -4,6 +4,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { ChatMenuDrawer } from './ChatMenuDrawer';
 import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
+import { useHistory } from 'react-router';
+import { IconButton } from '@mui/material';
 const ChatBarLayout = css`
   display: flex;
   flex-direction: row;
@@ -31,18 +33,25 @@ type ChatBarType = {
 };
 
 function ChatBar(props: ChatBarType) {
+  const history = useHistory();
+  const backButtonHandler = () => {
+    history.goBack();
+  };
   return (
     <div css={ChatBarLayout}>
-      <ArrowBackIosNewIcon
-        sx={{
-          paddingTop: '20px',
-          width: '30px',
-          height: '3.4rem',
-          marginLeft: '10px',
-          color: '#FFFFFF'
-        }}
-      />
+      <IconButton aria-label="go back" onClick={backButtonHandler}>
+        <ArrowBackIosNewIcon
+          sx={{
+            paddingTop: '5px',
+            width: '30px',
+            height: '3.4rem',
+            marginLeft: '10px',
+            color: '#FFFFFF'
+          }}
+        />
+      </IconButton>
       <div css={TitleStyle}>{props.title}</div>
+
       <ChatMenuDrawer socket={props.socket} participants={props.participants} />
     </div>
   );
