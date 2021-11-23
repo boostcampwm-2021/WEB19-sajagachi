@@ -76,7 +76,7 @@ const getPost = async (postId: string) => {
   try {
     const post = await db.manager.findOne(Post, {
       where: { id: postId },
-      relations: ['category', 'urls']
+      relations: ['category', 'urls', 'user']
     });
     return post;
   } catch (e) {
