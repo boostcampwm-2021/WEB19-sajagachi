@@ -23,7 +23,9 @@ const ChatContainer = css`
 function Chat() {
   const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
-  const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL)));
+  const socketRef = useRef<any>(
+    io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true })
+  );
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
