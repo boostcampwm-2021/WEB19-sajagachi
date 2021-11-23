@@ -8,7 +8,6 @@ import { Button } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { fetchGet, parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
-import { getCookie } from '../../../util/cookie';
 import Confirm from '../../../common/confirm';
 import { useHistory } from 'react-router';
 import { useRecoilValue } from 'recoil';
@@ -108,7 +107,7 @@ export function ChatMenu(props: propsType) {
   };
 
   const handleQuitConfirm = () => {
-    props.socket.emit('quitRoom', getCookie('user'), postId);
+    props.socket.emit('quitRoom', postId);
     setIsConfirmOn(false);
     history.replace(`/post/${postId}`);
     history.goBack();

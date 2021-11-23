@@ -49,7 +49,7 @@ function PointView(props: PointState) {
     });
 
     return () => {
-      socket.off('purchase error');
+      socket.off('purchaseError');
     };
   }, []);
 
@@ -65,8 +65,8 @@ function PointView(props: PointState) {
     setIsConfirmOn(false);
     setDisabled(true);
     if (!purchase)
-      socket.emit('point confirm', postId, loginUser.id, Number(myPoint));
-    else socket.emit('point cancel', postId, loginUser.id);
+      socket.emit('pointConfirm', postId, loginUser.id, Number(myPoint));
+    else socket.emit('pointCancel', postId, loginUser.id);
   };
 
   return (

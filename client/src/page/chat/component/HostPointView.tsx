@@ -47,6 +47,11 @@ function HostPointView(props: PointState) {
   useEffect(() => {
     setBtn();
     setFinished(false);
+    socket.on('finishError', console.log);
+
+    return () => {
+      socket.off('finishError');
+    };
   });
 
   const handleTakePointBtnClick = () => {

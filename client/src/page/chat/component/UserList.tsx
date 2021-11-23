@@ -123,7 +123,7 @@ function UserListItem({
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const [isConfirmOn, setIsConfirmOn] = useState(false);
   const handleUserKick = () => {
-    socket.emit('kickUser', getCookie('user'), postId, item.user.id);
+    socket.emit('kickUser', postId, item.user.id);
     setIsConfirmOn(false);
   };
 
