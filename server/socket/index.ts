@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import 'dotenv/config';
-import { Application, Request, RequestHandler, Response } from 'express';
+import { Application, RequestHandler } from 'express';
 import {
   cancelPurchase,
   confirmPurchase,
