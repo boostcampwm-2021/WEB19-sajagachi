@@ -30,12 +30,7 @@ export default function LogoutButton() {
       <button onClick={() => setIsConfirmOn(true)} css={ButtonStyle}>
         <Logout fontSize="small" /> 로그아웃
       </button>
-      <Confirm
-        on={isConfirmOn}
-        title="로그아웃"
-        onCancel={() => setIsConfirmOn(false)}
-        onConfirm={handleLogout}
-      >
+      <Confirm on={isConfirmOn} title="로그아웃" onCancel={() => setIsConfirmOn(false)} onConfirm={handleLogout}>
         로그아웃 하시겠습니까?
       </Confirm>
     </div>

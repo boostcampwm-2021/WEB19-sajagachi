@@ -91,30 +91,18 @@ export default function Profile() {
         {user.point}
       </p>
       <div css={BtnSetStyle}>
-        <button
-          css={BtnStyle('#4b976a')}
-          onClick={() => setIsChargePointModalOn(true)}
-        >
+        <button css={BtnStyle('#4b976a')} onClick={() => setIsChargePointModalOn(true)}>
           충전
         </button>
-        <button
-          css={BtnStyle('#45abd7')}
-          onClick={() => setIsReturnPointModalOn(true)}
-        >
+        <button css={BtnStyle('#45abd7')} onClick={() => setIsReturnPointModalOn(true)}>
           반환
         </button>
       </div>
       {isChargePointModalOn && (
-        <ChargePointModal
-          onClose={() => setIsChargePointModalOn(false)}
-          updateUser={() => updateUser(loginUser.id)}
-        />
+        <ChargePointModal onClose={() => setIsChargePointModalOn(false)} updateUser={() => updateUser(loginUser.id)} />
       )}
       {isReturnPointModalOn && (
-        <ReturnPointModal
-          onClose={() => setIsReturnPointModalOn(false)}
-          updateUser={() => updateUser(loginUser.id)}
-        />
+        <ReturnPointModal onClose={() => setIsReturnPointModalOn(false)} updateUser={() => updateUser(loginUser.id)} />
       )}
     </div>
   );

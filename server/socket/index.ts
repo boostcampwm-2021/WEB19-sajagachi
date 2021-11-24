@@ -1,22 +1,10 @@
 import { Server, Socket } from 'socket.io';
 import 'dotenv/config';
 import { Application, RequestHandler } from 'express';
-import {
-  cancelPurchase,
-  confirmPurchase,
-  joinRoom,
-  sendMsg,
-  kickUser,
-  quitRoom,
-  finishRoom
-} from './chat';
+import { cancelPurchase, confirmPurchase, joinRoom, sendMsg, kickUser, quitRoom, finishRoom } from './chat';
 import cookieParser from 'cookie-parser';
 
-export const socketInit = (
-  server: any,
-  app: Application,
-  sessionMiddleware: RequestHandler
-) => {
+export const socketInit = (server: any, app: Application, sessionMiddleware: RequestHandler) => {
   const io = new Server(server, {
     cors: {
       origin: process.env.CLIENT_URL,
@@ -25,8 +13,7 @@ export const socketInit = (
   });
   app.set('io', io);
 
-  const wrap = (middleware: any) => (socket: Socket, next: any) =>
-    middleware(socket.request, {}, next);
+  const wrap = (middleware: any) => (socket: Socket, next: any) => middleware(socket.request, {}, next);
   io.use(wrap(cookieParser(process.env.SESSION_SECRET)));
   io.use(wrap(sessionMiddleware));
 

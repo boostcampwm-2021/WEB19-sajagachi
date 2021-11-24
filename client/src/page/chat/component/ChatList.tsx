@@ -18,15 +18,7 @@ type ResultChat = {
   name: string;
 };
 
-export default function ChatList({
-  postId,
-  user,
-  socket
-}: {
-  postId: number;
-  user: UserInfoType;
-  socket: Socket;
-}) {
+export default function ChatList({ postId, user, socket }: { postId: number; user: UserInfoType; socket: Socket }) {
   const [isFetch, setIsFetch] = useState(false);
   const [chatDatas, setChatDatas] = useState<any>([]);
   const [imageModalOn, setImageModalOn] = useState('');
@@ -128,10 +120,7 @@ export default function ChatList({
     });
   }, []);
 
-  const handleObserver: IntersectionObserverCallback = async (
-    entry,
-    observer
-  ) => {
+  const handleObserver: IntersectionObserverCallback = async (entry, observer) => {
     const target = entry[0];
     if (target.isIntersecting && !isEnd.current) {
       observer.unobserve(target.target);
@@ -162,10 +151,7 @@ export default function ChatList({
       } finally {
         setIsFetch(false);
         const heightAfterFetch = parent.current?.scrollHeight;
-        parent.current?.scrollTo(
-          0,
-          (heightAfterFetch as number) - (heightBeforeFetch as number)
-        );
+        parent.current?.scrollTo(0, (heightAfterFetch as number) - (heightBeforeFetch as number));
         observer.observe(target.target);
       }
     }
@@ -212,9 +198,7 @@ export default function ChatList({
         <div key="messageEndDiv" ref={messageEndRef} />
       </div>
 
-      {imageModalOn !== '' && (
-        <ImageModal imageUrl={imageModalOn} setImageModalOn={setImageModalOn} />
-      )}
+      {imageModalOn !== '' && <ImageModal imageUrl={imageModalOn} setImageModalOn={setImageModalOn} />}
     </>
   );
 }
@@ -278,9 +262,7 @@ const MakeDateFormat = (date: Date) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  return `${year}-${month >= 10 ? month : '0' + month}-${
-    day >= 10 ? day : '0' + day
-  }`;
+  return `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
 };
 
 const makeSection = (chatDatas: MessageType[]) => {

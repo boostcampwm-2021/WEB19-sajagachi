@@ -121,9 +121,7 @@ function Main() {
           </Box>
         </ThemeProvider>
       )}
-      {isFetch && items.length === 0 && (
-        <img src={noItemImg} css={ImageStyle} alt={'noItem'} />
-      )}
+      {isFetch && items.length === 0 && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}
       <FAB loginUser={loginUser} />
     </div>
   );

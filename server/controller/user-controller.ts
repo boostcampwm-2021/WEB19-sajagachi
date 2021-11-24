@@ -1,20 +1,17 @@
 import { Request, Response } from 'express';
 import userService from '../service/user-service';
+import ERROR from '../util/error';
 
 export const getUser = async (req: Request, res: Response, next: Function) => {
   try {
     const user = await userService.findById(Number(req.params.user_id));
     res.json(user);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
-export const updatePoint = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const updatePoint = async (req: Request, res: Response, next: Function) => {
   try {
     const { user_id } = req.params;
     const user = await userService.findById(+user_id);
@@ -29,6 +26,6 @@ export const updatePoint = async (
     }
     res.json('success');
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_WRITE_FAIL);
   }
 };
