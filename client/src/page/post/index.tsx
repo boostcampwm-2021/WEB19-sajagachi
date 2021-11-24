@@ -95,6 +95,7 @@ function Post() {
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
   const currentLocation = useRecoilValue(locationState);
+  console.log(deadline);
 
   useEffect(() => {
     if (title && content && category !== null) setBtnDisabled(false);
@@ -129,7 +130,7 @@ function Post() {
       title: title,
       content: content,
       capacity: capacity,
-      deadline: deadline,
+      deadline: deadline ? deadline.setDate(deadline.getDate() + 1) : deadline,
       lat: currentLocation.lat,
       long: currentLocation.lng,
       urls: validUrls
