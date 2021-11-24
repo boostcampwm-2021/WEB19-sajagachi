@@ -8,6 +8,8 @@ import userService from '../service/user-service';
 import { Server } from 'socket.io';
 import { sendImg } from '../socket/chat';
 
+import { v4 } from 'uuid';
+
 export const getChats = async (req: Request, res: Response, next: Function) => {
   try {
     const { post_id } = req.params;
@@ -64,12 +66,9 @@ export const upload = multer({
       cb(null, req.path.substr(1));
     },
     filename(req, file, cb) {
-      const dir = req.path.substr(1);
-      fs.readdir(dir, (err, files) => {
-        if (err) throw new Error('파일 개수 세는 중 에러가 발생했습니다.');
-        const ext = path.extname(file.originalname);
-        cb(null, path.basename(String(files.length + 1), ext) + ext);
-      });
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(v4(), ext) + Date.now() + ext);
+      console.log((v4() + Date.now()).length);
     }
   })
   // 큰 파일 사이즈에 대한 에러처리 확인하기
