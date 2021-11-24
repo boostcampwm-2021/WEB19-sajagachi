@@ -79,7 +79,7 @@ function Chat() {
     });
 
     socketRef.current.on(
-      'purchase confirm',
+      'purchaseConfirm',
       (confirmUserId: number, sendPoint: number) => {
         setParticipants(prev => {
           const newParticipants = [...prev];
@@ -92,7 +92,7 @@ function Chat() {
       }
     );
 
-    socketRef.current.on('purchase cancel', (cancelUserId: number) => {
+    socketRef.current.on('purchaseCancel', (cancelUserId: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
         const cancelUser = newParticipants.find(

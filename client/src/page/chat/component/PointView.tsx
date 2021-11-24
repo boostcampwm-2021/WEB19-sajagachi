@@ -43,7 +43,7 @@ function PointView(props: PointState) {
   }, [props.participants]);
 
   useEffect(() => {
-    socket.on('purchase error', msg => {
+    socket.on('purchaseError', msg => {
       setDisabled(false);
       console.log(msg);
     });

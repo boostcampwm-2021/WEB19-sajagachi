@@ -45,13 +45,13 @@ export const confirmPurchase = (socket: any, io: Server) => {
     async (postId: number, userId: number, sendPoint: number) => {
       const loginUser = await checkSession(socket);
       if (loginUser === undefined || loginUser.id !== userId)
-        socket.emit('purchase error', '사용자 정보 에러');
+        socket.emit('purchaseError', '사용자 정보 에러');
       else if (loginUser.point < sendPoint)
-        socket.emit('purchase error', '잔여 포인트 부족');
+        socket.emit('purchaseError', '잔여 포인트 부족');
       else {
         userService.usePoint(loginUser.id, loginUser.point, sendPoint);
         participantService.updatePoint(postId, loginUser.id, sendPoint);
-        io.to(String(postId)).emit('purchase confirm', loginUser.id, sendPoint);
+        io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
         processSystemMsg(
           io,
           SYSTEM_MSG_TYPE.CONFIRM_PURCHASE,
@@ -77,7 +77,7 @@ export const cancelPurchase = (socket: any, io: Server) => {
       if (participant === undefined)
         socket.emit('purchaseError', '참여 정보 없음');
       else if (participant.point === null)
-        socket.emit('purchasError', '제출 이력 없음');
+        socket.emit('purchaseError', '제출 이력 없음');
       else {
         participantService.updatePoint(postId, loginUser.id, null);
         userService.addPoint(loginUser.id, participant.point);
