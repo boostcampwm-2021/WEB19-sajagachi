@@ -33,20 +33,16 @@ interface CategoryState {
 }
 
 function CheckCategory({ category, setCategory }: CategoryState) {
-  const [categoryList, setCategoryList] = useState<
-    { name: string; checked: boolean }[]
-  >([]);
+  const [categoryList, setCategoryList] = useState<{ name: string; checked: boolean }[]>([]);
 
   useEffect(() => {
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(
-      result => {
-        setCategoryList(
-          result.map((x: any) => {
-            return { name: x.name, checked: false };
-          })
-        );
-      }
-    );
+    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(result => {
+      setCategoryList(
+        result.map((x: any) => {
+          return { name: x.name, checked: false };
+        })
+      );
+    });
   }, []);
 
   const handleCategoryClick = (idx: number) => {

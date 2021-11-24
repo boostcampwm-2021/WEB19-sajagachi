@@ -96,13 +96,7 @@ export function UserList({
       <h1>참여자 ({participants.length}명)</h1>
       <ul>
         {participants.map(user => (
-          <UserListItem
-            key={user.user.id}
-            item={user}
-            myId={myId}
-            hostId={hostId}
-            socket={socket}
-          />
+          <UserListItem key={user.user.id} item={user} myId={myId} hostId={hostId} socket={socket} />
         ))}
       </ul>
     </div>

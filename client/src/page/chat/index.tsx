@@ -23,9 +23,7 @@ const ChatContainer = css`
 function Chat() {
   const history = useHistory();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
-  const socketRef = useRef<any>(
-    io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true })
-  );
+  const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true }));
   const [userMe, setUserMe] = useState<UserInfoType>();
   const [participants, setParticipants] = useState<ParticipantType[]>([]);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
@@ -47,9 +45,7 @@ function Chat() {
     const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
     const result = await fetchGet(participantUrl);
 
-    const participantMe = result.find(
-      (participant: ParticipantType) => participant.user.id === userLogin.id
-    );
+    const participantMe = result.find((participant: ParticipantType) => participant.user.id === userLogin.id);
     if (participantMe === undefined) history.goBack();
 
     if (participantMe !== undefined) {
@@ -78,26 +74,19 @@ function Chat() {
       setParticipants(list);
     });
 
-    socketRef.current.on(
-      'purchaseConfirm',
-      (confirmUserId: number, sendPoint: number) => {
-        setParticipants(prev => {
-          const newParticipants = [...prev];
-          const confirmUser = newParticipants.find(
-            participant => participant.user.id === confirmUserId
-          );
-          if (confirmUser) confirmUser.point = sendPoint;
-          return newParticipants;
-        });
-      }
-    );
+    socketRef.current.on('purchaseConfirm', (confirmUserId: number, sendPoint: number) => {
+      setParticipants(prev => {
+        const newParticipants = [...prev];
+        const confirmUser = newParticipants.find(participant => participant.user.id === confirmUserId);
+        if (confirmUser) confirmUser.point = sendPoint;
+        return newParticipants;
+      });
+    });
 
     socketRef.current.on('purchaseCancel', (cancelUserId: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
-        const cancelUser = newParticipants.find(
-          participant => participant.user.id === cancelUserId
-        );
+        const cancelUser = newParticipants.find(participant => participant.user.id === cancelUserId);
         if (cancelUser) cancelUser.point = null;
         return newParticipants;
       });
@@ -120,19 +109,9 @@ function Chat() {
 
   return (
     <div css={ChatContainer}>
-      {participants && (
-        <ChatBar
-          title={title}
-          socket={socketRef.current}
-          participants={participants}
-        />
-      )}
-      {userMe && (
-        <ChatList postId={postId} user={userMe} socket={socketRef.current} />
-      )}
-      {userMe && (
-        <ChatInput socket={socketRef.current} postId={postId} user={userMe} />
-      )}
+      {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
+      {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
+      {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} />}
       <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
         호스트가 당신을 내보냈습니다.
       </Alert>

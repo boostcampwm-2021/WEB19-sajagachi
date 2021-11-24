@@ -46,12 +46,7 @@ function OtherChatMessage(props: { msgData: MessageType }) {
       <div css={DirectionSelector}>
         {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
         {props.msgData.img && props.msgData.modalOn && (
-          <img
-            css={ImageStyle}
-            src={props.msgData.img}
-            alt={'chatImg'}
-            onClick={handleImageClick}
-          />
+          <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
         )}
         <span css={MessageTimeStyle}>{props.msgData.time}</span>
       </div>

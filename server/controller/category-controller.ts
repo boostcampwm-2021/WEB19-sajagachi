@@ -1,11 +1,7 @@
 import { Request, Response } from 'express';
 import categoryService from '../service/category-service';
 
-export const getCategories = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const getCategories = async (req: Request, res: Response, next: Function) => {
   try {
     const categories = await categoryService.getCategories();
     res.json(categories);

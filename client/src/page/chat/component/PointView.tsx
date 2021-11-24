@@ -36,9 +36,7 @@ function PointView(props: PointState) {
       setMyPoint(String(me.point));
       setPurchase(true);
     } else setPurchase(false);
-    fetchGet(
-      `${process.env.REACT_APP_SERVER_URL}/api/user/${loginUser.id}`
-    ).then(data => setLeftPoint(data.point));
+    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/user/${loginUser.id}`).then(data => setLeftPoint(data.point));
     setDisabled(false);
   }, [props.participants]);
 
@@ -64,8 +62,7 @@ function PointView(props: PointState) {
   const handleSubmitPointBtnClick = () => {
     setIsConfirmOn(false);
     setDisabled(true);
-    if (!purchase)
-      socket.emit('pointConfirm', postId, loginUser.id, Number(myPoint));
+    if (!purchase) socket.emit('pointConfirm', postId, loginUser.id, Number(myPoint));
     else socket.emit('pointCancel', postId, loginUser.id);
   };
 
@@ -73,18 +70,8 @@ function PointView(props: PointState) {
     <div css={PointViewStyle}>
       <h1>포인트</h1>
       <div css={PointContainer}>
-        <input
-          type="number"
-          css={PointInputStyle}
-          value={myPoint}
-          onChange={handlePointChange}
-          disabled={purchase}
-        />
-        <Button
-          css={PointBtnStyle(purchase, disabled)}
-          onClick={() => setIsConfirmOn(true)}
-          disabled={disabled}
-        >
+        <input type="number" css={PointInputStyle} value={myPoint} onChange={handlePointChange} disabled={purchase} />
+        <Button css={PointBtnStyle(purchase, disabled)} onClick={() => setIsConfirmOn(true)} disabled={disabled}>
           {purchase ? '취소' : '확정'}
         </Button>
       </div>
@@ -95,9 +82,7 @@ function PointView(props: PointState) {
         onCancel={() => setIsConfirmOn(false)}
         onConfirm={handleSubmitPointBtnClick}
       >
-        {!purchase
-          ? `정말 ${myPoint}포인트를 제출하시겠습니까?`
-          : `정말 포인트 제출을 취소하시겠습니까?`}
+        {!purchase ? `정말 ${myPoint}포인트를 제출하시겠습니까?` : `정말 포인트 제출을 취소하시겠습니까?`}
       </Confirm>
     </div>
   );
@@ -151,9 +136,7 @@ const PointInputStyle = css`
 
 const PointBtnStyle = (purchase: boolean, disabled: boolean) => css`
   width: 15%;
-  background-color: ${purchase
-    ? `#b6e3e9${disabled ? '99' : ''}`
-    : `#fdafab${disabled ? '99' : ''}`};
+  background-color: ${purchase ? `#b6e3e9${disabled ? '99' : ''}` : `#fdafab${disabled ? '99' : ''}`};
   color: white;
   &:hover {
     background-color: ${purchase ? '#b6e3e9' : '#fdafab'};

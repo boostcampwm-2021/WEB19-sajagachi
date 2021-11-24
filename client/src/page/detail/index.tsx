@@ -1,14 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  CircularProgress,
-  Chip,
-  Box,
-  Avatar
-} from '@mui/material';
+import { Card, CardContent, Typography, IconButton, CircularProgress, Chip, Box, Avatar } from '@mui/material';
 import styled from '@emotion/styled';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { fetchGet } from '../../util';
@@ -116,9 +107,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   }, []);
   useEffect(() => {
     let es: any = null;
-    fetchGet(
-      `${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`
-    ).then(post => {
+    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`).then(post => {
       if (!post.finished && post.deadline !== null) {
         es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
         es.onmessage = function (e: MessageEvent) {
@@ -136,16 +125,10 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             } else {
               const t = end.getTime() - server.getTime();
               const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
-              const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(
-                -2
-              );
-              const hours = (
-                '0' + Math.floor((t / (1000 * 60 * 60)) % 24)
-              ).slice(-2);
+              const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+              const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
               const days = '' + Math.floor(t / (1000 * 60 * 60) / 24);
-              deadLineRef.current.setDeadLine(
-                days + '일 ' + hours + ':' + minutes + ':' + seconds
-              );
+              deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
               return;
             }
           }
@@ -196,17 +179,10 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
                 display: 'flex'
               }}
             >
-              <Avatar
-                src={post.user.img}
-                sx={{ width: 32, height: 32, marginRight: 1 }}
-              />
+              <Avatar src={post.user.img} sx={{ width: 32, height: 32, marginRight: 1 }} />
               {post.user.name}
             </Typography>
-            <DeadLine
-              ref={deadLineRef}
-              isNeedServerTime={isNeedServerTime}
-              deadline={post.deadline}
-            />
+            <DeadLine ref={deadLineRef} isNeedServerTime={isNeedServerTime} deadline={post.deadline} />
           </Box>
           <Card
             sx={{

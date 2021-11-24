@@ -21,18 +21,16 @@ const btnIcon = css`
 export default function SearchModalDrawer({ history }: RouteComponentProps) {
   const [isSearchModalOn, setIsSearchModalOn] = useState(false);
 
-  const toggleDrawer =
-    () => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
-      ) {
-        return;
-      }
+  const toggleDrawer = () => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
 
-      setIsSearchModalOn(!isSearchModalOn);
-    };
+    setIsSearchModalOn(!isSearchModalOn);
+  };
 
   const list = () => (
     <div>
@@ -42,10 +40,7 @@ export default function SearchModalDrawer({ history }: RouteComponentProps) {
           height: 'auto'
         }}
       >
-        <SearchModal
-          setIsSearchModalOn={setIsSearchModalOn}
-          history={history}
-        />
+        <SearchModal setIsSearchModalOn={setIsSearchModalOn} history={history} />
       </Box>
     </div>
   );

@@ -14,11 +14,7 @@ export const getChats = async (req: Request, res: Response, next: Function) => {
   try {
     const { post_id } = req.params;
     const { limit, cursor } = req.query;
-    const chats = await chatService.getChats(
-      post_id,
-      limit as string,
-      cursor as string
-    );
+    const chats = await chatService.getChats(post_id, limit as string, cursor as string);
 
     res.json(chats);
   } catch (err: any) {
@@ -36,11 +32,7 @@ export const checkDirectory = (req: Request, res: Response, next: Function) => {
   });
 };
 
-export const resizeImg = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const resizeImg = async (req: Request, res: Response, next: Function) => {
   try {
     if (req.file === undefined) throw new Error('file이 없습니다');
     sharp(req.file.path)
@@ -81,17 +73,12 @@ export const uploadImage = async (req: Request, res: Response, next: any) => {
     const session = req.session;
     const postId = req.path.split('/')[2];
     const filename = postId + '/' + req.file.filename;
-    if (!session.userId || !session.userName)
-      throw new Error('session 정보 없음');
+    if (!session.userId || !session.userName) throw new Error('session 정보 없음');
     const io: Server = req.app.get('io');
     sendImg(io, +postId, session.userId, session.userName, filename);
 
     // 나중에 사용 예정
-    const savedImg = await chatService.saveImg(
-      session.userId,
-      +postId,
-      filename
-    );
+    const savedImg = await chatService.saveImg(session.userId, +postId, filename);
     if (savedImg) res.json({ savedImg });
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });

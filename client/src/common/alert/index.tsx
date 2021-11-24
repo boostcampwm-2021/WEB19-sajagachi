@@ -1,13 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/react';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 type AlertParamType = {
   on: boolean;
@@ -26,9 +19,7 @@ export default function Alert(props: AlertParamType) {
     >
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {props.children}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{props.children}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => props.onClose()}>확인</Button>

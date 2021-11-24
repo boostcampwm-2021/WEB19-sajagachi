@@ -9,11 +9,7 @@ declare module 'express-session' {
   }
 }
 
-export const githubLogin = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const githubLogin = async (req: Request, res: Response, next: Function) => {
   try {
     const { code } = req.query;
     const githubAccessToken = await getGithubAccessToken(code);
@@ -21,8 +17,7 @@ export const githubLogin = async (
     if (!githubUserData) throw new Error('No Github User');
 
     let user = await userService.findById(githubUserData.id);
-    if (user === undefined)
-      user = await userService.signUp(githubUserData.id, githubUserData.login);
+    if (user === undefined) user = await userService.signUp(githubUserData.id, githubUserData.login);
     req.session.userId = user.id;
     req.session.userName = user.name;
     res.redirect(`${process.env.CLIENT_URL}`);
@@ -31,11 +26,7 @@ export const githubLogin = async (
   }
 };
 
-export const checkLogin = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const checkLogin = async (req: Request, res: Response, next: Function) => {
   try {
     const id = req.session.userId;
     if (id) {

@@ -24,9 +24,7 @@ function HostPointView(props: PointState) {
     return (
       participantss.length > 1 &&
       participantss.every(participant => {
-        return (
-          participant.user.id === +props.hostId || Number(participant.point) > 0
-        );
+        return participant.user.id === +props.hostId || Number(participant.point) > 0;
       })
     );
   };
@@ -65,14 +63,8 @@ function HostPointView(props: PointState) {
     <div css={HostPointViewStyle}>
       <h1>포인트</h1>
       <div css={PointContainer}>
-        <Button
-          css={PointBtnStyle(disabled)}
-          onClick={() => setIsConfirmOn(true)}
-          disabled={disabled}
-        >
-          {!disabled
-            ? `${allPoint} 포인트 회수`
-            : `${finished ? '공구 완료!' : '아직 불가능!'}`}
+        <Button css={PointBtnStyle(disabled)} onClick={() => setIsConfirmOn(true)} disabled={disabled}>
+          {!disabled ? `${allPoint} 포인트 회수` : `${finished ? '공구 완료!' : '아직 불가능!'}`}
         </Button>
       </div>
       <Confirm

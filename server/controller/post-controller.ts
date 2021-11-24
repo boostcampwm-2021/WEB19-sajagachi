@@ -8,9 +8,7 @@ export const getPosts = async (req: Request, res: Response, next: Function) => {
     const posts = await postService.getPosts(req.query as getPostsOption);
     const result = await Promise.all(
       posts.map(async (post: any) => {
-        const participantCnt = await participantService.getParticipantNum(
-          post.id
-        );
+        const participantCnt = await participantService.getParticipantNum(post.id);
         post.participantCnt = participantCnt;
         return post;
       })
@@ -29,15 +27,10 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
     let isParticipate: boolean;
     if (userId === undefined) isParticipate = false;
     else {
-      isParticipate = await participantService.checkParticipation(
-        Number(req.params.postId),
-        userId
-      );
+      isParticipate = await participantService.checkParticipation(Number(req.params.postId), userId);
     }
 
-    const participantCnt = await participantService.getParticipantNum(
-      Number(req.params.postId)
-    );
+    const participantCnt = await participantService.getParticipantNum(Number(req.params.postId));
     res.json({ ...post, participantCnt, isParticipate });
   } catch (err: any) {
     next({ statusCode: 500, message: err.message });
@@ -65,11 +58,7 @@ export const getHost = async (req: Request, res: Response, next: Function) => {
   }
 };
 
-export const getPostFinished = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const getPostFinished = async (req: Request, res: Response, next: Function) => {
   try {
     const { postId } = req.params;
     const finished = await postService.getFinished(+postId);
@@ -79,11 +68,7 @@ export const getPostFinished = async (
   }
 };
 
-export const finishPost = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const finishPost = async (req: Request, res: Response, next: Function) => {
   try {
     const { postId } = req.params;
     await postService.updatePostFinished(+postId);

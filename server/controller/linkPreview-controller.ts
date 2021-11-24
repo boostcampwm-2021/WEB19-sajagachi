@@ -2,11 +2,7 @@ import { Request, Response } from 'express';
 import { parse } from 'html-metadata-parser';
 import { MetaResult, APIOutput } from '../type';
 
-export const parsePreviewLinkData = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const parsePreviewLinkData = async (req: Request, res: Response, next: Function) => {
   try {
     let url = req.query.url as string;
 
@@ -17,9 +13,7 @@ export const parsePreviewLinkData = async (
     url = url.indexOf('://') === -1 ? 'http://' + url : url;
 
     const isUrlValid =
-      /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
-        url
-      );
+      /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(url);
 
     if (!isUrlValid) {
       next({ statusCode: 400, message: 'Invalid URL' });
@@ -32,8 +26,7 @@ export const parsePreviewLinkData = async (
       return sendResponse(res, null);
     }
 
-    const { image, description, title, siteName } =
-      manufactureMetadata(metadata);
+    const { image, description, title, siteName } = manufactureMetadata(metadata);
 
     const output: APIOutput = {
       title,

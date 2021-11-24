@@ -10,11 +10,7 @@ export const getUser = async (req: Request, res: Response, next: Function) => {
   }
 };
 
-export const updatePoint = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const updatePoint = async (req: Request, res: Response, next: Function) => {
   try {
     const { user_id } = req.params;
     const user = await userService.findById(+user_id);
