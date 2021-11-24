@@ -7,9 +7,4 @@ router.get('/:user_id', getUser);
 router.get('/:userId/participationPosts', getParticipationPosts);
 router.post('/:user_id/point', updatePoint);
 
-const errorHandler = (err: any, req: Request, res: Response, next: any) => {
-  res.status(err.statusCode).json(err.message);
-};
-router.use(errorHandler);
-
 export default router;
