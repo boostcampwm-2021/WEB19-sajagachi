@@ -28,13 +28,19 @@ export function ChatMenuDrawer(props: propsType) {
 
   return (
     <>
-      <IconButton aria-label="chat menu">
+      <IconButton
+        aria-label="chat menu"
+        sx={{
+          marginTop: '10px',
+          width: '30px',
+          height: '3.4rem',
+          marginRight: '15px'
+        }}
+      >
         <MenuIcon
           sx={{
-            paddingTop: '5px',
             width: '30px',
             height: '3.4rem',
-            marginRight: '10px',
             color: '#FFFFFF'
           }}
           onClick={toggleDrawer}

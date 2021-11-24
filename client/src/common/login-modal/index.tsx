@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { css } from '@emotion/react';
-import githubButton from '../../asset/github-button.png';
 import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
-import { fetchGet, fetchPost } from '../../util';
-import { useRecoilState } from 'recoil';
-import { loginUserState } from '../../store/login';
-import { LoginUserType } from '../../type';
-import { useHistory } from 'react-router';
+import loginTextImg from '../../asset/loginText.png';
 
 const modalBackground = css`
   position: fixed;
@@ -36,30 +31,13 @@ const modal = css`
 `;
 
 const loginText = css`
-  color: #ce9393;
-  font-family: 'Gugi', cursive;
-  margin-bottom: 30px;
-`;
-
-const InputText = css`
-  border: 2px solid #ce9393;
-  border-radius: 16px;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 40%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  padding: 10px;
-  text-align: center;
+  width: 32%;
+  margin-bottom: 10px;
 `;
 
 const loginButton = css`
-  width: 40%;
-  height: 40%;
+  width: 50%;
+  height: 50%;
 `;
 
 const githubImage = css`
@@ -89,7 +67,7 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
       className="modal_background"
     >
       <div css={modal}>
-        <h1 css={loginText}>로그인</h1>
+        <img src={loginTextImg} alt="로그인" css={loginText} />
         <IconButton css={loginButton} onClick={handleLoginBtnClick}>
           <img src={githubIcon} alt="로그인" css={githubImage}></img>
         </IconButton>
