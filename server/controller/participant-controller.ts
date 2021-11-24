@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
 import { SYSTEM_MSG_TYPE, processSystemMsg } from '../socket/chat';
+import ERROR from '../util/error';
 
 export const getParticipants = async (req: Request, res: Response, next: Function) => {
   try {
     const participants = await participantService.getParticipants(+req.params.post_id);
     res.json(participants);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
@@ -24,7 +25,7 @@ export const createParticipant = async (req: Request, res: Response, next: Funct
     processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, req.body.postId, String(req.session.userName));
     res.json(createdParticipant);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_WRITE_FAIL);
   }
 };
 
@@ -47,6 +48,6 @@ export const getParticipationPosts = async (req: Request, res: Response, next: F
     if (result.length === 0) return res.json({ result });
     return res.json({ result, nextCursor: result[result.length - 1]['id'] });
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };

@@ -7,6 +7,7 @@ import sharp from 'sharp';
 import userService from '../service/user-service';
 import { Server } from 'socket.io';
 import { sendImg } from '../socket/chat';
+import ERROR from '../util/error';
 
 import { v4 } from 'uuid';
 
@@ -18,7 +19,7 @@ export const getChats = async (req: Request, res: Response, next: Function) => {
 
     res.json(chats);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_CONNECT_FAIL);
   }
 };
 

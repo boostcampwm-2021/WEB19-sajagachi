@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import userService from '../service/user-service';
 import axios from 'axios';
+import ERROR from '../util/error';
 
 declare module 'express-session' {
   interface SessionData {
@@ -14,7 +15,7 @@ export const githubLogin = async (req: Request, res: Response, next: Function) =
     const { code } = req.query;
     const githubAccessToken = await getGithubAccessToken(code);
     const githubUserData = await getGithubUserData(githubAccessToken);
-    if (!githubUserData) throw new Error('No Github User');
+    if (!githubUserData) next(ERROR.NO_GITHUB_USER);
 
     let user = await userService.findById(githubUserData.id);
     if (user === undefined) user = await userService.signUp(githubUserData.id, githubUserData.login);
@@ -22,7 +23,7 @@ export const githubLogin = async (req: Request, res: Response, next: Function) =
     req.session.userName = user.name;
     res.redirect(`${process.env.CLIENT_URL}`);
   } catch (err: any) {
-    next({ statusCode: 401, message: 'unauthorized' });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
@@ -32,10 +33,10 @@ export const checkLogin = async (req: Request, res: Response, next: Function) =>
     if (id) {
       const user = await userService.findById(id);
       if (user) res.status(200).json({ id: user.id, name: user.name });
-      else next({ statusCode: 401, message: 'unauthorized' });
-    } else next({ statusCode: 401, message: 'unauthorized' });
+      else next(ERROR.NOT_LOGGED_IN);
+    } else next(ERROR.NOT_LOGGED_IN);
   } catch (err: any) {
-    next({ statusCode: 401, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
@@ -45,7 +46,7 @@ export const logout = async (req: Request, res: Response, next: Function) => {
       res.json('success');
     });
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.SESSION_DESTROY_FAIL);
   }
 };
 
