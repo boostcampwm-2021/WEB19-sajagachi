@@ -6,7 +6,6 @@ import { UserInfoType } from '../../../type';
 
 import IconButton from '@mui/material/IconButton';
 
-
 type ChatInputType = {
   socket: any;
   postId: number;
@@ -26,10 +25,7 @@ function ChatInput(props: ChatInputType) {
       credentials: 'include' as RequestCredentials,
       body: formData
     };
-    const res = await fetch(
-      `${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`,
-      options
-    );
+    const res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`, options);
     console.log(await res.json());
   };
   const checkEnter = (event: KeyboardEvent) => {
@@ -56,18 +52,8 @@ function ChatInput(props: ChatInputType) {
 
   return (
     <div css={ChatInputDiv}>
-      <input
-        accept=".png, .jpg"
-        type="file"
-        onChange={uploadFile}
-        style={{ display: 'none' }}
-        ref={fileInputRef}
-      />
-      <IconButton
-        aria-label="image add"
-        sx={{ width: '40px', height: '40px' }}
-        onClick={imgUpload}
-      >
+      <input accept=".png, .jpg" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
+      <IconButton aria-label="image add" sx={{ width: '40px', height: '40px' }} onClick={imgUpload}>
         <AddCircleIcon
           sx={{
             width: '30px',

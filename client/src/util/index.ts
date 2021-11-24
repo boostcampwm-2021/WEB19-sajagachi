@@ -71,9 +71,7 @@ export const decomposeQueryString = (queryStr: string) => {
     ?.split(',')
     .map(x => Number(x));
 
-  result.finished = params.get('finished')
-    ? params.get('finished') === 'true'
-    : undefined;
+  result.finished = params.get('finished') ? params.get('finished') === 'true' : undefined;
   if (Number(params.get('lat'))) result.lat = Number(params.get('lat'));
   if (Number(params.get('long'))) result.long = Number(params.get('long'));
   result.search = params.get('search') ? params.get('search') + '' : undefined;
@@ -105,12 +103,7 @@ export const parsePath = (pathName: string): string[] => {
   return pathName.split('/').filter(path => path !== '');
 };
 
-export const getDistance = (
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-) => {
+export const getDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const R = 6371e3;
   const RAD = Math.PI / 180;
 
@@ -120,8 +113,7 @@ export const getDistance = (
   const sinDeltaLat = Math.sin(deltaLat / 2);
   const sinDeltaLng = Math.sin(deltaLng / 2);
   const sqrt = Math.sqrt(
-    sinDeltaLat * sinDeltaLat +
-      Math.cos(lat1 * RAD) * Math.cos(lat2 * RAD) * sinDeltaLng * sinDeltaLng
+    sinDeltaLat * sinDeltaLat + Math.cos(lat1 * RAD) * Math.cos(lat2 * RAD) * sinDeltaLng * sinDeltaLng
   );
 
   const dist = 2 * R * Math.asin(sqrt);

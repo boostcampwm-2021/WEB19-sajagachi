@@ -1,13 +1,6 @@
 import React from 'react';
 import { css } from '@emotion/react';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 type ConfirmParamType = {
   on: boolean;
@@ -27,9 +20,7 @@ export default function Confirm(props: ConfirmParamType) {
     >
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {props.children}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{props.children}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => props.onCancel()}>취소</Button>

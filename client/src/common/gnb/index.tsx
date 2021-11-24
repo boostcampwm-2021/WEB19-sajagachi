@@ -163,16 +163,10 @@ function Gnb() {
             </IconButton>
           )}
 
-          {isLoginModalOn && (
-            <LoginModal setIsLoginModalOn={setIsLoginModalOn} />
-          )}
+          {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
         </div>
       </div>
-      <Alert
-        on={isAlertOn}
-        title="위치를 불러오지 못했어요"
-        onClose={() => setIsAlertOn(false)}
-      >
+      <Alert on={isAlertOn} title="위치를 불러오지 못했어요" onClose={() => setIsAlertOn(false)}>
         위치 권한을 허용해주시면 근처의 공동구매 게시글을 검색해드릴 수 있어요.
       </Alert>
       <Backdrop open={isBackdropOn} sx={{ backgroundColor: '#ffffff' }}>

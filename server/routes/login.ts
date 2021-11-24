@@ -1,9 +1,5 @@
 import express from 'express';
-import {
-  checkLogin,
-  githubLogin,
-  logout
-} from '../controller/login-controller';
+import { checkLogin, githubLogin, logout } from '../controller/login-controller';
 
 const router = express.Router();
 

@@ -96,15 +96,7 @@ export default function ReturnPointModal(props: ReturnPointModalProps) {
       <div css={PointModalStyle}>
         <h1 css={TitleStyle}>포인트 반환</h1>
         <form onSubmit={handleSubmit}>
-          <input
-            type="number"
-            value={point}
-            onChange={handleChange}
-            css={InputNumberStyle}
-            min="1"
-            step="1"
-            required
-          />
+          <input type="number" value={point} onChange={handleChange} css={InputNumberStyle} min="1" step="1" required />
           <Button type="submit" css={SubmitStyle}>
             반환
           </Button>

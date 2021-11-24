@@ -61,11 +61,7 @@ function LoginModal({ setIsLoginModalOn }: ModalState) {
   }
 
   return (
-    <div
-      css={modalBackground}
-      onClick={handleOutsideClick}
-      className="modal_background"
-    >
+    <div css={modalBackground} onClick={handleOutsideClick} className="modal_background">
       <div css={modal}>
         <img src={loginTextImg} alt="로그인" css={loginText} />
         <IconButton css={loginButton} onClick={handleLoginBtnClick}>

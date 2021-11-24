@@ -14,18 +14,16 @@ export default function MapDrawer({
 }) {
   const [isMapOn, setIsMapOn] = useState(false);
 
-  const toggleDrawer =
-    () => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
-      ) {
-        return;
-      }
+  const toggleDrawer = () => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
 
-      setIsMapOn(!isMapOn);
-    };
+    setIsMapOn(!isMapOn);
+  };
 
   const list = () => (
     <div>
@@ -35,11 +33,7 @@ export default function MapDrawer({
           height: 'auto'
         }}
       >
-        <NaverMapAPI
-          setIsMapOn={setIsMapOn}
-          setLocation={setLocation}
-          location={location}
-        />
+        <NaverMapAPI setIsMapOn={setIsMapOn} setLocation={setLocation} location={location} />
       </Box>
     </div>
   );

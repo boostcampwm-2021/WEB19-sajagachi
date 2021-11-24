@@ -13,8 +13,7 @@ const savePost = async (body: Request['body']): Promise<number> => {
     lat: Number(body.lat),
     long: Number(body.long)
   };
-  if (!isNaN(body.capacity) && Number(body.capacity) > 0)
-    postBody.capacity = Number(body.capacity);
+  if (!isNaN(body.capacity) && Number(body.capacity) > 0) postBody.capacity = Number(body.capacity);
   if (body.deadline) postBody.deadline = body.deadline;
   const newPost = db.manager.create(Post, postBody);
   const createPost = await db.manager.save(newPost);
@@ -24,24 +23,13 @@ const savePost = async (body: Request['body']): Promise<number> => {
 const saveUrls = async (urls: string[], postId: number): Promise<void> => {
   const db = await getDB().get();
   if (urls.length > 0) {
-    const urlValues = urls
-      .map((url: string) => `(${postId}, '${url}')`)
-      .join(',');
+    const urlValues = urls.map((url: string) => `(${postId}, '${url}')`).join(',');
     await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
   }
 };
 
-const getPosts = async ({
-  offset,
-  limit,
-  category,
-  finished,
-  search,
-  lat,
-  long
-}: getPostsOption) => {
-  if (!(offset && limit))
-    throw new Error('offset 과 limit은 지정해주어야 합니다.');
+const getPosts = async ({ offset, limit, category, finished, search, lat, long }: getPostsOption) => {
+  if (!(offset && limit)) throw new Error('offset 과 limit은 지정해주어야 합니다.');
   const db = await getDB().get();
   let sql = `
 	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, post.lat, post.long, category.name as category
@@ -62,8 +50,7 @@ const getPosts = async ({
   categories = categories.map(category => {
     return `post.categoryId = ${category}`;
   });
-  if (categories.length !== 0)
-    condition.push(' (' + categories.join(' OR ') + ') ');
+  if (categories.length !== 0) condition.push(' (' + categories.join(' OR ') + ') ');
   sql += condition.length ? ' AND ' + condition.join(' AND ') : '';
   sql += ' ORDER BY post.id DESC';
   sql += ` LIMIT ${offset}, ${limit}`;

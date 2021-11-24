@@ -47,12 +47,7 @@ export function ChatMenuDrawer(props: propsType) {
         />
       </IconButton>
       {isMenuOn && <div css={BlurredBackground}></div>}
-      <SwipeableDrawer
-        anchor="right"
-        open={isMenuOn}
-        onClose={toggleDrawer}
-        onOpen={toggleDrawer}
-      >
+      <SwipeableDrawer anchor="right" open={isMenuOn} onClose={toggleDrawer} onOpen={toggleDrawer}>
         <ChatMenu
           onCloseBtnClicked={() => setIsMenuOn(false)}
           socket={props.socket}

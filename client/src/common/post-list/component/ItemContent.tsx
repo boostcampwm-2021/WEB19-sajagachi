@@ -100,12 +100,8 @@ const ChipStyle = (backgroundColor: string) => ({
 export function ItemContent(props: { item: ItemType }) {
   const location = useRecoilValue(locationState);
   const fin = isFinished(props.item);
-  const deadline = props.item.deadline
-    ? `${dateFormat(props.item.deadline)}까지`
-    : '마감 기한 없음';
-  const dist = Math.round(
-    getDistance(location.lat, location.lng, props.item.lat, props.item.long)
-  );
+  const deadline = props.item.deadline ? `${dateFormat(props.item.deadline)}까지` : '마감 기한 없음';
+  const dist = Math.round(getDistance(location.lat, location.lng, props.item.lat, props.item.long));
 
   return (
     <div css={ItemContainerStyle}>
@@ -117,11 +113,7 @@ export function ItemContent(props: { item: ItemType }) {
         {dist}m
       </p>
       <div css={ChipContainerStyle}>
-        <Chip
-          label={props.item.category}
-          sx={ChipStyle(categoryColor[props.item.category])}
-          size="small"
-        />
+        <Chip label={props.item.category} sx={ChipStyle(categoryColor[props.item.category])} size="small" />
         <ParticipantChip item={props.item} />
       </div>
     </div>
@@ -133,11 +125,7 @@ function ParticipantChip(props: { item: ItemType }) {
   return (
     <Chip
       icon={fin ? <Done /> : <GroupIcon />}
-      label={
-        fin
-          ? '마감'
-          : `${props.item.participantCnt}/${props.item.capacity ?? '-'}명`
-      }
+      label={fin ? '마감' : `${props.item.participantCnt}/${props.item.capacity ?? '-'}명`}
       sx={ChipStyle(fin ? '#dadada' : '#ffd8d9')}
       size="small"
     />

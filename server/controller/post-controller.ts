@@ -2,22 +2,21 @@ import { Request, Response } from 'express';
 import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
+import ERROR from '../util/error';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
     const posts = await postService.getPosts(req.query as getPostsOption);
     const result = await Promise.all(
       posts.map(async (post: any) => {
-        const participantCnt = await participantService.getParticipantNum(
-          post.id
-        );
+        const participantCnt = await participantService.getParticipantNum(post.id);
         post.participantCnt = participantCnt;
         return post;
       })
     );
     res.json(result);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
@@ -29,18 +28,13 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
     let isParticipate: boolean;
     if (userId === undefined) isParticipate = false;
     else {
-      isParticipate = await participantService.checkParticipation(
-        Number(req.params.postId),
-        userId
-      );
+      isParticipate = await participantService.checkParticipation(Number(req.params.postId), userId);
     }
 
-    const participantCnt = await participantService.getParticipantNum(
-      Number(req.params.postId)
-    );
+    const participantCnt = await participantService.getParticipantNum(Number(req.params.postId));
     res.json({ ...post, participantCnt, isParticipate });
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
@@ -51,7 +45,7 @@ export const savePost = async (req: Request, res: Response, next: Function) => {
     await participantService.saveParticipant(Number(req.body.userId), postId);
     res.json(postId);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_WRITE_FAIL);
   }
 };
 
@@ -61,35 +55,27 @@ export const getHost = async (req: Request, res: Response, next: Function) => {
     const userId = await postService.getHost(+postId);
     res.json(userId);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
-export const getPostFinished = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const getPostFinished = async (req: Request, res: Response, next: Function) => {
   try {
     const { postId } = req.params;
     const finished = await postService.getFinished(+postId);
     res.json(finished);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
-export const finishPost = async (
-  req: Request,
-  res: Response,
-  next: Function
-) => {
+export const finishPost = async (req: Request, res: Response, next: Function) => {
   try {
     const { postId } = req.params;
     await postService.updatePostFinished(+postId);
     res.status(200).send();
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_WRITE_FAIL);
   }
 };
 
@@ -99,6 +85,6 @@ export const getTitle = async (req: Request, res: Response, next: Function) => {
     const title = await postService.getTitle(+postId);
     res.json(title);
   } catch (err: any) {
-    next({ statusCode: 500, message: err.message });
+    next(ERROR.DB_READ_FAIL);
   }
 };

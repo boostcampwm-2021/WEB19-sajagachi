@@ -22,12 +22,9 @@ export default function MyList() {
   };
   const { data, error, size, setSize } = useSWRInfinite(getKey, fetcher);
   const isLoadingInitialData = !data && !error;
-  const isLoadingMore =
-    isLoadingInitialData ||
-    (size > 0 && data && typeof data[size - 1] === 'undefined');
+  const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
   const isEmpty = data?.[0]?.result.length === 0;
-  const isReachingEnd =
-    isEmpty || (data && data[data.length - 1].result.length < LIMIT_SIZE);
+  const isReachingEnd = isEmpty || (data && data[data.length - 1].result.length < LIMIT_SIZE);
   if (!data) return <LoadingSpinner />;
   return (
     <div style={{ paddingBottom: '10px' }}>

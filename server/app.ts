@@ -34,7 +34,5 @@ app.use(express.static('public'));
 app.use('/img', express.static('upload'));
 app.use('/api', router);
 app.use('/sse', sseRouter);
-const server = app.listen(port, () =>
-  console.log(`Server listening at port ${port}`)
-);
+const server = app.listen(port, () => console.log(`Server listening at port ${port}`));
 socketInit(server, app, sessionMiddleware);

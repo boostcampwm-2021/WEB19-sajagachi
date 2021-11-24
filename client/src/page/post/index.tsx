@@ -18,8 +18,7 @@ import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
 import LoginModal from '../../common/login-modal';
 
-const URL_REGX: RegExp =
-  /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
+const URL_REGX: RegExp = /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
 const postContainer = css`
   display: flex;
@@ -47,8 +46,8 @@ const inputCommon = css`
   overflow: hidden;
   margin-left: 10vw;
   margin-right: 10vw;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
 `;
 
 const inputContent = css`
@@ -134,11 +133,9 @@ function Post() {
       long: currentLocation.lng,
       urls: validUrls
     };
-    fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(
-      data => {
-        history.push(`/post/${data}`);
-      }
-    );
+    fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(data => {
+      history.push(`/post/${data}`);
+    });
   }
 
   function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -176,10 +173,7 @@ function Post() {
         <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
         <DateDeadline deadline={deadline} setDeadline={setDeadline} />
       </div>
-      <Tooltip
-        TransitionComponent={Zoom}
-        title="제목, 내용, 카테고리를 입력하셔야 합니다."
-      >
+      <Tooltip TransitionComponent={Zoom} title="제목, 내용, 카테고리를 입력하셔야 합니다.">
         <span css={finishButton}>
           <Button
             style={{

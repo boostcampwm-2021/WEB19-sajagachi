@@ -1,32 +1,32 @@
 @font-face {
-	font-family: 'Noto Sans KR';
-	src: url(./asset/NotoSansKR-Regular.otf);
+  font-family: 'Noto Sans KR';
+  src: url(./asset/NotoSansKR-Regular.otf);
 }
 
 @font-face {
-	font-family: 'Noto Sans KR Medium';
-	src: url(./asset/NotoSansKR-Medium.otf);
+  font-family: 'Noto Sans KR Medium';
+  src: url(./asset/NotoSansKR-Medium.otf);
 }
 
 @font-face {
-	font-family: 'Gugi';
-	src: url(./asset/Gugi-Regular.ttf);
+  font-family: 'Gugi';
+  src: url(./asset/Gugi-Regular.ttf);
 }
 
 * {
-	box-sizing: border-box;
-	padding: 0;
-	font-family: 'Noto Sans KR', sans-serif;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 body {
-	width: 100vw;
-	height: calc(100vh - 4.4rem);
-	padding: 0;
-	margin: 0;
+  width: 100vw;
+  height: calc(100vh - 4.4rem);
+  padding: 0;
+  margin: 0;
 }
 
 #root {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
