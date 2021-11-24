@@ -57,7 +57,6 @@ export const getParticipationPosts = async (
   try {
     const { userId } = req.params;
     const { limit, cursor } = req.query;
-    console.log(cursor);
     const participationPosts = await participantService.getParticipationPosts(
       Number(userId),
       limit as string,

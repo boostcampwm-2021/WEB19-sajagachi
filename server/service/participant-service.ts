@@ -96,7 +96,6 @@ const getParticipationPosts = async (
   if (cursor !== null) condition += `WHERE p.id < ${cursor} `;
   condition += `ORDER BY p.id DESC `;
   condition += `LIMIT ${limit}`;
-  console.log(sql + condition);
   const result = await db.manager.query(sql + condition);
   return result;
 };
