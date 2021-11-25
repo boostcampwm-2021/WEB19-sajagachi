@@ -249,6 +249,7 @@ const getAMPMTime = (date: Date) => {
   const currentMinutes = date.getMinutes();
   const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
   currentHour = currentHour < 12 ? currentHour : currentHour - 12;
+  if (currentHour === 0) currentHour = 12;
   return strAmPm + currentHour + '시 ' + currentMinutes + '분';
 };
 
