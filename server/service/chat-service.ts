@@ -31,11 +31,7 @@ const saveImg = async (userId: number, postId: number, img: string) => {
   }
 };
 
-const getChats = async (
-  postId: string,
-  limit: string | undefined,
-  cursor: string | null = null
-) => {
+const getChats = async (postId: string, limit: string | undefined, cursor: string | null = null) => {
   try {
     const db = await getDB().get();
     let query = `

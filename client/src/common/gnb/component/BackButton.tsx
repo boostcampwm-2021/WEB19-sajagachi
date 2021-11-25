@@ -9,14 +9,8 @@ function BackButton({ location, history }: RouteComponentProps) {
   };
 
   return location.pathname !== '/' ? (
-    <IconButton
-      aria-label="go back"
-      onClick={goBack}
-      sx={{ width: '2.43rem', height: '2.43rem' }}
-    >
-      <ArrowBackIosNewIcon
-        sx={{ color: 'white', width: '1.9rem', height: '1.9rem' }}
-      />
+    <IconButton aria-label="go back" onClick={goBack} sx={{ width: '2.43rem', height: '2.43rem' }}>
+      <ArrowBackIosNewIcon sx={{ color: 'white', width: '1.9rem', height: '1.9rem' }} />
     </IconButton>
   ) : null;
 }

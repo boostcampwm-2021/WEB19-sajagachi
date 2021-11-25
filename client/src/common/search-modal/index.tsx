@@ -75,13 +75,7 @@ const buttonContainerStyle = css`
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
-function SearchModal({
-  setIsSearchModalOn,
-  history
-}: {
-  setIsSearchModalOn: any;
-  history: any;
-}) {
+function SearchModal({ setIsSearchModalOn, history }: { setIsSearchModalOn: any; history: any }) {
   const [categories, setCategories] = useState([]);
   const [checkedCategories, setCheckedCategories] = useState([] as boolean[]);
 
@@ -128,33 +122,30 @@ function SearchModal({
     setLocation(currentLocation);
   }, [currentLocation]);
   useEffect(() => {
-    if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 }))
-      searchCoordinateToAddress(location);
+    if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 })) searchCoordinateToAddress(location);
   }, [location]);
   useEffect(() => {
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(
-      result => {
-        setCategories(result.map((x: any) => x.name));
+    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(result => {
+      setCategories(result.map((x: any) => x.name));
 
-        const query = decomposeQueryString(window.location.search);
-        setCheckedCategories(checkedCategories => {
-          const arr = new Array(result.length).fill(false);
-          query.category?.forEach(val => {
-            arr[val - 1] = true;
-          });
-          return arr;
+      const query = decomposeQueryString(window.location.search);
+      setCheckedCategories(checkedCategories => {
+        const arr = new Array(result.length).fill(false);
+        query.category?.forEach(val => {
+          arr[val - 1] = true;
         });
-        if (query.lat && query.long) {
-          setLocation({ lat: query.lat, lng: query.long });
-        }
-        if (query.search) setSearch(query.search);
-        setCheckedFinished(checkedFinished => {
-          if (query.finished === true) checkedFinished[1] = true;
-          else if (query.finished === false) checkedFinished[0] = true;
-          return checkedFinished;
-        });
+        return arr;
+      });
+      if (query.lat && query.long) {
+        setLocation({ lat: query.lat, lng: query.long });
       }
-    );
+      if (query.search) setSearch(query.search);
+      setCheckedFinished(checkedFinished => {
+        if (query.finished === true) checkedFinished[1] = true;
+        else if (query.finished === false) checkedFinished[0] = true;
+        return checkedFinished;
+      });
+    });
   }, []);
 
   return (

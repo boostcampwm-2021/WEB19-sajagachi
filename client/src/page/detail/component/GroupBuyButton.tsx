@@ -125,8 +125,6 @@ const createGroupButtonText = ({
   if (finished) {
     return isParticipate ? '공구마감 / 참여중' : '모집 종료';
   } else {
-    return `${isParticipate ? '참여중' : '공동 구매'} (${participantCnt} / ${
-      capacity ?? ' - '
-    })`;
+    return `${isParticipate ? '참여중' : '공동 구매'} (${participantCnt} / ${capacity ?? ' - '})`;
   }
 };

@@ -23,12 +23,7 @@ export default function FAB({ loginUser }: { loginUser: LoginUserType }) {
 
   return (
     <>
-      <Fab
-        css={FabStyle}
-        sx={{ backgroundColor: '#ebabab' }}
-        aria-label="edit"
-        onClick={handleFabClick}
-      >
+      <Fab css={FabStyle} sx={{ backgroundColor: '#ebabab' }} aria-label="edit" onClick={handleFabClick}>
         <EditIcon sx={{ color: '#ffffff' }} />
       </Fab>
       {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}

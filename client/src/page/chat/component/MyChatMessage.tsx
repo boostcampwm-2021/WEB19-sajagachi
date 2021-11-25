@@ -39,12 +39,7 @@ function MyChatMessage(props: { msgData: MessageType }) {
       <span css={MessageTimeStyle}>{props.msgData.time}</span>
       {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
       {props.msgData.img && props.msgData.modalOn && (
-        <img
-          css={ImageStyle}
-          src={props.msgData.img}
-          alt={'chatImg'}
-          onClick={handleImageClick}
-        />
+        <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
       )}
     </div>
   );

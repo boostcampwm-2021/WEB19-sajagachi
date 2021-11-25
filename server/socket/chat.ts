@@ -29,65 +29,38 @@ export const sendMsg = (socket: any, io: Server) => {
   });
 };
 
-export const sendImg = (
-  io: Server,
-  postId: number,
-  userId: number,
-  userName: string,
-  img: string
-) => {
+export const sendImg = (io: Server, postId: number, userId: number, userName: string, img: string) => {
   io.to(String(postId)).emit('sendImg', userId, userName, img);
 };
 
 export const confirmPurchase = (socket: any, io: Server) => {
-  socket.on(
-    'pointConfirm',
-    async (postId: number, userId: number, sendPoint: number) => {
-      const loginUser = await checkSession(socket);
-      if (loginUser === undefined || loginUser.id !== userId)
-        socket.emit('purchaseError', '사용자 정보 에러');
-      else if (loginUser.point < sendPoint)
-        socket.emit('purchaseError', '잔여 포인트 부족');
-      else {
-        userService.usePoint(loginUser.id, loginUser.point, sendPoint);
-        participantService.updatePoint(postId, loginUser.id, sendPoint);
-        io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
-        processSystemMsg(
-          io,
-          SYSTEM_MSG_TYPE.CONFIRM_PURCHASE,
-          postId,
-          loginUser.name
-        );
-      }
+  socket.on('pointConfirm', async (postId: number, userId: number, sendPoint: number) => {
+    const loginUser = await checkSession(socket);
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
+    else if (loginUser.point < sendPoint) socket.emit('purchaseError', '잔여 포인트 부족');
+    else {
+      userService.usePoint(loginUser.id, loginUser.point, sendPoint);
+      participantService.updatePoint(postId, loginUser.id, sendPoint);
+      io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
+      processSystemMsg(io, SYSTEM_MSG_TYPE.CONFIRM_PURCHASE, postId, loginUser.name);
     }
-  );
+  });
 };
 
 export const cancelPurchase = (socket: any, io: Server) => {
   socket.on('pointCancel', async (postId: number, userId: number) => {
     const loginUser = await checkSession(socket);
     if (loginUser === undefined) return;
-    if (loginUser === undefined || loginUser.id !== userId)
-      socket.emit('purchaseError', '사용자 정보 에러');
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
     else {
-      const participant = await participantService.getParticipant(
-        postId,
-        loginUser.id
-      );
-      if (participant === undefined)
-        socket.emit('purchaseError', '참여 정보 없음');
-      else if (participant.point === null)
-        socket.emit('purchaseError', '제출 이력 없음');
+      const participant = await participantService.getParticipant(postId, loginUser.id);
+      if (participant === undefined) socket.emit('purchaseError', '참여 정보 없음');
+      else if (participant.point === null) socket.emit('purchaseError', '제출 이력 없음');
       else {
         participantService.updatePoint(postId, loginUser.id, null);
         userService.addPoint(loginUser.id, participant.point);
         io.to(String(postId)).emit('purchaseCancel', loginUser.id);
-        processSystemMsg(
-          io,
-          SYSTEM_MSG_TYPE.CANCEL_PURCHASE,
-          postId,
-          loginUser.name
-        );
+        processSystemMsg(io, SYSTEM_MSG_TYPE.CANCEL_PURCHASE, postId, loginUser.name);
       }
     }
   });
@@ -107,10 +80,7 @@ export const kickUser = (socket: any, io: Server) => {
     }
 
     // 타깃 유저를 찾기
-    const targetUser = await participantService.getParticipant(
-      postId,
-      targetUserId
-    );
+    const targetUser = await participantService.getParticipant(postId, targetUserId);
     if (!targetUser) {
       return; // target user not exists
     }
@@ -219,12 +189,7 @@ const createSystemMsg = (msgType: number, userName: string) => {
   }
 };
 
-export const processSystemMsg = (
-  io: Server,
-  type: number,
-  postId: number,
-  userName: string
-) => {
+export const processSystemMsg = (io: Server, type: number, postId: number, userName: string) => {
   const msg = createSystemMsg(type, userName);
   chatService.saveChat(SYSTEM_ID, postId, msg);
   io.to(String(postId)).emit('receiveMsg', SYSTEM_ID, SYSTEM_NAME, msg);

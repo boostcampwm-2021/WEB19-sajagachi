@@ -51,3 +51,8 @@ export type MetaResult = {
     videos?: Array<Image>;
   };
 };
+
+export type ErrorType = {
+  status: number;
+  message: string;
+};

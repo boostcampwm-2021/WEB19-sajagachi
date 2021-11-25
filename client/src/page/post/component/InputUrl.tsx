@@ -55,14 +55,7 @@ function InputUrl({ idx, urls, setUrls }: UrlState) {
 
   return (
     <div css={urlContainer} key={idx}>
-      <input
-        type="url"
-        name="url"
-        css={inputUrl}
-        placeholder="url"
-        onChange={handleUrlChange}
-        value={urls[idx]}
-      />
+      <input type="url" name="url" css={inputUrl} placeholder="url" onChange={handleUrlChange} value={urls[idx]} />
       {idx > 0 && (
         <IconButton css={deleteButton} onClick={handleDeleteClick}>
           <ClearIcon color="error" />

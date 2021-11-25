@@ -33,25 +33,14 @@ const InputText = css`
   padding: 10px;
 `;
 
-function SearchInput({
-  value,
-  setSearch
-}: {
-  value: string;
-  setSearch: Function;
-}) {
+function SearchInput({ value, setSearch }: { value: string; setSearch: Function }) {
   function onChangeHandle(e: ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value);
   }
 
   return (
     <form css={searchForm} onSubmit={e => e.preventDefault()}>
-      <input
-        type="text"
-        css={InputText}
-        onChange={onChangeHandle}
-        value={value}
-      />
+      <input type="text" css={InputText} onChange={onChangeHandle} value={value} />
     </form>
   );
 }

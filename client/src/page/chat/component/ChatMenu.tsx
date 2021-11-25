@@ -116,24 +116,12 @@ export function ChatMenu(props: propsType) {
   return (
     <div css={ChatMenuStyle}>
       <Close css={CloseBtnStyle} onClick={() => props.onCloseBtnClicked()} />
-      <UserList
-        socket={props.socket}
-        hostId={hostId}
-        participants={props.participants}
-      />
+      <UserList socket={props.socket} hostId={hostId} participants={props.participants} />
       {
         [
           <FinishedPointView />,
-          <HostPointView
-            socket={props.socket}
-            hostId={hostId}
-            participants={props.participants}
-          />,
-          <PointView
-            socket={props.socket}
-            hostId={hostId}
-            participants={props.participants}
-          />
+          <HostPointView socket={props.socket} hostId={hostId} participants={props.participants} />,
+          <PointView socket={props.socket} hostId={hostId} participants={props.participants} />
         ][pointViewState]
       }
 
