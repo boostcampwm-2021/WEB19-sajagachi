@@ -94,6 +94,7 @@ function Post() {
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
   const currentLocation = useRecoilValue(locationState);
+  console.log(deadline);
 
   useEffect(() => {
     if (title && content && category !== null) setBtnDisabled(false);
@@ -122,13 +123,16 @@ function Post() {
   });
 
   function createPost(validUrls: string[]) {
+    const deadlineDate = deadline
+      ? new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate() + 1)
+      : deadline;
     const body = {
       userId: loginUser.id,
       categoryId: category,
       title: title,
       content: content,
       capacity: capacity,
-      deadline: deadline,
+      deadline: deadlineDate,
       lat: currentLocation.lat,
       long: currentLocation.lng,
       urls: validUrls

@@ -17,4 +17,9 @@ router.use('/previewData', linkPreviewRouter);
 router.use('/login', loginRouter);
 router.use('/user', userRouter);
 
+const errorHandler = (err: any, req: Request, res: Response, next: any) => {
+  res.status(err.status).json(err.message);
+};
+router.use(errorHandler);
+
 export default router;
