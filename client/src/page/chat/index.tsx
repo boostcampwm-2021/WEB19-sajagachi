@@ -67,13 +67,9 @@ function Chat() {
 
   useEffect(() => {
     updateParticipants(postId);
-    socketRef.current.on('afterJoin', (msg: string) => {
-      console.log(msg);
-    });
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
     });
-
     socketRef.current.on('purchaseConfirm', (confirmUserId: number, sendPoint: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -82,7 +78,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('purchaseCancel', (cancelUserId: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -91,7 +86,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('getOut', (targetUserId: number) => {
       if (loginUser.id === targetUserId) {
         setIsAlertOn(true);
