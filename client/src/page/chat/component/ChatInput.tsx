@@ -5,6 +5,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
 import { ERROR } from '../../../util/error-message';
 import IconButton from '@mui/material/IconButton';
+import { isImage } from '../../../util';
 
 type ChatInputType = {
   socket: any;
@@ -18,6 +19,10 @@ function ChatInput(props: ChatInputType) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const uploadFile = async (event: any) => {
     const img = event.target.files[0];
+    if (!isImage(img.name)) {
+      props.popError(ERROR.FILE_TYPE);
+      return;
+    }
     if (img.size > 2 * 1024 * 1024) {
       props.popError(ERROR.FILE_SIZE);
       return;
@@ -56,7 +61,7 @@ function ChatInput(props: ChatInputType) {
 
   return (
     <div css={ChatInputDiv}>
-      <input accept="image/*" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
+      <input accept="file" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
       <IconButton aria-label="image add" sx={{ width: '40px', height: '40px' }} onClick={imgUpload}>
         <AddCircleIcon
           sx={{

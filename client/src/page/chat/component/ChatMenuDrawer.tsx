@@ -35,6 +35,7 @@ export function ChatMenuDrawer(props: propsType) {
           width: '2.43rem',
           height: '2.43rem'
         }}
+        onClick={toggleDrawer}
       >
         <MenuIcon
           sx={{
@@ -42,7 +43,6 @@ export function ChatMenuDrawer(props: propsType) {
             height: '1.9rem',
             color: '#FFFFFF'
           }}
-          onClick={toggleDrawer}
         />
       </IconButton>
       {isMenuOn && <div css={BlurredBackground}></div>}
