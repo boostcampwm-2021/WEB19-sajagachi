@@ -13,8 +13,6 @@ export const joinRoom = (socket: any, io: Server) => {
     console.log('user: ' + loginUser.id + ' has entered room: ' + postId);
     socket.join(String(postId));
     const joinMsg = `user ${loginUser.id} has join room ${postId}`;
-    io.to(String(postId)).emit('afterJoin', joinMsg);
-
     const participants = await participantService.getParticipants(postId);
     io.to(String(postId)).emit('updateParticipants', participants);
   });

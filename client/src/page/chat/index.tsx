@@ -4,13 +4,13 @@ import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
 import ChatList from './component/ChatList';
 import io from 'socket.io-client';
-
 import { fetchGet, getCurrentTime, parsePath } from '../../util';
 import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
 import Alert from '../../common/alert';
+import useError from '../../hook/useError';
 
 const ChatContainer = css`
   margin-left: auto;
@@ -22,6 +22,7 @@ const ChatContainer = css`
 
 function Chat() {
   const history = useHistory();
+  const [popError, renderError] = useError();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true }));
   const [userMe, setUserMe] = useState<UserInfoType>();
@@ -67,13 +68,9 @@ function Chat() {
 
   useEffect(() => {
     updateParticipants(postId);
-    socketRef.current.on('afterJoin', (msg: string) => {
-      console.log(msg);
-    });
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
     });
-
     socketRef.current.on('purchaseConfirm', (confirmUserId: number, sendPoint: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -82,7 +79,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('purchaseCancel', (cancelUserId: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -91,7 +87,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('getOut', (targetUserId: number) => {
       if (loginUser.id === targetUserId) {
         setIsAlertOn(true);
@@ -106,12 +101,12 @@ function Chat() {
   const handleAlertClose = () => {
     history.goBack();
   };
-
   return (
     <div css={ChatContainer}>
+      {renderError('')}
       {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
       {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
-      {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} />}
+      {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} popError={popError} />}
       <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
         호스트가 당신을 내보냈습니다.
       </Alert>
