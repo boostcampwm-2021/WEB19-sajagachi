@@ -11,6 +11,7 @@ import DeadLine, { DeadLineHandle } from './component/DeadLine';
 import LinkPreview from './component/LinkPreview';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
+import useLoginUser from '../../hook/useLoginUser';
 
 type UrlType = {
   postId: number;
@@ -68,7 +69,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
   const deadLineRef = useRef<DeadLineHandle>();
-  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const loginUser = useLoginUser();
   const [post, setPost] = useState<PostType>({
     id: 0,
     userId: 0,
@@ -91,20 +92,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
     },
     isParticipate: false
   });
-  useEffect(() => {
-    if (!loginUser.isSigned) {
-      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-      fetchGet(url).then(userLogin => {
-        if (!isNaN(userLogin.id)) {
-          setLoginUser({
-            id: userLogin.id,
-            name: userLogin.name,
-            isSigned: true
-          });
-        }
-      });
-    }
-  }, []);
+
   useEffect(() => {
     let es: any = null;
     fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`).then(post => {
