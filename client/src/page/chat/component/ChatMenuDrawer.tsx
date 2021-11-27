@@ -34,15 +34,10 @@ export function ChatMenuDrawer(props: propsType) {
           marginTop: '15px',
           width: '2.43rem',
           height: '2.43rem'
-          // width: '30px',
-          // height: '3.4rem',
-          // marginRight: '15px'
         }}
       >
         <MenuIcon
           sx={{
-            // width: '30px',
-            // height: '3.4rem',
             width: '1.9rem',
             height: '1.9rem',
             color: '#FFFFFF'

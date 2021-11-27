@@ -10,6 +10,7 @@ type ChatInputType = {
   socket: any;
   postId: number;
   user: UserInfoType;
+  popError: Function;
 };
 
 function ChatInput(props: ChatInputType) {
@@ -52,7 +53,7 @@ function ChatInput(props: ChatInputType) {
 
   return (
     <div css={ChatInputDiv}>
-      <input accept=".png, .jpg" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
+      <input accept="image/*" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
       <IconButton aria-label="image add" sx={{ width: '40px', height: '40px' }} onClick={imgUpload}>
         <AddCircleIcon
           sx={{
@@ -91,7 +92,6 @@ function ChatInput(props: ChatInputType) {
   );
 }
 const ChatInputStyle = css`
-  /* margin-top: 5px; */
   margin: 5px 5px 0px 5px;
   width: 80%;
   height: 30px;
