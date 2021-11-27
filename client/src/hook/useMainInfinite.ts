@@ -16,8 +16,8 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
     return (
       `${process.env.REACT_APP_SERVER_URL}/api/post?` +
       createQueryString({
-        offset: pageIndex * 15,
-        limit: 15,
+        offset: pageIndex * POST_LIMIT_SIZE,
+        limit: POST_LIMIT_SIZE,
         lat: location.lat,
         long: location.lng,
         ...filter
@@ -29,7 +29,7 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
   const isEmpty = data?.[0]?.length === 0;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < 15);
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < POST_LIMIT_SIZE);
 
   useEffect(() => {
     if (isReachingEnd && observerRef.current && loader.current) observerRef.current.unobserve(loader.current);
@@ -73,3 +73,5 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
 };
 
 export default useMainInfinite;
+
+const POST_LIMIT_SIZE = 15;
