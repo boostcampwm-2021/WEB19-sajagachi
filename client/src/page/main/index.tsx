@@ -1,49 +1,49 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
 import { createQueryString, decomposeQueryString, fetchGet } from '../../util';
-import { ItemType } from '../../type';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
-import { CircularProgress, Box } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/system';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
 import LocationIndicator from './component/LocationIndicator';
 import { loginUserState } from '../../store/login';
+import LoadingSpinner from '../../common/loading-spinner';
+import useSWRInfinite from 'swr/infinite';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#ebabab'
-    }
-  }
-});
-
-const mainContainer = css`
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-`;
-const ImageStyle = css`
-  width: 100%;
-`;
-
-const loadingSpinner = css`
-  margin-left: auto;
-  margin-right: auto;
-`;
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 function Main() {
-  const [items, setItems] = useState<ItemType[]>([]);
-  const [alert, setAlert] = useState(false);
-  const [isFetch, setIsFetch] = useState(false);
   const location = useRecoilValue(locationState);
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
-
-  let offset = useRef(0);
+  const observerRef = useRef<IntersectionObserver>();
   const loader = useRef(null);
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    if (previousPageData && !previousPageData.length) {
+      return null;
+    }
+    const filter = decomposeQueryString(window.location.search);
+    return (
+      `${process.env.REACT_APP_SERVER_URL}/api/post?` +
+      createQueryString({
+        offset: pageIndex * 15,
+        limit: 15,
+        lat: location.lat,
+        long: location.lng,
+        ...filter
+      })
+    );
+  };
+  const { data = [], error, size, setSize } = useSWRInfinite(getKey, fetcher, { initialSize: 0, revalidateAll: true });
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
+  const isEmpty = data?.[0]?.length === 0;
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < 15);
+
+  useEffect(() => {
+    if (isReachingEnd && observerRef.current && loader.current) observerRef.current.unobserve(loader.current);
+  }, [isReachingEnd]);
 
   useEffect(() => {
     if (!loginUser.isSigned) {
@@ -60,71 +60,49 @@ function Main() {
     }
   }, []);
 
-  useEffect(() => {
-    setItems([]);
-    offset.current = 0;
-  }, [window.location.search, location]);
-
-  const handleObserver = useCallback(
-    entry => {
-      const target = entry[0];
-      const filter = decomposeQueryString(window.location.search);
-      if (target.isIntersecting) {
-        setIsFetch(false);
-        fetchGet(
-          `${process.env.REACT_APP_SERVER_URL}/api/post`,
-          createQueryString({
-            offset: offset.current,
-            limit: 15,
-            lat: location.lat,
-            long: location.lng,
-            ...filter
-          })
-        )
-          .then(result => {
-            setIsFetch(true);
-            setItems(prev => [...prev, ...result]);
-            offset.current += result.length;
-          })
-          .catch(e => {
-            setIsFetch(true);
-            setAlert(true);
-          });
-      }
-    },
-    [window.location.search, location]
-  );
-
+  const handleObserver: IntersectionObserverCallback = (entry, observer) => {
+    const target = entry[0];
+    if (target.isIntersecting) {
+      observer.unobserve(target.target);
+      setSize(prev => prev + 1).finally(() => {
+        observer.observe(target.target);
+      });
+    }
+  };
   useEffect(() => {
     const option = {
       root: null,
       rootMargin: '20px',
       threshold: 0
     };
-    const observer = new IntersectionObserver(handleObserver, option);
-    if (loader.current) observer.observe(loader.current);
+    observerRef.current = new IntersectionObserver(handleObserver, option);
+    if (loader.current) observerRef.current.observe(loader.current);
     return () => {
-      if (loader.current) observer.unobserve(loader.current);
+      if (observerRef.current && loader.current) observerRef.current.unobserve(loader.current);
     };
-  }, [handleObserver]);
+  }, [window.location.search, location]);
 
+  if (isLoadingInitialData) return <LoadingSpinner />;
+  const items = data ? [].concat(...data) : [];
   return (
     <div css={mainContainer}>
-      {alert && <ErrorAlert alert={alert} />}
+      {error && <ErrorAlert alert={error} />}
       <LocationIndicator />
-      <PostList items={items} />
-      <div ref={loader} />
-      {!isFetch && (
-        <ThemeProvider theme={theme}>
-          <Box sx={{ display: 'flex' }}>
-            <CircularProgress css={loadingSpinner} />
-          </Box>
-        </ThemeProvider>
-      )}
-      {isFetch && items.length === 0 && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}
+      <PostList items={items} />;{isLoadingMore && <LoadingSpinner />}
+      {!isReachingEnd && <div ref={loader} />}
+      {isEmpty && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}
       <FAB loginUser={loginUser} />
     </div>
   );
 }
 
 export default Main;
+
+const mainContainer = css`
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+`;
+const ImageStyle = css`
+  width: 100%;
+`;
