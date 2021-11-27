@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
-
+import { ERROR } from '../../../util/error-message';
 import IconButton from '@mui/material/IconButton';
 
 type ChatInputType = {
@@ -16,9 +16,12 @@ type ChatInputType = {
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const uploadFile = async (event: any) => {
     const img = event.target.files[0];
+    if (img.size > 2 * 1024 * 1024) {
+      props.popError(ERROR.FILE_SIZE);
+      return;
+    }
     const formData = new FormData();
     formData.append('file', img);
     const options = {
