@@ -10,59 +10,12 @@ import { withRouter } from 'react-router-dom';
 import logoImg from '../../asset/logo.svg';
 import BackButton from './component/BackButton';
 import LoginModal from '../login-modal';
-import Alert from '../alert';
 import { Avatar, Backdrop } from '@mui/material';
 import LoadingUI from './component/LoadingUI';
 import { loginUserState } from '../../store/login';
 import { fetchGet } from '../../util';
 import useError from '../../hook/useError';
 import { ERROR } from '../../util/error-message';
-
-const gnbBackground = css`
-  z-index: 1;
-  height: 4.4rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #ebabab;
-  & + * {
-    margin-top: 4.4rem;
-  }
-`;
-
-const gnbContainer = css`
-  margin: auto;
-  max-width: 700px;
-  height: 4.4rem;
-  display: flex;
-  flex-direction: row;
-
-  align-items: center;
-`;
-
-const logo = css`
-  width: 40px;
-  height: 40px;
-  font-size: 30px;
-  padding: 0;
-  text-align: center;
-  line-height: 40px;
-`;
-
-const btn = css`
-  width: 2.43rem;
-  height: 2.43rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const btnIcon = css`
-  width: 1.9rem;
-  height: 1.9rem;
-  color: white;
-`;
 
 const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 
@@ -177,3 +130,49 @@ function Gnb() {
 }
 
 export default Gnb;
+
+const gnbBackground = css`
+  z-index: 1;
+  height: 4.4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #ebabab;
+  & + * {
+    margin-top: 4.4rem;
+  }
+`;
+
+const gnbContainer = css`
+  margin: auto;
+  max-width: 700px;
+  height: 4.4rem;
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+`;
+
+const logo = css`
+  width: 40px;
+  height: 40px;
+  font-size: 30px;
+  padding: 0;
+  text-align: center;
+  line-height: 40px;
+`;
+
+const btn = css`
+  width: 2.43rem;
+  height: 2.43rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const btnIcon = css`
+  width: 1.9rem;
+  height: 1.9rem;
+  color: white;
+`;
