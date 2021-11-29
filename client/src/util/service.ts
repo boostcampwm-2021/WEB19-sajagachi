@@ -48,6 +48,14 @@ const getTitle = async (postId: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle };
+const getPost = async (postId: number) => {
+  const postUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}`;
+  const response = await fetch(postUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, getPost };
 
 export default service;
