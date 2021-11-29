@@ -5,38 +5,24 @@ import FAB from './component/FAB';
 import { fetchGet } from '../../util';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
-import { useRecoilState } from 'recoil';
+import useLoginUser from '../../hook/useLoginUser';
 import LocationIndicator from './component/LocationIndicator';
-import { loginUserState } from '../../store/login';
 import LoadingSpinner from '../../common/loading-spinner';
 import useMainInfinite from '../../hook/useMainInfinite';
+
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 function Main() {
-  const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const loginUser = useLoginUser();
   const loader = useRef(null);
   const { data, error, isLoadingInitialData, isLoadingMore, isEmpty, isReachingEnd } = useMainInfinite({
     fetcher,
     loader
   });
-
-  useEffect(() => {
-    if (!loginUser.isSigned) {
-      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-      fetchGet(url).then(userLogin => {
-        if (!isNaN(userLogin.id)) {
-          setLoginUser({
-            id: userLogin.id,
-            name: userLogin.name,
-            isSigned: true
-          });
-        }
-      });
-    }
-  }, []);
-
+   
   if (isLoadingInitialData) return <LoadingSpinner />;
+  
   const items = data ? [].concat(...data) : [];
   return (
     <div css={mainContainer}>
