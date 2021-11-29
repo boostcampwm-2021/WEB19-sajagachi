@@ -5,6 +5,7 @@ import { SYSTEM_MSG_TYPE, processSystemMsg } from '../socket/chat';
 import ERROR from '../util/error';
 
 export const getParticipants = async (req: Request, res: Response, next: Function) => {
+  next(ERROR.DB_READ_FAIL);
   try {
     const participants = await participantService.getParticipants(+req.params.post_id);
     res.json(participants);

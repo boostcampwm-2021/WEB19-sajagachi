@@ -31,32 +31,36 @@ function Chat() {
   const [isAlertOn, setIsAlertOn] = useState(false);
   const [title, setTitle] = useState('');
   const updateParticipants = async (postId: number) => {
-    const userLogin = loginUser.isSigned ? loginUser : await service.getLogin();
+    try {
+      const userLogin = loginUser.isSigned ? loginUser : await service.getLogin();
 
-    if (!loginUser.isSigned) {
-      if (isNaN(userLogin.id)) {
-        history.push(`/post/${postId}`);
-      } else
-        setLoginUser({
-          id: userLogin.id,
-          name: userLogin.name,
-          isSigned: true
+      if (!loginUser.isSigned) {
+        if (isNaN(userLogin.id)) {
+          history.push(`/post/${postId}`);
+        } else
+          setLoginUser({
+            id: userLogin.id,
+            name: userLogin.name,
+            isSigned: true
+          });
+      }
+      const result = await service.getParticipants(postId);
+
+      const participantMe = result.find((participant: ParticipantType) => participant.user.id === userLogin.id);
+      if (participantMe === undefined) history.goBack();
+
+      if (participantMe !== undefined) {
+        setChatSocket();
+        const resultTitle = await service.getTitle(postId);
+        setTitle(resultTitle);
+        setUserMe({
+          userId: participantMe.user.id,
+          userName: participantMe.user.name
         });
-    }
-    const result = await service.getParticipants(postId);
-
-    const participantMe = result.find((participant: ParticipantType) => participant.user.id === userLogin.id);
-    if (participantMe === undefined) history.goBack();
-
-    if (participantMe !== undefined) {
-      setChatSocket();
-      const resultTitle = await service.getTitle(postId);
-      setTitle(resultTitle);
-      setUserMe({
-        userId: participantMe.user.id,
-        userName: participantMe.user.name
-      });
-      setParticipants(result);
+        setParticipants(result);
+      }
+    } catch (err: any) {
+      popError(err.message);
     }
   };
 
