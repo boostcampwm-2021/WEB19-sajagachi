@@ -22,7 +22,7 @@ const ChatContainer = css`
 
 function Chat() {
   const history = useHistory();
-  const [popError, renderError] = useError();
+  const [popError, RenderError] = useError();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true }));
   const [userMe, setUserMe] = useState<UserInfoType>();
@@ -105,7 +105,7 @@ function Chat() {
   };
   return (
     <div css={ChatContainer}>
-      {renderError()}
+      <RenderError />
       {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
       {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
       {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} popError={popError} />}
