@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { Button } from '@mui/material';
-import { fetchPost } from '../../../util';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
 import service from '../../../util/service';
+import useError from '../../../hook/useError';
 
 type ChargePointModalProps = {
   onClose: () => void;
@@ -14,6 +14,7 @@ type ChargePointModalProps = {
 export default function ChargePointModal(props: ChargePointModalProps) {
   const loginUser = useRecoilValue(loginUserState);
   const [point, setPoint] = useState('');
+  const [popError, RenderError] = useError();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPoint(e.target.value);
@@ -21,10 +22,13 @@ export default function ChargePointModal(props: ChargePointModalProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    service.updatePoint(loginUser.id, +point).then(() => {
-      props.updateUser();
-      props.onClose();
-    });
+    service
+      .updatePoint(loginUser.id, +point)
+      .then(() => {
+        props.updateUser();
+        props.onClose();
+      })
+      .catch(err => popError(err.message));
   };
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -33,6 +37,7 @@ export default function ChargePointModal(props: ChargePointModalProps) {
 
   return (
     <div css={PointModalBgStyle} onClick={handleOutsideClick}>
+      <RenderError />
       <div css={PointModalStyle}>
         <h1 css={TitleStyle}>포인트 충전</h1>
         <form onSubmit={handleSubmit}>
