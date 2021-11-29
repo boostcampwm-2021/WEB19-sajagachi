@@ -19,6 +19,7 @@ import { useHistory } from 'react-router';
 import LoginModal from '../../common/login-modal';
 import useError from '../../hook/useError';
 import { ERROR } from '../../util/error-message';
+import service from '../../util/service';
 
 const URL_REGX: RegExp = /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
@@ -95,7 +96,7 @@ function Post() {
   const [capacity, setCapacity] = useState<number>(0);
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
-  const [popError, RenderError] = useError('');
+  const [popError, RenderError] = useError();
   const currentLocation = useRecoilValue(locationState);
 
   useEffect(() => {
@@ -124,12 +125,11 @@ function Post() {
     return <div css={horizonLine}></div>;
   });
 
-  function createPost(validUrls: string[]) {
+  const createPost = async (validUrls: string[]) => {
     const deadlineDate = deadline
       ? new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate() + 1)
       : deadline;
     const body = {
-      userId: loginUser.id,
       categoryId: category,
       title: title,
       content: content,
@@ -139,10 +139,13 @@ function Post() {
       long: currentLocation.lng,
       urls: validUrls
     };
-    fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(data => {
-      history.push(`/post/${data}`);
-    });
-  }
+    try {
+      const postId = await service.postPost(body);
+      history.push(`/post/${postId}`);
+    } catch (err: any) {
+      popError(err.message);
+    }
+  };
 
   function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
     setUrls([...urls, '']);

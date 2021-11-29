@@ -1,25 +1,28 @@
+import { PostInputType } from '../type';
+
 const getOptions = () => {
   const options: RequestInit = {
     method: 'GET',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include'
   };
   return options;
 };
 
-const postOptions = () => {
+const postOptions = (body: any) => {
   const options: RequestInit = {
     method: 'post',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include',
+    body: JSON.stringify(body)
   };
   return options;
 };
@@ -48,6 +51,14 @@ const getTitle = async (postId: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle };
+const postPost = async (body: PostInputType) => {
+  const postUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/`;
+  const response = await fetch(postUrl, postOptions(body));
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, postPost };
 
 export default service;
