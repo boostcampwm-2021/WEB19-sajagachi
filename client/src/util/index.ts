@@ -119,3 +119,9 @@ export const getDistance = (lat1: number, lng1: number, lat2: number, lng2: numb
   const dist = 2 * R * Math.asin(sqrt);
   return dist;
 };
+
+export const isImage = (filename: string) => {
+  const reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+  if (filename.match(reg) === null) return false;
+  return true;
+};
