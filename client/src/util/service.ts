@@ -4,23 +4,25 @@ const getOptions = () => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include'
   };
   return options;
 };
 
-const postOptions = () => {
+const postOptions = (body: any) => {
   const options: RequestInit = {
     method: 'post',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include'
   };
+
+  if (body) options.body = JSON.stringify(body);
   return options;
 };
 
@@ -72,6 +74,14 @@ const getUser = async (userId: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle, getHost, getFinished, getUser };
+const updatePoint = async (userId: number, point: number) => {
+  const pointUrl = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/point`;
+  const response = await fetch(pointUrl, postOptions({ point }));
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, getHost, getFinished, getUser, updatePoint };
 
 export default service;
