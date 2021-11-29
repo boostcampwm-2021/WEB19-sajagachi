@@ -105,7 +105,7 @@ function Chat() {
   };
   return (
     <div css={ChatContainer}>
-      {renderError('')}
+      {renderError()}
       {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
       {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
       {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} popError={popError} />}
