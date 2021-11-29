@@ -12,13 +12,6 @@ import { useHistory } from 'react-router';
 import Alert from '../../common/alert';
 import useError from '../../hook/useError';
 import service from '../../util/service';
-const ChatContainer = css`
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-  height: 100%;
-  position: relative;
-`;
 
 function Chat() {
   const history = useHistory();
@@ -107,7 +100,7 @@ function Chat() {
     <div css={ChatContainer}>
       <RenderError />
       {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
-      {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
+      {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} popError={popError} />}
       {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} popError={popError} />}
       <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
         호스트가 당신을 내보냈습니다.
@@ -115,4 +108,13 @@ function Chat() {
     </div>
   );
 }
+
+const ChatContainer = css`
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  height: 100%;
+  position: relative;
+`;
+
 export default Chat;

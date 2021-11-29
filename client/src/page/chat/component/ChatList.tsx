@@ -4,10 +4,10 @@ import MyChatMessage from './MyChatMessage';
 import OtherChatMessage from './OtherChatMsg';
 import SystemMessage from './SystemMessage';
 import { Socket } from 'socket.io-client';
-import { createQueryString, fetchGet } from '../../../util/index';
 import { CircularProgress } from '@mui/material';
 import { UserInfoType, MessageType } from '../../../type';
 import ImageModal from './ImageModal';
+import service from '../../../util/service';
 type ResultChat = {
   id: number;
   userId: number;
@@ -18,7 +18,14 @@ type ResultChat = {
   name: string;
 };
 
-export default function ChatList({ postId, user, socket }: { postId: number; user: UserInfoType; socket: Socket }) {
+type ChatListType = {
+  postId: number;
+  user: UserInfoType;
+  socket: Socket;
+  popError: Function;
+};
+
+export default function ChatList({ postId, user, socket, popError }: ChatListType) {
   const [isFetch, setIsFetch] = useState(false);
   const [chatDatas, setChatDatas] = useState<any>([]);
   const [imageModalOn, setImageModalOn] = useState('');
@@ -128,31 +135,24 @@ export default function ChatList({ postId, user, socket }: { postId: number; use
 
       const heightBeforeFetch = parent.current?.scrollHeight;
       try {
-        const result: Array<ResultChat> = await fetchGet(
-          `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}`,
-          createQueryString({
-            cursor: cursor.current,
-            limit: LIMIT
-          })
-        );
-
+        const result: Array<ResultChat> = await service.getChats(postId, cursor.current, LIMIT);
         if (result.length < LIMIT) {
           isEnd.current = true;
           observer.unobserve(target.target);
+          if (result.length === 0) return;
         }
-
         const manufacturedChats = manufactureChats(result);
         cursor.current = result[result.length - 1].id;
         setChatDatas((chatDatas: MessageType[]) => {
           return [...manufacturedChats, ...chatDatas];
         });
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsFetch(false);
         const heightAfterFetch = parent.current?.scrollHeight;
         parent.current?.scrollTo(0, (heightAfterFetch as number) - (heightBeforeFetch as number));
         observer.observe(target.target);
+      } catch (err: any) {
+        popError(err.message);
+      } finally {
+        setIsFetch(false);
       }
     }
   };

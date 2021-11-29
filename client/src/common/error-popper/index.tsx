@@ -1,6 +1,5 @@
 import React from 'react';
 import { Alert, Grow } from '@mui/material';
-import { css } from '@emotion/react';
 
 type ErrorPopperType = {
   alert: boolean;
@@ -22,7 +21,8 @@ const ErrorPopperStyle: React.CSSProperties = {
   zIndex: 4,
   position: 'fixed',
   left: '0',
-  right: '0'
+  right: '0',
+  top: '4.4rem'
 };
 
 const AlertStyle: React.CSSProperties = {

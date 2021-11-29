@@ -1,3 +1,4 @@
+import { createQueryString } from '../util';
 const getOptions = () => {
   const options: RequestInit = {
     method: 'GET',
@@ -48,6 +49,28 @@ const getTitle = async (postId: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle };
+const postFile = async (postId: number, formData: FormData) => {
+  const uploadUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${postId}`;
+  const options = {
+    method: 'POST',
+    credentials: 'include' as RequestCredentials,
+    body: formData
+  };
+  const response = await fetch(uploadUrl, options);
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const getChats = async (postId: number, cursor: number | undefined, limit: number) => {
+  const queryString = createQueryString({ cursor, limit });
+  const chatUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}?${queryString}`;
+  const response = await fetch(chatUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, postFile, getChats };
 
 export default service;
