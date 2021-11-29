@@ -140,7 +140,7 @@ function Post() {
       urls: validUrls
     };
     try {
-      const postId = await service.postPost(body);
+      const postId = await service.createPost(body);
       history.push(`/post/${postId}`);
     } catch (err: any) {
       popError(err.message);

@@ -24,6 +24,8 @@ const postOptions = (body: any) => {
     credentials: 'include',
     body: JSON.stringify(body)
   };
+
+  if (body) options.body = JSON.stringify(body);
   return options;
 };
 
@@ -51,7 +53,15 @@ const getTitle = async (postId: number) => {
   return result;
 };
 
-const postPost = async (body: PostInputType) => {
+const getHost = async (postId: number) => {
+  const hostUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/host`;
+  const response = await fetch(hostUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const createPost = async (body: PostInputType) => {
   const postUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/`;
   const response = await fetch(postUrl, postOptions(body));
   const result = await response.json();
@@ -59,6 +69,30 @@ const postPost = async (body: PostInputType) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle, postPost };
+const getFinished = async (postId: number) => {
+  const finishedUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/finished`;
+  const response = await fetch(finishedUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const getUser = async (userId: number) => {
+  const userUrl = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}`;
+  const response = await fetch(userUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const updatePoint = async (userId: number, point: number) => {
+  const pointUrl = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/point`;
+  const response = await fetch(pointUrl, postOptions({ point }));
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, getHost, getFinished, getUser, updatePoint, createPost };
 
 export default service;
