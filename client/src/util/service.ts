@@ -56,6 +56,20 @@ const getPost = async (postId: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle, getPost };
+const getParticipationPosts = async (
+  loginUserId: number,
+  option: { limit: number; nextCursor: number | undefined }
+) => {
+  let url = `${process.env.REACT_APP_SERVER_URL}/api/user/${loginUserId}/participationPosts?limit=${option.limit}`;
+  if (option.nextCursor !== undefined)
+    url = `${process.env.REACT_APP_SERVER_URL}/api/user/${loginUserId}/participationPosts?cursor=${option.nextCursor}&limit=${option.limit}`;
+
+  const response = await fetch(url, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, getPost, getParticipationPosts };
 
 export default service;
