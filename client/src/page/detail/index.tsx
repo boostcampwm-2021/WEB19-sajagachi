@@ -1,16 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, Typography, IconButton, CircularProgress, Chip, Box, Avatar } from '@mui/material';
+import { Card, CardContent, Typography, CircularProgress, Chip, Box, Avatar } from '@mui/material';
 import styled from '@emotion/styled';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { fetchGet } from '../../util';
 import { RouteComponentProps } from 'react-router-dom';
-
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
 import LinkPreview from './component/LinkPreview';
-import { useRecoilState } from 'recoil';
-import { loginUserState } from '../../store/login';
 import useLoginUser from '../../hook/useLoginUser';
 
 type UrlType = {
@@ -58,12 +54,6 @@ const StyledBox = styled(Box)(() => ({
   marginRight: 'auto',
   maxWidth: '700px'
 }));
-
-const StyledIconButton = styled(IconButton)`
-  &:hover {
-    background: white;
-  }
-`;
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isLoad, setIsLoad] = useState(false);
