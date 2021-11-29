@@ -15,6 +15,8 @@ import { Avatar, Backdrop } from '@mui/material';
 import LoadingUI from './component/LoadingUI';
 import { loginUserState } from '../../store/login';
 import { fetchGet } from '../../util';
+import useError from '../../hook/useError';
+import { ERROR } from '../../util/error-message';
 
 const gnbBackground = css`
   z-index: 1;
@@ -67,9 +69,9 @@ const SearchModalDrawerWithRouter = withRouter(SearchModalDrawer);
 function Gnb() {
   const [location, setLocation] = useRecoilState(locationState);
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
-  const [isAlertOn, setIsAlertOn] = useState(false);
   const [isBackdropOn, setIsBackropOn] = useState(false);
   const loginUser = useRecoilValue(loginUserState);
+  const [popError, RenderError] = useError();
 
   const [profileImg, setProfileImg] = useState('');
   const updateProfileImg = async (userId: number) => {
@@ -99,7 +101,7 @@ function Gnb() {
         lng: location.lng,
         isLoaded: true
       });
-      setIsAlertOn(true);
+      popError(ERROR.LOCATION_NOT_LOADED);
     };
 
     const lat = localStorage.getItem('lat');
@@ -166,9 +168,7 @@ function Gnb() {
           {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
         </div>
       </div>
-      <Alert on={isAlertOn} title="위치를 불러오지 못했어요" onClose={() => setIsAlertOn(false)}>
-        위치 권한을 허용해주시면 근처의 공동구매 게시글을 검색해드릴 수 있어요.
-      </Alert>
+      <RenderError />
       <Backdrop open={isBackdropOn} sx={{ backgroundColor: '#ffffff' }}>
         <LoadingUI />
       </Backdrop>
