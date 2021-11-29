@@ -3,6 +3,7 @@ import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
 import ERROR from '../util/error';
+import session from 'express-session';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
@@ -40,9 +41,10 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
 
 export const savePost = async (req: Request, res: Response, next: Function) => {
   try {
-    const postId = await postService.savePost(req.body);
+    if (req.session.userId === undefined) next(ERROR.NOT_LOGGED_IN);
+    const postId = await postService.savePost(Number(req.session.userId), req.body);
     await postService.saveUrls(req.body.urls, postId);
-    await participantService.saveParticipant(Number(req.body.userId), postId);
+    await participantService.saveParticipant(Number(req.session.userId), postId);
     res.json(postId);
   } catch (err: any) {
     next(ERROR.DB_WRITE_FAIL);

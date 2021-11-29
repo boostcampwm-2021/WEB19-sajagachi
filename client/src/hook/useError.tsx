@@ -12,11 +12,11 @@ function useError(): [(msg: string) => void, () => EmotionJSX.Element] {
     setTimeout(() => setIsOn(false), 3000);
   };
 
-  const renderError = () => {
+  const RenderError = () => {
     return <>{isOn && <ErrorPopper alert={isOn} errorMsg={errorMsg} />}</>;
   };
 
-  return [popError, renderError];
+  return [popError, RenderError];
 }
 
 export default useError;

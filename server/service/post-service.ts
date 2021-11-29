@@ -3,10 +3,10 @@ import { getDB } from '../db/db';
 import { Post } from '../model/entity/Post';
 import { getPostsOption } from '../type';
 
-const savePost = async (body: Request['body']): Promise<number> => {
+const savePost = async (userId: number, body: Request['body']): Promise<number> => {
   const db = await getDB().get();
   const postBody: any = {
-    userId: Number(body.userId),
+    userId: userId,
     categoryId: Number(body.categoryId),
     title: body.title,
     content: body.content,
