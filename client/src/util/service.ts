@@ -85,6 +85,14 @@ const getUser = async (userId: number) => {
   return result;
 };
 
+const getCategories = async () => {
+  const categoryUrl = `${process.env.REACT_APP_SERVER_URL}/api/category`;
+  const response = await fetch(categoryUrl, getOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
 const updatePoint = async (userId: number, point: number) => {
   const pointUrl = `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/point`;
   const response = await fetch(pointUrl, postOptions({ point }));
@@ -93,6 +101,16 @@ const updatePoint = async (userId: number, point: number) => {
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle, getHost, getFinished, getUser, updatePoint, createPost };
+const service = {
+  getLogin,
+  getParticipants,
+  getTitle,
+  getHost,
+  getFinished,
+  getUser,
+  updatePoint,
+  createPost,
+  getCategories
+};
 
 export default service;

@@ -178,7 +178,7 @@ function Post() {
       <IconButton sx={{ ml: 'auto', mr: 'auto' }} onClick={handleUrlAddClick}>
         <AddBoxIcon css={urlAddIcon} />
       </IconButton>
-      <CheckCategory category={category} setCategory={setCategory} />
+      <CheckCategory category={category} setCategory={setCategory} popError={popError} />
       <div css={capacityDeadline}>
         <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
         <DateDeadline deadline={deadline} setDeadline={setDeadline} />
