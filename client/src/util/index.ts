@@ -93,7 +93,10 @@ export const getAddressByGeocode = (lat: number, lng: number) => {
     if (!naver.maps.Service) reject('map service error');
     const location = new naver.maps.LatLng(lat, lng);
     naver.maps.Service.reverseGeocode({ location }, (status, response) => {
-      if (status !== naver.maps.Service.Status.OK) reject('map service error');
+      if (status !== naver.maps.Service.Status.OK || !response.result.items.length) {
+        reject('map service error');
+        return;
+      }
       resolve(response.result.items[0].address);
     });
   });
