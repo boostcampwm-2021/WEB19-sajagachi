@@ -31,19 +31,18 @@ export function ChatMenuDrawer(props: propsType) {
       <IconButton
         aria-label="chat menu"
         sx={{
-          marginTop: '10px',
-          width: '30px',
-          height: '3.4rem',
-          marginRight: '15px'
+          marginTop: '15px',
+          width: '2.43rem',
+          height: '2.43rem'
         }}
+        onClick={toggleDrawer}
       >
         <MenuIcon
           sx={{
-            width: '30px',
-            height: '3.4rem',
+            width: '1.9rem',
+            height: '1.9rem',
             color: '#FFFFFF'
           }}
-          onClick={toggleDrawer}
         />
       </IconButton>
       {isMenuOn && <div css={BlurredBackground}></div>}
