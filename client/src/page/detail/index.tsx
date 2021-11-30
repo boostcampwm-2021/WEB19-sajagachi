@@ -1,18 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, Typography, IconButton, CircularProgress, Chip, Box, Avatar } from '@mui/material';
+import { Card, CardContent, Typography, Chip, Box, Avatar } from '@mui/material';
 import styled from '@emotion/styled';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { fetchGet } from '../../util';
 import { RouteComponentProps } from 'react-router-dom';
-
 import { css } from '@emotion/react';
 import GroupBuyButton from './component/GroupBuyButton';
 import DeadLine, { DeadLineHandle } from './component/DeadLine';
 import LinkPreview from './component/LinkPreview';
-import { useRecoilState } from 'recoil';
-import { loginUserState } from '../../store/login';
 import useLoginUser from '../../hook/useLoginUser';
 import useError from '../../hook/useError';
+import service from '../../util/service';
+import LoadingSpinner from '../../common/loading-spinner';
 
 type UrlType = {
   postId: number;
@@ -30,15 +27,10 @@ type MatchParams = {
   postId: string;
 };
 type PostType = {
-  id: number;
-  lat: number;
-  long: number;
   deadline: string;
-  userId: number;
-  categoryId: number;
   title: string;
   content: string;
-  category: { id: number; name: string };
+  category: { name: string };
   finished: boolean;
   capacity: number;
   participantCnt: number;
@@ -47,25 +39,6 @@ type PostType = {
   isParticipate: boolean;
 };
 
-const detailContainer = css`
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-`;
-const StyledBox = styled(Box)(() => ({
-  backgroundColor: '#ffe7e7',
-  border: '1px solid #fefafa',
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  maxWidth: '700px'
-}));
-
-const StyledIconButton = styled(IconButton)`
-  &:hover {
-    background: white;
-  }
-`;
-
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
@@ -73,14 +46,9 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const loginUser = useLoginUser();
   const [popError, RenderError] = useError();
   const [post, setPost] = useState<PostType>({
-    id: 0,
-    userId: 0,
-    categoryId: 0,
     title: '',
     content: '',
-    category: { id: 0, name: '' },
-    lat: 0,
-    long: 0,
+    category: { name: '' },
     finished: false,
     capacity: 0,
     deadline: '',
@@ -96,143 +64,161 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   });
 
   useEffect(() => {
-    let es: any = null;
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/post/${match.params.postId}`).then(post => {
-      if (!post.finished && post.deadline !== null) {
-        es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
-        es.onmessage = function (e: MessageEvent) {
-          if (isNeedServerTime) {
-            setIsNeedServerTime(false);
-          }
-          if (deadLineRef.current) {
-            const end = new Date(post.deadline);
-            const server = new Date(parseInt(e.data, 10));
-            if (server >= end) {
-              deadLineRef.current.setDeadLine('기한 마감');
-              setPost({ ...post, finished: true });
-              es.close();
-              return;
-            } else {
-              const t = end.getTime() - server.getTime();
-              const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
-              const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
-              const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
-              const days = '' + Math.floor(t / (1000 * 60 * 60) / 24);
-              deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
-              return;
+    const setEventSourve = async (es: EventSource | null) => {
+      try {
+        const post = await service.getPost(Number(match.params.postId));
+        if (!post.finished && post.deadline !== null) {
+          es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
+          es.onmessage = function (e: MessageEvent) {
+            if (isNeedServerTime) {
+              setIsNeedServerTime(false);
             }
-          }
-        };
-      } else {
-        setIsNeedServerTime(false);
+            if (deadLineRef.current) {
+              const end = new Date(post.deadline);
+              const server = new Date(parseInt(e.data, 10));
+              if (server >= end) {
+                deadLineRef.current.setDeadLine('기한 마감');
+                setPost({ ...post, finished: true });
+                es && es.close();
+                return;
+              } else {
+                const t = end.getTime() - server.getTime();
+                const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+                const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+                const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+                const days = '' + Math.floor(t / (1000 * 60 * 60) / 24);
+                deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
+                return;
+              }
+            }
+          };
+        } else {
+          setIsNeedServerTime(false);
+        }
+        setPost({ ...post });
+        setIsLoad(true);
+      } catch (err: any) {
+        console.log('hello');
+        setIsLoad(true);
+        popError(err.message);
       }
-      setPost({ ...post });
-      setIsLoad(true);
-    });
+    };
+
+    let es: EventSource | null = null;
+    setEventSourve(es);
     return () => {
       if (es !== null) {
         es.close();
       }
     };
   }, []);
-  return isLoad ? (
-    <div css={detailContainer}>
+
+  return (
+    <>
       <RenderError />
-      <Card
-        sx={{
-          borderRadius: 7,
-          bgcolor: '#fefafa',
-          border: '1px solid #fefafa',
-          pb: '4.5rem'
-        }}
-        variant="outlined"
-      >
-        <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between'
-            }}
-          >
-            <Typography variant="h5">{post.title}</Typography>
-            <Chip label={post.category.name} sx={{ color: 'grey' }} />
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              mt: 2
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                display: 'flex'
-              }}
-            >
-              <Avatar src={post.user.img} sx={{ width: 32, height: 32, marginRight: 1 }} />
-              {post.user.name}
-            </Typography>
-            <DeadLine ref={deadLineRef} isNeedServerTime={isNeedServerTime} deadline={post.deadline} />
-          </Box>
+      {isLoad ? (
+        <div css={detailContainer}>
           <Card
             sx={{
-              mt: 2,
-              minWidth: 275,
-              minHeight: 275,
-              bgcolor: '#ffe7e7',
+              borderRadius: 7,
+              bgcolor: '#fefafa',
               border: '1px solid #fefafa',
-              borderRadius: 7
+              pb: '4.5rem'
             }}
             variant="outlined"
           >
             <CardContent>
-              <Typography variant="body2" lineHeight="2.5">
-                {post.content}
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Typography variant="h5">{post.title}</Typography>
+                <Chip label={post.category.name} sx={{ color: 'grey' }} />
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  mt: 2
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    display: 'flex'
+                  }}
+                >
+                  <Avatar src={post.user.img} sx={{ width: 32, height: 32, marginRight: 1 }} />
+                  {post.user.name}
+                </Typography>
+                <DeadLine ref={deadLineRef} isNeedServerTime={isNeedServerTime} deadline={post.deadline} />
+              </Box>
+              <Card
+                sx={{
+                  mt: 2,
+                  minWidth: 275,
+                  minHeight: 275,
+                  bgcolor: '#ffe7e7',
+                  border: '1px solid #fefafa',
+                  borderRadius: 7
+                }}
+                variant="outlined"
+              >
+                <CardContent>
+                  <Typography variant="body2" lineHeight="2.5">
+                    {post.content}
+                  </Typography>
+                </CardContent>
+              </Card>
+              {post.urls.map((url, idx) => {
+                return <LinkPreview key={idx} url={url.url} />;
+              })}
             </CardContent>
           </Card>
-          {post.urls.map((url, idx) => {
-            return <LinkPreview key={idx} url={url.url} />;
-          })}
-        </CardContent>
-      </Card>
-      <StyledBox
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          visibility: 'visible',
-          right: 0,
-          left: 0,
-          height: '4.5rem'
-        }}
-      >
-        <Box sx={{ display: 'flex', p: 1 }}>
-          <GroupBuyButton
-            login={loginUser}
-            postId={Number(match.params.postId)}
-            participantCnt={post.participantCnt}
-            capacity={post.capacity}
-            finished={post.finished}
-            isParticipate={post.isParticipate}
-            isNeedServerTime={isNeedServerTime}
-            popError={popError}
-          />
-        </Box>
-      </StyledBox>
-    </div>
-  ) : (
-    <Box sx={{ display: 'flex' }}>
-      <CircularProgress
-        sx={{
-          marginTop: '50%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          color: '#ebabab'
-        }}
-      />
-    </Box>
+          <StyledBox
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              visibility: 'visible',
+              right: 0,
+              left: 0,
+              height: '4.5rem'
+            }}
+          >
+            <Box sx={{ display: 'flex', p: 1 }}>
+              <GroupBuyButton
+                login={loginUser}
+                postId={Number(match.params.postId)}
+                participantCnt={post.participantCnt}
+                capacity={post.capacity}
+                finished={post.finished}
+                isParticipate={post.isParticipate}
+                isNeedServerTime={isNeedServerTime}
+                popError={popError}
+              />
+            </Box>
+          </StyledBox>
+        </div>
+      ) : (
+        <LoadingSpinner />
+      )}
+    </>
   );
 }
+
+const detailContainer = css`
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+`;
+const StyledBox = styled(Box)(() => ({
+  backgroundColor: '#ffe7e7',
+  border: '1px solid #fefafa',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  maxWidth: '700px'
+}));

@@ -57,3 +57,14 @@ export interface MessageType {
   created_at: string;
   modalOn?: Function;
 }
+
+export type PostInputType = {
+  categoryId: number | null;
+  title: string;
+  content: string;
+  capacity: number | null;
+  deadline: Date | null;
+  lat: number;
+  long: number;
+  urls: string[];
+};

@@ -86,8 +86,12 @@ function SearchModal({ setIsSearchModalOn, history }: { setIsSearchModalOn: any;
   const [search, setSearch] = useState('');
 
   async function searchCoordinateToAddress(latlng: any) {
-    const result = await getAddressByGeocode(latlng.lat, latlng.lng);
-    setAddress(result);
+    try {
+      const result = await getAddressByGeocode(latlng.lat, latlng.lng);
+      setAddress(result);
+    } catch (err: any) {
+      setAddress('주소 정보 없음');
+    }
   }
 
   const handleCategoryClick = (idx: number) => {

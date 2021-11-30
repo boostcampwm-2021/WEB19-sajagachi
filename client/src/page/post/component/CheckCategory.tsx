@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import Chip from '@mui/material/Chip';
 import { fetchGet } from '../../../util';
+import service from '../../../util/service';
 
 const CategoryStyle = css`
   width: 90%;
@@ -30,19 +31,27 @@ const ChipStyle = (checked: boolean) => {
 interface CategoryState {
   category: number | null;
   setCategory: (category: number | null) => void;
+  popError: (msg: string) => void;
 }
 
-function CheckCategory({ category, setCategory }: CategoryState) {
+function CheckCategory({ category, setCategory, popError }: CategoryState) {
   const [categoryList, setCategoryList] = useState<{ name: string; checked: boolean }[]>([]);
 
-  useEffect(() => {
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(result => {
+  const getCategories = async () => {
+    try {
+      const categories = await service.getCategories();
       setCategoryList(
-        result.map((x: any) => {
+        categories.map((x: any) => {
           return { name: x.name, checked: false };
         })
       );
-    });
+    } catch (err: any) {
+      popError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
   }, []);
 
   const handleCategoryClick = (idx: number) => {
