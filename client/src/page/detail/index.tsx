@@ -6,9 +6,10 @@ import Header from './component/Header';
 import Content from './component/Content';
 import Bottom from './component/Bottom';
 import { DeadLineHandle } from './component/DeadLine';
+import LoadingSpinner from '../../common/loading-spinner';
 import useError from '../../hook/useError';
 import service from '../../util/service';
-import LoadingSpinner from '../../common/loading-spinner';
+import { getRemainingDay } from '../../util/index';
 
 interface PostType {
   title: string;
@@ -37,60 +38,53 @@ interface DetailType {
 }
 
 export default function Detail({ match }: RouteComponentProps<DetailType>) {
+  const [post, setPost] = useState<PostType>(INITIAL_POST_STATE);
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
-  const deadLineRef = useRef<DeadLineHandle>();
   const [popError, RenderError] = useError();
-  const [post, setPost] = useState<PostType>(INITIAL_POST_STATE);
+  const deadLineRef = useRef<DeadLineHandle>();
+  const eventSource = useRef<EventSource>();
 
   useEffect(() => {
-    const setEventSourve = async (es: EventSource | null) => {
-      try {
-        const post = await service.getPost(Number(match.params.postId));
-        if (!post.finished && post.deadline !== null) {
-          es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
-          es.onmessage = function (e: MessageEvent) {
-            if (isNeedServerTime) {
-              setIsNeedServerTime(false);
-            }
-            if (deadLineRef.current) {
-              const end = new Date(post.deadline);
-              const server = new Date(parseInt(e.data, 10));
-              if (server >= end) {
-                deadLineRef.current.setDeadLine('기한 마감');
-                setPost({ ...post, finished: true });
-                es && es.close();
-                return;
-              } else {
-                const t = end.getTime() - server.getTime();
-                const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
-                const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
-                const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
-                const days = '' + Math.floor(t / (1000 * 60 * 60) / 24);
-                deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
-                return;
-              }
-            }
-          };
-        } else {
-          setIsNeedServerTime(false);
-        }
-        setPost({ ...post });
-        setIsLoad(true);
-      } catch (err: any) {
-        setIsLoad(true);
-        popError(err.message);
-      }
-    };
-
-    let es: EventSource | null = null;
-    setEventSourve(es);
+    getPostDataAndConnectServer();
     return () => {
-      if (es !== null) {
-        es.close();
-      }
+      eventSource.current?.close();
     };
   }, []);
+
+  const setEventSource = (deadline: string) => {
+    eventSource.current = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
+    const endTime = new Date(deadline);
+    eventSource.current.onmessage = function (e: MessageEvent) {
+      if (isNeedServerTime) setIsNeedServerTime(false);
+      if (deadLineRef.current) {
+        const serverTime = new Date(parseInt(e.data, 10));
+        if (serverTime >= endTime) {
+          deadLineRef.current.setDeadLine('기한 마감');
+          setPost({ ...post, finished: true });
+          eventSource.current?.close();
+          return;
+        } else {
+          const { days, hours, minutes, seconds } = getRemainingDay(endTime, serverTime);
+          deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
+          return;
+        }
+      }
+    };
+  };
+
+  const getPostDataAndConnectServer = async () => {
+    try {
+      const post = await service.getPost(Number(match.params.postId));
+      if (!post.finished && post.deadline !== null) setEventSource(post.deadline);
+      else setIsNeedServerTime(false);
+      setPost({ ...post });
+    } catch (error: any) {
+      popError(error.message);
+    } finally {
+      setIsLoad(true);
+    }
+  };
 
   const {
     title,
@@ -117,6 +111,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
                 writer={user}
                 deadline={deadline}
                 isNeedServerTime={isNeedServerTime}
+                deadLineRef={deadLineRef}
               />
               <Content content={content} urls={urls} />
             </CardContent>
