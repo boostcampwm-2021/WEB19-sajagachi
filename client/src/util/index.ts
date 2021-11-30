@@ -128,3 +128,12 @@ export const isImage = (filename: string) => {
   if (filename.match(reg) === null) return false;
   return true;
 };
+
+export const getRemainingDay = (fromTime: Date, toTime: Date) => {
+  const remainingTime = fromTime.getTime() - toTime.getTime();
+  const seconds = ('0' + Math.floor((remainingTime / 1000) % 60)).slice(-2);
+  const minutes = ('0' + Math.floor((remainingTime / 1000 / 60) % 60)).slice(-2);
+  const hours = ('0' + Math.floor((remainingTime / (1000 * 60 * 60)) % 24)).slice(-2);
+  const days = '' + Math.floor(remainingTime / (1000 * 60 * 60) / 24);
+  return { days, hours, minutes, seconds };
+};
