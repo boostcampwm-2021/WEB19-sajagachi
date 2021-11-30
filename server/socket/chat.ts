@@ -57,13 +57,14 @@ export const confirmPurchase = (socket: any, io: Server) => {
       try {
         await userService.usePoint(loginUser.id, loginUser.point, sendPoint);
         await participantService.updatePoint(postId, loginUser.id, sendPoint);
-        io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
         processSystemMsg(io, SYSTEM_MSG_TYPE.CONFIRM_PURCHASE, postId, loginUser.name);
+        await queryRunner.commitTransaction();
+        io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
       } catch (err: any) {
         await queryRunner.rollbackTransaction();
         socket.emit('purchaseError', ERROR.DB_WRITE_FAIL);
       } finally {
-        queryRunner.release();
+        await queryRunner.release();
       }
     }
   });
@@ -74,7 +75,6 @@ export const cancelPurchase = (socket: any, io: Server) => {
     const queryRunner = (await getDB().get()).createQueryRunner();
     await queryRunner.startTransaction();
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
     if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', ERROR.INVALID_USER);
     else {
       const participant = await participantService.getParticipant(postId, loginUser.id);
@@ -84,13 +84,15 @@ export const cancelPurchase = (socket: any, io: Server) => {
         try {
           await participantService.updatePoint(postId, loginUser.id, null);
           await userService.addPoint(loginUser.id, participant.point);
-          io.to(String(postId)).emit('purchaseCancel', loginUser.id);
           processSystemMsg(io, SYSTEM_MSG_TYPE.CANCEL_PURCHASE, postId, loginUser.name);
+          await queryRunner.commitTransaction();
+          io.to(String(postId)).emit('purchaseCancel', loginUser.id);
         } catch (err: any) {
+          console.log('취소가 안된다고?');
           await queryRunner.rollbackTransaction();
           socket.emit('purchaseError', ERROR.DB_WRITE_FAIL);
         } finally {
-          queryRunner.release();
+          await queryRunner.release();
         }
       }
     }
@@ -138,8 +140,10 @@ export const kickUser = (socket: any, io: Server) => {
 
       // 변경된 참여자 리스트를 클라이언트에 반환
       const participants = await participantService.getParticipants(postId);
-      io.to(String(postId)).emit('updateParticipants', participants);
       processSystemMsg(io, SYSTEM_MSG_TYPE.KICKED, postId, banUser.name);
+      await queryRunner.commitTransaction();
+
+      io.to(String(postId)).emit('updateParticipants', participants);
 
       // 강제퇴장 당한 클라이언트에게 이벤트 전달
       io.to(String(postId)).emit('getOut', targetUserId);
@@ -190,6 +194,7 @@ export const quitRoom = (socket: any, io: Server) => {
       const participants = await participantService.getParticipants(postId);
       io.to(String(postId)).emit('updateParticipants', participants);
       processSystemMsg(io, SYSTEM_MSG_TYPE.QUIT, postId, loginUser.name);
+      await queryRunner.commitTransaction();
     } catch (err: any) {
       await queryRunner.rollbackTransaction();
       socket.emit('quitError', ERROR.DB_WRITE_FAIL);
