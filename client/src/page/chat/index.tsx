@@ -53,13 +53,13 @@ function Chat() {
         setParticipants(result);
       }
     } catch (err: any) {
-      popError(err.message);
+      history.replace('/error');
     }
   };
 
   const setChatSocket = () => {
     socketRef.current.emit('joinRoom', postId);
-    socketRef.current.on('joinError', (errMessage: string) => popError(errMessage));
+    socketRef.current.on('joinError', (errMessage: string) => history.replace('/error'));
   };
 
   useEffect(() => {
