@@ -21,8 +21,9 @@ const ErrorPopperStyle: React.CSSProperties = {
   transformOrigin: '0 0 0',
   zIndex: 4,
   position: 'fixed',
-  left: '0',
-  right: '0'
+  left: 0,
+  right: 0,
+  top: '4.4rem'
 };
 
 const AlertStyle: React.CSSProperties = {
