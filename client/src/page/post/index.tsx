@@ -182,19 +182,16 @@ function Post() {
         <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
         <DateDeadline deadline={deadline} setDeadline={setDeadline} />
       </div>
-      <Tooltip TransitionComponent={Zoom} title="제목, 내용, 카테고리를 입력하셔야 합니다.">
-        <span css={finishButton}>
-          <Button
-            style={{
-              backgroundColor: '#ebabab',
-              color: 'white'
-            }}
-            onClick={handleFinishClick}
-          >
-            등록
-          </Button>
-        </span>
-      </Tooltip>
+      <Button
+        style={{
+          backgroundColor: '#ebabab',
+          color: 'white'
+        }}
+        css={finishButton}
+        onClick={handleFinishClick}
+      >
+        등록
+      </Button>
     </div>
   );
 }
