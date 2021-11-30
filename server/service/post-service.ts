@@ -42,7 +42,11 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
 	`;
   const condition = [];
 
-  if (finished !== undefined) condition.push(`post.finished = ${finished}`);
+  if (finished !== undefined) {
+    let option = ` (post.finished = 1 OR (post.deadline IS NOT NULL AND post.deadline <= now())) `;
+    if (String(finished) === 'false') option = ' NOT' + option;
+    condition.push(option);
+  }
   if (search) condition.push(`post.title LIKE "%${search}%"`);
 
   let categories: string[] = [];
