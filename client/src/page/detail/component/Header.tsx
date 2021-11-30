@@ -19,28 +19,12 @@ interface UserType {
 export default function Header({ title, categoryName, writer, deadline, isNeedServerTime, deadLineRef }: HeaderType) {
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}
-      >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h5">{title}</Typography>
         <Chip label={categoryName} sx={{ color: 'grey' }} />
       </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          mt: 2
-        }}
-      >
-        <Typography
-          variant="body1"
-          sx={{
-            display: 'flex'
-          }}
-        >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+        <Typography variant="body1" sx={{ display: 'flex' }}>
           <Avatar src={writer.img} sx={{ width: 32, height: 32, marginRight: 1 }} />
           {writer.name}
         </Typography>

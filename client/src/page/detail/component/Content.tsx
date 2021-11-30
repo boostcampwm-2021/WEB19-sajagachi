@@ -14,17 +14,7 @@ interface UrlType {
 export default function Content({ content, urls }: ContentType) {
   return (
     <>
-      <Card
-        sx={{
-          mt: 2,
-          minWidth: 275,
-          minHeight: 275,
-          bgcolor: '#ffe7e7',
-          border: '1px solid #fefafa',
-          borderRadius: 7
-        }}
-        variant="outlined"
-      >
+      <Card sx={ContentStyle} variant="outlined">
         <CardContent>
           <Typography variant="body2" lineHeight="2.5">
             {content}
@@ -37,3 +27,12 @@ export default function Content({ content, urls }: ContentType) {
     </>
   );
 }
+
+const ContentStyle = {
+  mt: 2,
+  minWidth: 275,
+  minHeight: 275,
+  bgcolor: '#ffe7e7',
+  border: '1px solid #fefafa',
+  borderRadius: 7
+};
