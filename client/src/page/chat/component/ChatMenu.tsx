@@ -92,8 +92,8 @@ export function ChatMenu(props: propsType) {
       {
         [
           <FinishedPointView />,
-          <HostPointView socket={props.socket} hostId={hostId} participants={props.participants} />,
-          <PointView socket={props.socket} hostId={hostId} participants={props.participants} />
+          <HostPointView socket={props.socket} popError={popError} hostId={hostId} participants={props.participants} />,
+          <PointView socket={props.socket} popError={popError} hostId={hostId} participants={props.participants} />
         ][pointViewState]
       }
 
