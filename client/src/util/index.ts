@@ -128,3 +128,12 @@ export const isImage = (filename: string) => {
   if (filename.match(reg) === null) return false;
   return true;
 };
+
+export const getAMPMTime = (date: Date) => {
+  let currentHour = date.getHours();
+  const currentMinutes = date.getMinutes();
+  const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
+  currentHour = currentHour < 12 ? currentHour : currentHour - 12;
+  if (currentHour === 0) currentHour = 12;
+  return strAmPm + currentHour + '시 ' + currentMinutes + '분';
+};

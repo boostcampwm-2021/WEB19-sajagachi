@@ -8,6 +8,8 @@ import { CircularProgress } from '@mui/material';
 import { UserInfoType, MessageType } from '../../../type';
 import ImageModal from './ImageModal';
 import service from '../../../util/service';
+import { getAMPMTime } from '../../../util';
+
 type ResultChat = {
   id: number;
   userId: number;
@@ -34,49 +36,46 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
   const messageEndRef = useRef<HTMLDivElement>(null);
   const loader = useRef(null);
   const parent = useRef<HTMLDivElement>(null);
-
   const manufactureChats = (chats: Array<ResultChat>): Array<MessageType> => {
     return chats
       .map(chat => {
-        if (chat.img === null) {
-          return {
-            sender: chat.name,
-            msg: chat.msg,
-            time: getAMPMTime(new Date(chat.created_at)),
-            isMe: checkSender(chat.userId),
-            created_at: chat.created_at
-          } as MessageType;
-        } else {
-          return {
-            sender: chat.name,
-            img: process.env.REACT_APP_IMAGE_URL + '' + chat.img,
-            time: getAMPMTime(new Date(chat.created_at)),
-            isMe: checkSender(chat.userId),
-            created_at: chat.created_at,
-            modalOn: setImageModalOn
-          } as MessageType;
+        const temp = {
+          sender: chat.name,
+          time: getAMPMTime(new Date(chat.created_at)),
+          isMe: checkSender(chat.userId),
+          created_at: chat.created_at
+        } as MessageType;
+        if (chat.msg) temp.msg = '' + chat.msg;
+        else {
+          temp.img = process.env.REACT_APP_IMAGE_URL + '' + chat.img;
+          temp.modalOn = setImageModalOn;
         }
+        return temp;
       })
       .reverse();
   };
   const checkSender = (sender: number) => {
-    if (sender === SENDER_TYPE.SYSTEM) {
-      return SENDER_TYPE.SYSTEM;
-    } else if (sender === user.userId) {
-      return SENDER_TYPE.ME;
-    } else {
-      return SENDER_TYPE.OTHER;
+    if (sender === SENDER_TYPE.SYSTEM) return SENDER_TYPE.SYSTEM;
+    else if (sender === user.userId) return SENDER_TYPE.ME;
+    else return SENDER_TYPE.OTHER;
+  };
+  const moveScroll = (isMe: number) => {
+    const bottom =
+      (parent.current?.scrollHeight as number) -
+      (parent.current?.scrollTop as number) -
+      (parent.current?.clientHeight as number);
+    if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
+      messageEndRef.current?.scrollIntoView({
+        behavior: 'auto',
+        block: 'start',
+        inline: 'nearest'
+      });
     }
   };
 
   useEffect(() => {
     socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
       const isMe = checkSender(user);
-      const bottom =
-        (parent.current?.scrollHeight as number) -
-        (parent.current?.scrollTop as number) -
-        (parent.current?.clientHeight as number);
-
       setChatDatas((chatDatas: MessageType[]) => {
         return [
           ...chatDatas,
@@ -89,21 +88,10 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
           }
         ];
       });
-
-      if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
-        messageEndRef.current?.scrollIntoView({
-          behavior: 'auto',
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
+      moveScroll(isMe);
     });
     socket.on('sendImg', (user: number, userName: string, img: string) => {
       const isMe = checkSender(user);
-      const bottom =
-        (parent.current?.scrollHeight as number) -
-        (parent.current?.scrollTop as number) -
-        (parent.current?.clientHeight as number);
       setChatDatas((chatDatas: MessageType[]) => {
         return [
           ...chatDatas,
@@ -117,13 +105,7 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
           }
         ];
       });
-      if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
-        messageEndRef.current?.scrollIntoView({
-          behavior: 'auto',
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
+      moveScroll(isMe);
     });
   }, []);
 
@@ -142,6 +124,7 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
           if (result.length === 0) return;
         }
         const manufacturedChats = manufactureChats(result);
+
         cursor.current = result[result.length - 1].id;
         setChatDatas((chatDatas: MessageType[]) => {
           return [...manufacturedChats, ...chatDatas];
@@ -183,13 +166,9 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
                 <button>{date}</button>
               </div>
               {chats.map((chat: MessageType) => {
-                if (chat.isMe === SENDER_TYPE.SYSTEM) {
-                  return <SystemMessage msgData={chat} />;
-                } else if (chat.isMe === SENDER_TYPE.ME) {
-                  return <MyChatMessage msgData={chat} />;
-                } else {
-                  return <OtherChatMessage msgData={chat} />;
-                }
+                if (chat.isMe === SENDER_TYPE.SYSTEM) return <SystemMessage msgData={chat} />;
+                else if (chat.isMe === SENDER_TYPE.ME) return <MyChatMessage msgData={chat} />;
+                else return <OtherChatMessage msgData={chat} />;
               })}
             </div>
           );
@@ -197,13 +176,44 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
 
         <div key="messageEndDiv" ref={messageEndRef} />
       </div>
-
       {imageModalOn !== '' && <ImageModal imageUrl={imageModalOn} setImageModalOn={setImageModalOn} />}
     </>
   );
 }
 
 const LIMIT = 20;
+
+const checkBetweenFromTo = (target: number, from: number, to: number) => {
+  if (target >= from && target <= to) return true;
+  return false;
+};
+
+const MakeDateFormat = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
+};
+
+const makeSection = (chatDatas: MessageType[]) => {
+  const sections: { [key: string]: MessageType[] } = {};
+  chatDatas.forEach(chat => {
+    const monthDate = MakeDateFormat(new Date(chat.created_at));
+    if (Array.isArray(sections[monthDate])) {
+      sections[monthDate].push(chat);
+    } else {
+      sections[monthDate] = [chat];
+    }
+  });
+  return sections;
+};
+
+const SENDER_TYPE = {
+  SYSTEM: 0,
+  ME: 1,
+  OTHER: 2
+};
 
 const ProgressStyle = {
   color: '#f76a6a',
@@ -243,44 +253,3 @@ const StickyHeader = css`
     outline: none;
   }
 `;
-
-const getAMPMTime = (date: Date) => {
-  let currentHour = date.getHours();
-  const currentMinutes = date.getMinutes();
-  const strAmPm = currentHour < 12 ? '오전 ' : '오후 ';
-  currentHour = currentHour < 12 ? currentHour : currentHour - 12;
-  if (currentHour === 0) currentHour = 12;
-  return strAmPm + currentHour + '시 ' + currentMinutes + '분';
-};
-
-const checkBetweenFromTo = (target: number, from: number, to: number) => {
-  if (target >= from && target <= to) return true;
-  return false;
-};
-
-const MakeDateFormat = (date: Date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
-};
-
-const makeSection = (chatDatas: MessageType[]) => {
-  const sections: { [key: string]: MessageType[] } = {};
-  chatDatas.forEach(chat => {
-    const monthDate = MakeDateFormat(new Date(chat.created_at));
-    if (Array.isArray(sections[monthDate])) {
-      sections[monthDate].push(chat);
-    } else {
-      sections[monthDate] = [chat];
-    }
-  });
-  return sections;
-};
-
-const SENDER_TYPE = {
-  SYSTEM: 0,
-  ME: 1,
-  OTHER: 2
-};

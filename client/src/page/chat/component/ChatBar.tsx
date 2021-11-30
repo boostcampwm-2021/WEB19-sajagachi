@@ -6,6 +6,39 @@ import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
 import { useHistory } from 'react-router';
 import { IconButton } from '@mui/material';
+
+type ChatBarType = {
+  title: string;
+  socket: Socket;
+  participants: ParticipantType[];
+};
+
+function ChatBar(props: ChatBarType) {
+  const history = useHistory();
+  const backButtonHandler = () => {
+    history.goBack();
+  };
+  return (
+    <div css={ChatBarLayout}>
+      <IconButton aria-label="go back" onClick={backButtonHandler} sx={IconButtonStyle}>
+        <ArrowBackIosNewIcon sx={ArrowBackIconStyle} />
+      </IconButton>
+      <div css={TitleStyle}>{props.title}</div>
+      <ChatMenuDrawer socket={props.socket} participants={props.participants} />
+    </div>
+  );
+}
+const IconButtonStyle = {
+  width: '2.43rem',
+  height: '2.43rem',
+  marginTop: '15px'
+};
+const ArrowBackIconStyle = {
+  width: '1.9rem',
+  height: '1.9rem',
+  color: '#FFFFFF'
+};
+
 const ChatBarLayout = css`
   display: flex;
   flex-direction: row;
@@ -25,42 +58,5 @@ const TitleStyle = css`
   padding-top: 23px;
   font-size: 18px;
 `;
-
-type ChatBarType = {
-  title: string;
-  socket: Socket;
-  participants: ParticipantType[];
-};
-
-function ChatBar(props: ChatBarType) {
-  const history = useHistory();
-  const backButtonHandler = () => {
-    history.goBack();
-  };
-  return (
-    <div css={ChatBarLayout}>
-      <IconButton
-        aria-label="go back"
-        onClick={backButtonHandler}
-        sx={{
-          width: '2.43rem',
-          height: '2.43rem',
-          marginTop: '15px'
-        }}
-      >
-        <ArrowBackIosNewIcon
-          sx={{
-            width: '1.9rem',
-            height: '1.9rem',
-            color: '#FFFFFF'
-          }}
-        />
-      </IconButton>
-      <div css={TitleStyle}>{props.title}</div>
-
-      <ChatMenuDrawer socket={props.socket} participants={props.participants} />
-    </div>
-  );
-}
 
 export default ChatBar;
