@@ -22,8 +22,8 @@ export const createParticipant = async (req: Request, res: Response, next: Funct
     const session = req.session;
     if (!session.userId) return next(ERROR.NOT_LOGGED_IN);
     const { post_id } = req.params;
-    const finished = await postService.getFinished(+post_id);
-    if (finished) return next(ERROR.ENTER_FAIL_FINISHED);
+    const result = await postService.getFinished(+post_id);
+    if (result.finished) return next(ERROR.ENTER_FAIL_FINISHED);
     const participantNum = await participantService.getParticipantNum(+post_id);
     const capacity = await postService.getCapacity(+post_id);
     if (capacity === undefined) return next(ERROR.INVALID_POST_ID);
