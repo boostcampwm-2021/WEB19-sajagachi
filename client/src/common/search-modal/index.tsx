@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
 import { css } from '@emotion/react';
 import { locationState } from '../../store/location';
 import { useRecoilValue } from 'recoil';
@@ -10,6 +9,7 @@ import { LocationType } from '../../type';
 import service from '../../util/service';
 import FilterOption from './component/FilterOption';
 import SelectChip from './component/SelectChip';
+import ButtonSet from './component/ButtonSet';
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
@@ -52,7 +52,9 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     });
   };
 
-  const handleSubmitClick = () => {
+  const handleCancel = () => setIsSearchModalOn(false);
+
+  const handleSubmit = () => {
     const query = {
       category: boolToNum(checkedCategories),
       finished: finishedToBool(checkedFinished),
@@ -62,6 +64,7 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     };
     const queryStr = createQueryString(query);
     history.push('/?' + queryStr);
+    setIsSearchModalOn(false);
   };
 
   useEffect(() => {
@@ -93,64 +96,39 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
   }, []);
 
   return (
-    <div>
-      <div css={searchModal}>
-        <SearchInput value={search} setSearch={setSearch} />
-        <FilterOption title="카테고리">
-          {categories.map((category, i) => (
-            <SelectChip
-              selected={checkedCategories[i]}
-              onClick={() => {
-                handleCategoryClick(i);
-              }}
-            >
-              {category}
-            </SelectChip>
-          ))}
-        </FilterOption>
-        <FilterOption title="공구 상태">
-          {FINISHED_LIST.map((finished, i) => (
-            <SelectChip
-              selected={checkedFinished[i]}
-              onClick={() => {
-                handleFinishedClick(i);
-              }}
-            >
-              {finished}
-            </SelectChip>
-          ))}
-        </FilterOption>
-        <FilterOption title="위치">
-          <div>
-            <p>{address}</p>
-            <MapDrawer setLocation={setLocation} location={location} />
-          </div>
-        </FilterOption>
-        <div css={buttonContainerStyle}>
-          <Button
-            variant="contained"
-            style={{
-              backgroundColor: '#D9D5D5',
-              marginRight: '15px'
-            }}
-            onClick={e => {
-              setIsSearchModalOn(false);
+    <div css={searchModal}>
+      <SearchInput value={search} setSearch={setSearch} />
+      <FilterOption title="카테고리">
+        {categories.map((category, i) => (
+          <SelectChip
+            selected={checkedCategories[i]}
+            onClick={() => {
+              handleCategoryClick(i);
             }}
           >
-            취소
-          </Button>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: '#ebabab' }}
-            onClick={e => {
-              handleSubmitClick();
-              setIsSearchModalOn(false);
+            {category}
+          </SelectChip>
+        ))}
+      </FilterOption>
+      <FilterOption title="공구 상태">
+        {FINISHED_LIST.map((finished, i) => (
+          <SelectChip
+            selected={checkedFinished[i]}
+            onClick={() => {
+              handleFinishedClick(i);
             }}
           >
-            완료
-          </Button>
+            {finished}
+          </SelectChip>
+        ))}
+      </FilterOption>
+      <FilterOption title="위치">
+        <div>
+          <p>{address}</p>
+          <MapDrawer setLocation={setLocation} location={location} />
         </div>
-      </div>
+      </FilterOption>
+      <ButtonSet onCancel={handleCancel} onSubmit={handleSubmit} />
     </div>
   );
 }
@@ -164,8 +142,4 @@ const searchModal = css`
   background-color: #fff7f7;
   z-index: 1;
   padding: 10px;
-`;
-
-const buttonContainerStyle = css`
-  text-align: right;
 `;
