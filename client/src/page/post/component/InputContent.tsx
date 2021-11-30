@@ -20,26 +20,12 @@ const inputContent = css`
   overflow: visible;
 `;
 
-interface ContentState {
-  content: string;
-  setContent: (content: string) => void;
+interface ContentStateType {
+  content: React.MutableRefObject<HTMLTextAreaElement | null>;
 }
 
-function InputContent({ content, setContent }: ContentState) {
-  function handleContentChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setContent(e.target.value);
-  }
-
-  return (
-    <textarea
-      name="content"
-      css={inputContent}
-      placeholder="Content"
-      rows={15}
-      onChange={handleContentChange}
-      value={content}
-    ></textarea>
-  );
+function InputContent({ content }: ContentStateType) {
+  return <textarea name="content" css={inputContent} placeholder="Content" rows={15} ref={content}></textarea>;
 }
 
 export default React.memo(InputContent);
