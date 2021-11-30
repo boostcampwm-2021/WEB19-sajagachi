@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Typography, Chip, Box, Avatar } from '@mui/material';
-import DeadLine, { DeadLineHandle } from './DeadLine';
+import DeadLine from './DeadLine';
 
 interface HeaderType {
   title: string;
@@ -8,6 +8,7 @@ interface HeaderType {
   writer: UserType;
   deadline: string | null;
   isNeedServerTime: boolean;
+  deadLineRef: React.Ref<unknown> | undefined;
 }
 
 interface UserType {
@@ -15,8 +16,7 @@ interface UserType {
   img: string;
 }
 
-export default function Header({ title, categoryName, writer, deadline, isNeedServerTime }: HeaderType) {
-  const deadLineRef = useRef<DeadLineHandle>();
+export default function Header({ title, categoryName, writer, deadline, isNeedServerTime, deadLineRef }: HeaderType) {
   return (
     <>
       <Box
