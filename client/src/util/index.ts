@@ -1,4 +1,4 @@
-import { QueryStringType } from '../type';
+import { QueryStringType, ItemType } from '../type';
 
 export const finishedToBool = (finished: boolean[]) => {
   return finished[0] === finished[1] ? undefined : finished[1];
@@ -136,4 +136,10 @@ export const getRemainingDay = (fromTime: Date, toTime: Date) => {
   const hours = ('0' + Math.floor((remainingTime / (1000 * 60 * 60)) % 24)).slice(-2);
   const days = '' + Math.floor(remainingTime / (1000 * 60 * 60) / 24);
   return { days, hours, minutes, seconds };
+};
+
+export const isFinished = (item: ItemType) => {
+  const now = new Date();
+  if (item.finished) return true;
+  return item.deadline !== null && new Date(item.deadline) <= now;
 };
