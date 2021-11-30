@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import { MessageType } from '../../../type';
+import { getAMPMTime } from '../../../util/index';
 
 function MyChatMessage(props: { msgData: MessageType }) {
   const handleImageClick = () => {
@@ -8,7 +9,7 @@ function MyChatMessage(props: { msgData: MessageType }) {
   };
   return (
     <div css={DirectionSelector}>
-      <span css={MessageTimeStyle}>{props.msgData.time}</span>
+      <span css={MessageTimeStyle}>{getAMPMTime(new Date(props.msgData.created_at))}</span>
       {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
       {props.msgData.img && props.msgData.modalOn && (
         <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />

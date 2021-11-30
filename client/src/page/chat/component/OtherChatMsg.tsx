@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import { MessageType } from '../../../type';
+import { getAMPMTime } from '../../../util/index';
 
 function OtherChatMessage(props: { msgData: MessageType }) {
   const handleImageClick = () => {
@@ -16,7 +17,7 @@ function OtherChatMessage(props: { msgData: MessageType }) {
         {props.msgData.img && props.msgData.modalOn && (
           <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
         )}
-        <span css={MessageTimeStyle}>{props.msgData.time}</span>
+        <span css={MessageTimeStyle}>{getAMPMTime(new Date(props.msgData.created_at))}</span>
       </div>
     </>
   );
