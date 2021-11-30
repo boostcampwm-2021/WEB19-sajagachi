@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import { MessageType } from '../../../type';
+import { Skeleton } from '@mui/material';
 
 const MessageStyle = css`
   margin: 4px 0px;
@@ -9,6 +10,7 @@ const MessageStyle = css`
   border-radius: 10px;
   background-color: #e5e5ea;
   font-size: 18px;
+  word-wrap: break-word;
 `;
 const ImageStyle = css`
   margin: 4px 0px;
@@ -35,9 +37,13 @@ const SenderStyle = css`
 `;
 
 function OtherChatMessage(props: { msgData: MessageType }) {
+  const [imageOn, setImageOn] = useState<boolean>(false);
+
   const handleImageClick = () => {
     if (props.msgData.modalOn) props.msgData.modalOn(props.msgData.img);
   };
+  const onLoad = () => setImageOn(true);
+
   return (
     <>
       <div css={DirectionSelector}>
@@ -46,7 +52,10 @@ function OtherChatMessage(props: { msgData: MessageType }) {
       <div css={DirectionSelector}>
         {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
         {props.msgData.img && props.msgData.modalOn && (
-          <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
+          <>
+            {!imageOn && <Skeleton variant="rectangular" width={200} height={200} />}
+            <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} onLoad={onLoad} />
+          </>
         )}
         <span css={MessageTimeStyle}>{props.msgData.time}</span>
       </div>

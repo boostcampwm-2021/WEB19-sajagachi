@@ -19,7 +19,11 @@ const ERROR = Object.freeze({
   URL_INVAILD: <ErrorType>{ status: 400, message: '유효하지 않는 url 입니다.' },
 
   INVALID_POST_ID: <ErrorType>{ status: 400, message: '유효하지 않는 게시글 입니다.' },
-  ENTER_FAIL: <ErrorType>{ status: 400, message: '해당 공구는 정원이 가득 찼습니다.' },
+
+  ENTER_FAIL_FULL: <ErrorType>{ status: 500, message: '해당 공구는 정원이 가득 찼습니다.' },
+  ENTER_FAIL_FINISHED: <ErrorType>{ status: 500, message: '해당 공구는 이미 마감되었습니다.' },
+
+  ENTER_FAIL: <ErrorType>{ status: 500, message: '해당 공구는 정원이 가득 찼습니다.' },
 
   NOT_ENOUGH_POINT: <ErrorType>{ status: 400, message: '잔여 포인트가 부족합니다.' },
   NOT_PARTICIPANTS: <ErrorType>{ status: 400, message: '공동구매 참여 정보가 없습니다.' },

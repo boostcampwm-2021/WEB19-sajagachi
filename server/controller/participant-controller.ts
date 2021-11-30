@@ -22,10 +22,12 @@ export const createParticipant = async (req: Request, res: Response, next: Funct
     const session = req.session;
     if (!session.userId) return next(ERROR.NOT_LOGGED_IN);
     const { post_id } = req.params;
+    const result = await postService.getFinished(+post_id);
+    if (result.finished) return next(ERROR.ENTER_FAIL_FINISHED);
     const participantNum = await participantService.getParticipantNum(+post_id);
     const capacity = await postService.getCapacity(+post_id);
     if (capacity === undefined) return next(ERROR.INVALID_POST_ID);
-    if (capacity !== null && participantNum > capacity) res.json('해당 공구는 정원이 가득 찼습니다.');
+    if (capacity !== null && participantNum > capacity) return next(ERROR.ENTER_FAIL_FINISHED);
     else {
       const createdParticipant = await participantService.saveParticipant(Number(session.userId), +post_id);
       processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, +post_id, String(session.userName));
