@@ -6,79 +6,20 @@ import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
 import { Chip } from '@mui/material';
-import {
-  boolToNum,
-  createQueryString,
-  decomposeQueryString,
-  fetchGet,
-  finishedToBool,
-  getAddressByGeocode
-} from '../../util';
+import { boolToNum, createQueryString, decomposeQueryString, finishedToBool, getAddressByGeocode } from '../../util';
 import { LocationType } from '../../type';
-
-const searchModal = css`
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100vw;
-  height: 100vh;
-  background-color: #fff7f7;
-  z-index: 1;
-  padding: 10px;
-`;
-
-const CategoryStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const ChipStyle = (checked: boolean) => {
-  return css`
-    width: 80px;
-    margin: 3px 3px;
-    ${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
-    &:hover {
-      background-color: #ebe4e4;
-      ${checked ? 'background-color: #ebabab;' : ''}
-    }
-  `;
-};
-
-const StateStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const LocationStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const buttonContainerStyle = css`
-  text-align: right;
-`;
+import service from '../../util/service';
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
-function SearchModal({ setIsSearchModalOn, history }: { setIsSearchModalOn: any; history: any }) {
+interface SearchModalPropsType {
+  setIsSearchModalOn: any;
+  history: any;
+}
+
+export default function SearchModal({ setIsSearchModalOn, history }: SearchModalPropsType) {
   const [categories, setCategories] = useState([]);
   const [checkedCategories, setCheckedCategories] = useState([] as boolean[]);
-
   const [checkedFinished, setCheckedFinished] = useState([false, false]);
   const currentLocation = useRecoilValue(locationState);
   const [location, setLocation] = useState<LocationType>(currentLocation);
@@ -129,9 +70,8 @@ function SearchModal({ setIsSearchModalOn, history }: { setIsSearchModalOn: any;
     if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 })) searchCoordinateToAddress(location);
   }, [location]);
   useEffect(() => {
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/category`).then(result => {
+    service.getCategories().then(result => {
       setCategories(result.map((x: any) => x.name));
-
       const query = decomposeQueryString(window.location.search);
       setCheckedCategories(checkedCategories => {
         const arr = new Array(result.length).fill(false);
@@ -220,4 +160,59 @@ function SearchModal({ setIsSearchModalOn, history }: { setIsSearchModalOn: any;
   );
 }
 
-export default SearchModal;
+const searchModal = css`
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff7f7;
+  z-index: 1;
+  padding: 10px;
+`;
+
+const CategoryStyle = css`
+  & > h3 {
+    margin-bottom: 5px;
+  }
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const ChipStyle = (checked: boolean) => {
+  return css`
+    width: 80px;
+    margin: 3px 3px;
+    ${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
+    &:hover {
+      background-color: #ebe4e4;
+      ${checked ? 'background-color: #ebabab;' : ''}
+    }
+  `;
+};
+
+const StateStyle = css`
+  & > h3 {
+    margin-bottom: 5px;
+  }
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const LocationStyle = css`
+  & > h3 {
+    margin-bottom: 5px;
+  }
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const buttonContainerStyle = css`
+  text-align: right;
+`;
