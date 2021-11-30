@@ -70,6 +70,7 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
   };
 
   useEffect(() => {
+    socket.on('sendError', (errorMsg: string) => popError(errorMsg));
     socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
       const isMe = checkSender(user);
       const bottom =
