@@ -22,7 +22,7 @@ function ChatInput(props: ChatInputType) {
     try {
       const img = event.target.files[0];
       if (!isImage(img.name)) throw new Error(ERROR.FILE_TYPE);
-      if (img.size > 2 * 1024 * 1024) throw new Error(ERROR.FILE_SIZE);
+      if (img.size > 6 * 1024 * 1024) throw new Error(ERROR.FILE_SIZE);
       const formData = new FormData();
       formData.append('file', img);
       service.postFile(props.postId, formData);
