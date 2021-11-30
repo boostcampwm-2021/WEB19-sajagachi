@@ -6,11 +6,12 @@ import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 import Confirm from '../../../common/confirm';
 
-type PointState = {
+interface PointState {
   socket: Socket;
+  popError: (msg: string) => void;
   hostId: number;
   participants: ParticipantType[];
-};
+}
 
 function HostPointView(props: PointState) {
   const socket = props.socket;
@@ -45,7 +46,10 @@ function HostPointView(props: PointState) {
   useEffect(() => {
     setBtn();
     setFinished(false);
-    socket.on('finishError', console.log);
+
+    socket.on('finishError', err => {
+      props.popError(err.message);
+    });
 
     return () => {
       socket.off('finishError');

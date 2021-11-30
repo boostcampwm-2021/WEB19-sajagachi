@@ -4,17 +4,19 @@ import { Socket } from 'socket.io-client';
 import Button from '@mui/material/Button';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
-import { fetchGet, parsePath } from '../../../util';
+import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 import Confirm from '../../../common/confirm';
+import service from '../../../util/service';
 
-type PointState = {
+type PointStateType = {
   socket: Socket;
+  popError: (msg: string) => void;
   hostId: number;
   participants: ParticipantType[];
 };
 
-function PointView(props: PointState) {
+function PointView(props: PointStateType) {
   const socket = props.socket;
   const [myPoint, setMyPoint] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -23,6 +25,15 @@ function PointView(props: PointState) {
   const [isConfirmOn, setIsConfirmOn] = useState(false);
   const loginUser = useRecoilValue(loginUserState);
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
+
+  const getLeftPoint = async () => {
+    try {
+      const user = await service.getUser(loginUser.id);
+      setLeftPoint(user.point);
+    } catch (err: any) {
+      props.popError(err.message);
+    }
+  };
 
   useEffect(() => {
     const me = props.participants.find(participant => {
@@ -36,14 +47,15 @@ function PointView(props: PointState) {
       setMyPoint(String(me.point));
       setPurchase(true);
     } else setPurchase(false);
-    fetchGet(`${process.env.REACT_APP_SERVER_URL}/api/user/${loginUser.id}`).then(data => setLeftPoint(data.point));
+
+    getLeftPoint();
     setDisabled(false);
   }, [props.participants]);
 
   useEffect(() => {
-    socket.on('purchaseError', msg => {
+    socket.on('purchaseError', err => {
       setDisabled(false);
-      console.log(msg);
+      props.popError(err.message);
     });
 
     return () => {
