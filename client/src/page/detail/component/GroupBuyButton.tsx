@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
 import { fetchPost } from '../../../util';
 import { LoginUserType } from '../../../type';
+import service from '../../../util/service';
 
 type GroupBuyButtonType = {
   login: LoginUserType;
@@ -13,6 +14,7 @@ type GroupBuyButtonType = {
   finished: boolean;
   isParticipate: boolean;
   isNeedServerTime: boolean;
+  popError: Function;
 };
 
 export default function GroupBuyButton({
@@ -22,7 +24,8 @@ export default function GroupBuyButton({
   capacity,
   finished,
   isParticipate,
-  isNeedServerTime
+  isNeedServerTime,
+  popError
 }: GroupBuyButtonType) {
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
@@ -35,16 +38,15 @@ export default function GroupBuyButton({
     else if (isParticipate) {
       history.push(`/chat/${postId}`);
     } else {
-      const postBody = {
-        userId: login.id,
-        postId
-      };
-      const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-      const result = await fetchPost(url, postBody);
-      if (result === '해당 공구는 정원이 가득 찼습니다.') {
-        alert(result);
-        setButtonState(true);
-      } else history.push(`/chat/${postId}`);
+      try {
+        const result = await service.enterChat(postId);
+        if (result === '해당 공구는 정원이 가득 찼습니다.') {
+          alert(result);
+          setButtonState(true);
+        } else history.push(`/chat/${postId}`);
+      } catch (err: any) {
+        popError(err.message);
+      }
     }
   }, [history]);
   return (

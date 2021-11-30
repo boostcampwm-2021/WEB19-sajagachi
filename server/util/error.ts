@@ -12,7 +12,10 @@ const ERROR = Object.freeze({
 
   IMAGE_UPLOAD_FAIL: <ErrorType>{ status: 500, message: '이미지 업로드 실패' },
 
-  URL_INVAILD: <ErrorType>{ status: 404, message: '유효하지 않는 url 입니다.' }
+  URL_INVAILD: <ErrorType>{ status: 404, message: '유효하지 않는 url 입니다.' },
+
+  INVALID_POST_ID: <ErrorType>{ status: 404, message: '유효하지 않는 게시글 입니다.' },
+  ENTER_FAIL: <ErrorType>{ status: 500, message: '해당 공구는 정원이 가득 찼습니다.' }
 });
 
 export default ERROR;
