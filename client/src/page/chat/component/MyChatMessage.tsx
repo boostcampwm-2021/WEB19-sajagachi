@@ -2,6 +2,21 @@ import React from 'react';
 import { css } from '@emotion/react';
 import { MessageType } from '../../../type';
 
+function MyChatMessage(props: { msgData: MessageType }) {
+  const handleImageClick = () => {
+    if (props.msgData.modalOn) props.msgData.modalOn(props.msgData.img);
+  };
+  return (
+    <div css={DirectionSelector}>
+      <span css={MessageTimeStyle}>{props.msgData.time}</span>
+      {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
+      {props.msgData.img && props.msgData.modalOn && (
+        <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
+      )}
+    </div>
+  );
+}
+
 const MessageStyle = css`
   margin: 4px 0px;
   padding: 5px 10px;
@@ -29,20 +44,5 @@ const MessageTimeStyle = css`
   margin: 0px 10px;
   padding-bottom: 5px;
 `;
-
-function MyChatMessage(props: { msgData: MessageType }) {
-  const handleImageClick = () => {
-    if (props.msgData.modalOn) props.msgData.modalOn(props.msgData.img);
-  };
-  return (
-    <div css={DirectionSelector}>
-      <span css={MessageTimeStyle}>{props.msgData.time}</span>
-      {props.msgData.msg && <p css={MessageStyle}>{props.msgData.msg}</p>}
-      {props.msgData.img && props.msgData.modalOn && (
-        <img css={ImageStyle} src={props.msgData.img} alt={'chatImg'} onClick={handleImageClick} />
-      )}
-    </div>
-  );
-}
 
 export default MyChatMessage;

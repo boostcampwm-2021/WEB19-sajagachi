@@ -39,18 +39,18 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
   const manufactureChats = (chats: Array<ResultChat>): Array<MessageType> => {
     return chats
       .map(chat => {
-        const temp = {
+        const tmpChat = {
           sender: chat.name,
           time: getAMPMTime(new Date(chat.created_at)),
           isMe: checkSender(chat.userId),
           created_at: chat.created_at
         } as MessageType;
-        if (chat.msg) temp.msg = '' + chat.msg;
+        if (tmpChat.msg) tmpChat.msg = '' + chat.msg;
         else {
-          temp.img = process.env.REACT_APP_IMAGE_URL + '' + chat.img;
-          temp.modalOn = setImageModalOn;
+          tmpChat.img = process.env.REACT_APP_IMAGE_URL + '' + chat.img;
+          tmpChat.modalOn = setImageModalOn;
         }
-        return temp;
+        return tmpChat;
       })
       .reverse();
   };
