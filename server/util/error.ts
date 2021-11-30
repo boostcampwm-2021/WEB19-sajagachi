@@ -11,6 +11,7 @@ const ERROR = Object.freeze({
   DB_WRITE_FAIL: <ErrorType>{ status: 500, message: '데이터베이스에 쓰는데 실패하였습니다.' },
   DB_CONNECT_FAIL: <ErrorType>{ status: 500, message: '데이터베이스 연결에 실패하였습니다.' },
 
+  NO_FILE: <ErrorType>{ status: 500, message: '파일이 없습니다.' },
   IMAGE_UPLOAD_FAIL: <ErrorType>{ status: 500, message: '이미지 업로드에 실패하였습니다.' },
 
   URL_INVAILD: <ErrorType>{ status: 404, message: '유효하지 않는 url 입니다.' },
