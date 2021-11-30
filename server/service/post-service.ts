@@ -33,7 +33,7 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
   const db = await getDB().get();
   let sql = `
 	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, post.lat, post.long, category.name as category
-	FROM post
+	FROM post USE INDEX (idx_location)
 	INNER JOIN category
 	ON post.categoryId = category.id
 	WHERE
@@ -42,7 +42,11 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
 	`;
   const condition = [];
 
-  if (finished !== undefined) condition.push(`post.finished = ${finished}`);
+  if (finished !== undefined) {
+    let option = ` (post.finished = 1 OR (post.deadline IS NOT NULL AND post.deadline <= now())) `;
+    if (String(finished) === 'false') option = ' NOT' + option;
+    condition.push(option);
+  }
   if (search) condition.push(`post.title LIKE "%${search}%"`);
 
   let categories: string[] = [];
