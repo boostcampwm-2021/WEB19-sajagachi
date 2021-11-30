@@ -8,8 +8,8 @@ import { boolToNum, createQueryString, decomposeQueryString, finishedToBool, get
 import { LocationType } from '../../type';
 import service from '../../util/service';
 import FilterOption from './component/FilterOption';
-import SelectChip from './component/SelectChip';
 import ButtonSet from './component/ButtonSet';
+import Select from './component/Select';
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
@@ -34,22 +34,6 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     } catch (err: any) {
       setAddress('주소 정보 없음');
     }
-  };
-
-  const handleCategoryClick = (idx: number) => {
-    setCheckedCategories(checkedCategories => {
-      const arr = [...checkedCategories];
-      arr[idx] = !arr[idx];
-      return arr;
-    });
-  };
-
-  const handleFinishedClick = (idx: number) => {
-    setCheckedFinished(checkedFinished => {
-      const arr = [...checkedFinished];
-      arr[idx] = !arr[idx];
-      return arr;
-    });
   };
 
   const handleCancel = () => setIsSearchModalOn(false);
@@ -99,28 +83,10 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     <div css={searchModal}>
       <SearchInput value={search} setSearch={setSearch} />
       <FilterOption title="카테고리">
-        {categories.map((category, i) => (
-          <SelectChip
-            selected={checkedCategories[i]}
-            onClick={() => {
-              handleCategoryClick(i);
-            }}
-          >
-            {category}
-          </SelectChip>
-        ))}
+        <Select options={categories} selected={checkedCategories} setSelected={setCheckedCategories} />
       </FilterOption>
       <FilterOption title="공구 상태">
-        {FINISHED_LIST.map((finished, i) => (
-          <SelectChip
-            selected={checkedFinished[i]}
-            onClick={() => {
-              handleFinishedClick(i);
-            }}
-          >
-            {finished}
-          </SelectChip>
-        ))}
+        <Select options={FINISHED_LIST} selected={checkedFinished} setSelected={setCheckedFinished} />
       </FilterOption>
       <FilterOption title="위치">
         <div>
