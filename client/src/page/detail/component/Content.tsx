@@ -7,7 +7,7 @@ interface ContentType {
   urls: UrlType[];
 }
 
-interface UrlType {
+export interface UrlType {
   url: string;
 }
 

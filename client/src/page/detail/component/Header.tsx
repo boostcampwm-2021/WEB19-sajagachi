@@ -11,7 +11,7 @@ interface HeaderType {
   deadLineRef: React.Ref<unknown> | undefined;
 }
 
-interface UserType {
+export interface UserType {
   name: string;
   img: string;
 }
