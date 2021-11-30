@@ -5,11 +5,11 @@ import { locationState } from '../../store/location';
 import { useRecoilValue } from 'recoil';
 import MapDrawer from './component/MapDrawer';
 import SearchInput from './component/SearchInput';
-import { Chip } from '@mui/material';
 import { boolToNum, createQueryString, decomposeQueryString, finishedToBool, getAddressByGeocode } from '../../util';
 import { LocationType } from '../../type';
 import service from '../../util/service';
 import FilterOption from './component/FilterOption';
+import SelectChip from './component/SelectChip';
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
@@ -27,14 +27,14 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
   const [address, setAddress] = useState('위치 확인 중');
   const [search, setSearch] = useState('');
 
-  async function searchCoordinateToAddress(latlng: any) {
+  const updateAddress = async (latlng: LocationType) => {
     try {
       const result = await getAddressByGeocode(latlng.lat, latlng.lng);
       setAddress(result);
     } catch (err: any) {
       setAddress('주소 정보 없음');
     }
-  }
+  };
 
   const handleCategoryClick = (idx: number) => {
     setCheckedCategories(checkedCategories => {
@@ -54,8 +54,6 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
 
   const handleSubmitClick = () => {
     const query = {
-      offset: 0,
-      limit: 15,
       category: boolToNum(checkedCategories),
       finished: finishedToBool(checkedFinished),
       lat: location.lat,
@@ -67,7 +65,8 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
   };
 
   useEffect(() => {
-    if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 })) searchCoordinateToAddress(location);
+    if (location.lat == 0 && location.lng == 0) return;
+    updateAddress(location);
   }, [location]);
 
   useEffect(() => {
@@ -99,26 +98,26 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
         <SearchInput value={search} setSearch={setSearch} />
         <FilterOption title="카테고리">
           {categories.map((category, i) => (
-            <Chip
-              label={category}
-              css={ChipStyle(checkedCategories[i])}
+            <SelectChip
+              selected={checkedCategories[i]}
               onClick={() => {
                 handleCategoryClick(i);
               }}
-              data-idx={i}
-            />
+            >
+              {category}
+            </SelectChip>
           ))}
         </FilterOption>
         <FilterOption title="공구 상태">
           {FINISHED_LIST.map((finished, i) => (
-            <Chip
-              label={finished}
-              css={ChipStyle(checkedFinished[i])}
+            <SelectChip
+              selected={checkedFinished[i]}
               onClick={() => {
                 handleFinishedClick(i);
               }}
-              data-idx={i}
-            />
+            >
+              {finished}
+            </SelectChip>
           ))}
         </FilterOption>
         <FilterOption title="위치">
@@ -166,18 +165,6 @@ const searchModal = css`
   z-index: 1;
   padding: 10px;
 `;
-
-const ChipStyle = (checked: boolean) => {
-  return css`
-    width: 80px;
-    margin: 3px 3px;
-    ${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
-    &:hover {
-      background-color: #ebe4e4;
-      ${checked ? 'background-color: #ebabab;' : ''}
-    }
-  `;
-};
 
 const buttonContainerStyle = css`
   text-align: right;
