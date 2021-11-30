@@ -11,6 +11,7 @@ const MessageStyle = css`
   background-color: #f76a6a;
   color: #ffffff;
   font-size: 18px;
+  word-wrap: break-word;
 `;
 const ImageStyle = css`
   margin: 4px 0px;

@@ -10,6 +10,7 @@ const MessageStyle = css`
   border-radius: 10px;
   background-color: #e5e5ea;
   font-size: 18px;
+  word-wrap: break-word;
 `;
 const ImageStyle = css`
   margin: 4px 0px;
