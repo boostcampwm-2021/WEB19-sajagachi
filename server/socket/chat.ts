@@ -5,6 +5,7 @@ import userService from '../service/user-service';
 import postService from '../service/post-service';
 import { getDB } from '../db/db';
 import { User } from '../model/entity/User';
+import ERROR from '../util/error';
 
 export const joinRoom = (socket: any, io: Server) => {
   socket.on('joinRoom', async (postId: number) => {
@@ -34,8 +35,8 @@ export const sendImg = (io: Server, postId: number, userId: number, userName: st
 export const confirmPurchase = (socket: any, io: Server) => {
   socket.on('pointConfirm', async (postId: number, userId: number, sendPoint: number) => {
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
-    else if (loginUser.point < sendPoint) socket.emit('purchaseError', '잔여 포인트 부족');
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', ERROR.INVALID_USER);
+    else if (loginUser.point < sendPoint) socket.emit('purchaseError', ERROR.NOT_ENOUGH_POINT);
     else {
       userService.usePoint(loginUser.id, loginUser.point, sendPoint);
       participantService.updatePoint(postId, loginUser.id, sendPoint);
@@ -49,11 +50,11 @@ export const cancelPurchase = (socket: any, io: Server) => {
   socket.on('pointCancel', async (postId: number, userId: number) => {
     const loginUser = await checkSession(socket);
     if (loginUser === undefined) return;
-    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', ERROR.INVALID_USER);
     else {
       const participant = await participantService.getParticipant(postId, loginUser.id);
-      if (participant === undefined) socket.emit('purchaseError', '참여 정보 없음');
-      else if (participant.point === null) socket.emit('purchaseError', '제출 이력 없음');
+      if (participant === undefined) socket.emit('purchaseError', ERROR.NOT_PARTICIPANTS);
+      else if (participant.point === null) socket.emit('purchaseError', ERROR.NO_PURCHASE);
       else {
         participantService.updatePoint(postId, loginUser.id, null);
         userService.addPoint(loginUser.id, participant.point);
@@ -153,7 +154,7 @@ export const finishRoom = (socket: any, io: Server) => {
       io.to(String(postId)).emit('finishPost');
     } catch (err: any) {
       await queryRunner.rollbackTransaction();
-      socket.emit('finishError', '정상적으로 종료되지 않았습니다.');
+      socket.emit('finishError', ERROR.DB_WRITE_FAIL);
     } finally {
       await queryRunner.release();
     }

@@ -53,9 +53,9 @@ function PointView(props: PointStateType) {
   }, [props.participants]);
 
   useEffect(() => {
-    socket.on('purchaseError', msg => {
+    socket.on('purchaseError', err => {
       setDisabled(false);
-      props.popError(msg);
+      props.popError(err.message);
     });
 
     return () => {

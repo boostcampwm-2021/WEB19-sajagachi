@@ -46,7 +46,10 @@ function HostPointView(props: PointState) {
   useEffect(() => {
     setBtn();
     setFinished(false);
-    socket.on('finishError', console.log);
+
+    socket.on('finishError', err => {
+      props.popError(err.message);
+    });
 
     return () => {
       socket.off('finishError');
