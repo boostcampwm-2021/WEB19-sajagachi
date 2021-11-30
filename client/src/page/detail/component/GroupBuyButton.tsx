@@ -62,7 +62,7 @@ export default function GroupBuyButton({
     <>
       <Button
         variant="contained"
-        disabled={isNeedServerTime || buttonState}
+        disabled={isNeedServerTime || checkButtonState()}
         sx={GroupBuyButtonStyle}
         onClick={clickHandler}
       >
