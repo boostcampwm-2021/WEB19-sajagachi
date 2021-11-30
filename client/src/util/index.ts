@@ -137,3 +137,16 @@ export const getAMPMTime = (date: Date) => {
   if (currentHour === 0) currentHour = 12;
   return strAmPm + currentHour + '시 ' + currentMinutes + '분';
 };
+
+export const isBetweenFromTo = (target: number, from: number, to: number) => {
+  if (target >= from && target <= to) return true;
+  return false;
+};
+
+export const MakeDateFormat = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
+};
