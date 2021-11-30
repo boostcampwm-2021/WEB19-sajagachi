@@ -1,125 +1,55 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, RefObject } from 'react';
 import { css } from '@emotion/react';
+import { Socket } from 'socket.io-client';
 import MyChatMessage from './MyChatMessage';
 import OtherChatMessage from './OtherChatMsg';
 import SystemMessage from './SystemMessage';
-import { Socket } from 'socket.io-client';
-import { CircularProgress } from '@mui/material';
-import { UserInfoType, MessageType } from '../../../type';
 import ImageModal from './ImageModal';
+import LoadingSpinner from '../../../common/loading-spinner';
 import service from '../../../util/service';
-import { getAMPMTime } from '../../../util';
+import { isBetweenFromTo, MakeDateFormat } from '../../../util/index';
+import { UserInfoType, MessageType } from '../../../type';
 
-type ResultChat = {
+interface ResultChat {
   id: number;
   userId: number;
-  postId: number;
   msg: string | null;
   img: string | null;
   created_at: string;
   name: string;
-};
+}
 
-type ChatListType = {
+interface ChatListType {
   postId: number;
   user: UserInfoType;
   socket: Socket;
   popError: Function;
-};
+}
 
 export default function ChatList({ postId, user, socket, popError }: ChatListType) {
   const [isFetch, setIsFetch] = useState(false);
   const [chatDatas, setChatDatas] = useState<any>([]);
   const [imageModalOn, setImageModalOn] = useState('');
-  const isEnd = useRef(false);
+  const [isEnd, setIsEnd] = useState(false);
   const cursor = useRef<number>();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const loader = useRef(null);
   const parent = useRef<HTMLDivElement>(null);
   const manufactureChats = (chats: Array<ResultChat>): Array<MessageType> => {
-    return chats
-      .map(chat => {
-        const tmpChat = {
-          sender: chat.name,
-          time: getAMPMTime(new Date(chat.created_at)),
-          isMe: checkSender(chat.userId),
-          created_at: chat.created_at
-        } as MessageType;
-        if (tmpChat.msg) tmpChat.msg = '' + chat.msg;
-        else {
-          tmpChat.img = process.env.REACT_APP_IMAGE_URL + '' + chat.img;
-          tmpChat.modalOn = setImageModalOn;
-        }
-        return tmpChat;
-      })
-      .reverse();
+    return chats.map(chat => createChatData(chat.userId, chat.name, chat.msg, chat.img)).reverse();
   };
-  const checkSender = (sender: number) => {
-    if (sender === SENDER_TYPE.SYSTEM) return SENDER_TYPE.SYSTEM;
-    else if (sender === user.userId) return SENDER_TYPE.ME;
-    else return SENDER_TYPE.OTHER;
-  };
-  const moveScroll = (isMe: number) => {
-    const bottom =
-      (parent.current?.scrollHeight as number) -
-      (parent.current?.scrollTop as number) -
-      (parent.current?.clientHeight as number);
-    if (isMe || checkBetweenFromTo(bottom, 0, 10)) {
-      messageEndRef.current?.scrollIntoView({
-        behavior: 'auto',
-        block: 'start',
-        inline: 'nearest'
-      });
-    }
-  };
-
-  useEffect(() => {
-    socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
-      const isMe = checkSender(user);
-      setChatDatas((chatDatas: MessageType[]) => {
-        return [
-          ...chatDatas,
-          {
-            sender: userName,
-            msg,
-            time: getAMPMTime(new Date()),
-            isMe,
-            created_at: new Date().toString()
-          }
-        ];
-      });
-      moveScroll(isMe);
-    });
-    socket.on('sendImg', (user: number, userName: string, img: string) => {
-      const isMe = checkSender(user);
-      setChatDatas((chatDatas: MessageType[]) => {
-        return [
-          ...chatDatas,
-          {
-            sender: userName,
-            img: process.env.REACT_APP_IMAGE_URL + img,
-            time: getAMPMTime(new Date()),
-            isMe,
-            created_at: new Date().toString(),
-            modalOn: setImageModalOn
-          }
-        ];
-      });
-      moveScroll(isMe);
-    });
-  }, []);
 
   const handleObserver: IntersectionObserverCallback = async (entry, observer) => {
     const target = entry[0];
-    if (target.isIntersecting && !isEnd.current) {
+    if (target.isIntersecting && !isEnd) {
       observer.unobserve(target.target);
       setIsFetch(true);
 
-      const heightBeforeFetch = parent.current?.scrollHeight;
+      const scrollHeightBeforeFetch = parent.current?.scrollHeight;
       try {
-        const result: Array<ResultChat> = await service.getChats(postId, cursor.current, LIMIT);
-        if (result.length < LIMIT) {
-          isEnd.current = true;
+        const result: Array<ResultChat> = await service.getChats(postId, cursor.current, CHAT_LIMIT);
+        if (result.length < CHAT_LIMIT) {
+          setIsEnd(true);
           observer.unobserve(target.target);
           if (result.length === 0) return;
         }
@@ -129,8 +59,8 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
         setChatDatas((chatDatas: MessageType[]) => {
           return [...manufacturedChats, ...chatDatas];
         });
-        const heightAfterFetch = parent.current?.scrollHeight;
-        parent.current?.scrollTo(0, (heightAfterFetch as number) - (heightBeforeFetch as number));
+        const scrollHeightAfterFetch = parent.current?.scrollHeight;
+        parent.current?.scrollTo(0, (scrollHeightAfterFetch as number) - (scrollHeightBeforeFetch as number));
         observer.observe(target.target);
       } catch (err: any) {
         popError(err.message);
@@ -139,41 +69,73 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
       }
     }
   };
+  useIntersectionObserver(loader, handleObserver, { root: parent.current, threshold: 1 });
 
   useEffect(() => {
-    const option = {
-      root: parent.current,
-      threshold: 1
-    };
-
-    const loadObserver = new IntersectionObserver(handleObserver, option);
-    if (loader.current) loadObserver.observe(loader.current);
+    socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
+      setChatDatas((chatDatas: MessageType[]) => {
+        return [...chatDatas, createChatData(user, userName, msg, null)];
+      });
+      if (checkSender(user) === SENDER_TYPE.ME) moveScrollToBottom();
+    });
+    socket.on('sendImg', (user: number, userName: string, img: string) => {
+      setChatDatas((chatDatas: MessageType[]) => {
+        return [...chatDatas, createChatData(user, userName, null, img)];
+      });
+      if (checkSender(user) === SENDER_TYPE.ME) moveScrollToBottom();
+    });
     return () => {
-      if (loader.current) loadObserver.unobserve(loader.current);
+      socket.off('receiveMsg');
+      socket.off('sendImg');
     };
   }, []);
 
+  const checkSender = (sender: number) => {
+    if (sender === SENDER_TYPE.SYSTEM) return SENDER_TYPE.SYSTEM;
+    else if (sender === user.userId) return SENDER_TYPE.ME;
+    else return SENDER_TYPE.OTHER;
+  };
+  const moveScrollToBottom = () => {
+    const bottom =
+      (parent.current?.scrollHeight as number) -
+      (parent.current?.scrollTop as number) -
+      (parent.current?.clientHeight as number);
+    if (isBetweenFromTo(bottom, 0, 10)) {
+      messageEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'start', inline: 'nearest' });
+    }
+  };
+  const createChatData = (user: number, userName: string, msg: string | null = null, img: string | null = null) => {
+    const isMe = checkSender(user);
+    const chatData: MessageType = {
+      sender: userName,
+      isMe,
+      msg,
+      img: process.env.REACT_APP_IMAGE_URL + '' + img,
+      created_at: new Date().toString()
+    };
+    if (img) chatData.modalOn = setImageModalOn;
+    return chatData;
+  };
   const chatSections = makeSection(chatDatas);
   return (
     <>
       <div css={ChatLayout} ref={parent}>
-        {isFetch && <CircularProgress size={25} sx={ProgressStyle} />}
-        <div ref={loader} />
+        {isFetch && <LoadingSpinner />}
+        {!isEnd && <div ref={loader} />}
         {Object.entries(chatSections).map(([date, chats]) => {
           return (
             <div key={date}>
               <div css={StickyHeader}>
                 <button>{date}</button>
               </div>
-              {chats.map((chat: MessageType) => {
-                if (chat.isMe === SENDER_TYPE.SYSTEM) return <SystemMessage msgData={chat} />;
-                else if (chat.isMe === SENDER_TYPE.ME) return <MyChatMessage msgData={chat} />;
-                else return <OtherChatMessage msgData={chat} />;
+              {chats.map((chat: MessageType, index) => {
+                if (chat.isMe === SENDER_TYPE.SYSTEM) return <SystemMessage msgData={chat} key={index} />;
+                else if (chat.isMe === SENDER_TYPE.ME) return <MyChatMessage msgData={chat} key={index} />;
+                else return <OtherChatMessage msgData={chat} key={index} />;
               })}
             </div>
           );
         })}
-
         <div key="messageEndDiv" ref={messageEndRef} />
       </div>
       {imageModalOn !== '' && <ImageModal imageUrl={imageModalOn} setImageModalOn={setImageModalOn} />}
@@ -181,19 +143,12 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
   );
 }
 
-const LIMIT = 20;
+const CHAT_LIMIT = 20;
 
-const checkBetweenFromTo = (target: number, from: number, to: number) => {
-  if (target >= from && target <= to) return true;
-  return false;
-};
-
-const MakeDateFormat = (date: Date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`;
+const SENDER_TYPE = {
+  SYSTEM: 0,
+  ME: 1,
+  OTHER: 2
 };
 
 const makeSection = (chatDatas: MessageType[]) => {
@@ -207,17 +162,6 @@ const makeSection = (chatDatas: MessageType[]) => {
     }
   });
   return sections;
-};
-
-const SENDER_TYPE = {
-  SYSTEM: 0,
-  ME: 1,
-  OTHER: 2
-};
-
-const ProgressStyle = {
-  color: '#f76a6a',
-  marginLeft: '5px'
 };
 
 const ChatLayout = css`
@@ -253,3 +197,18 @@ const StickyHeader = css`
     outline: none;
   }
 `;
+
+const useIntersectionObserver = (
+  targetElement: RefObject<HTMLElement>,
+  callback: IntersectionObserverCallback,
+  option: any | null
+) => {
+  const observerRef = useRef<IntersectionObserver>();
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(callback, option);
+    if (targetElement.current) observerRef.current.observe(targetElement.current);
+    return () => {
+      if (observerRef.current && targetElement.current) observerRef.current.unobserve(targetElement.current);
+    };
+  }, []);
+};
