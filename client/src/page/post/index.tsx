@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
@@ -89,20 +89,16 @@ const capacityDeadline = css`
 function Post() {
   const history = useHistory();
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+
+  const title = useRef<HTMLInputElement>(null);
+  const content = useRef<HTMLTextAreaElement>(null);
+
   const [urls, setUrls] = useState<string[]>(['']);
   const [category, setCategory] = useState<number | null>(null);
   const [capacity, setCapacity] = useState<number>(0);
   const [deadline, setDeadline] = useState<Date | null>(null);
-  const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
   const [popError, RenderError] = useError();
   const currentLocation = useRecoilValue(locationState);
-
-  useEffect(() => {
-    if (title && content && category !== null) setBtnDisabled(false);
-    else setBtnDisabled(true);
-  }, [title, content, category]);
 
   useEffect(() => {
     if (!loginUser.isSigned) {
@@ -115,6 +111,7 @@ function Post() {
             isSigned: true
           });
         } else {
+          popError(ERROR.NOT_LOGGED_IN);
           history.push('/');
         }
       });
@@ -131,8 +128,8 @@ function Post() {
       : deadline;
     const body = {
       categoryId: category,
-      title: title,
-      content: content,
+      title: title.current?.value,
+      content: content.current?.value,
       capacity: capacity,
       deadline: deadlineDate,
       lat: currentLocation.lat,
@@ -141,7 +138,7 @@ function Post() {
     };
     try {
       const postId = await service.createPost(body);
-      history.push(`/post/${postId}`);
+      history.replace(`/post/${postId}`);
     } catch (err: any) {
       popError(err.message);
     }
@@ -158,7 +155,9 @@ function Post() {
   }
 
   function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
-    if (checkUrlValid()) {
+    if (!(title.current?.value && content.current?.value && category !== null)) {
+      popError(ERROR.NOT_ENOUGH_INPUT);
+    } else if (checkUrlValid()) {
       popError(ERROR.INVALID_URL);
     } else {
       const validUrls = new Set(urls.filter(x => x !== ''));
@@ -169,9 +168,9 @@ function Post() {
   return (
     <div css={postContainer}>
       <RenderError />
-      <InputTitle title={title} setTitle={setTitle} />
+      <InputTitle title={title} />
       <Line />
-      <InputContent content={content} setContent={setContent} />
+      <InputContent content={content} />
       {urls.map((url, idx) => (
         <InputUrl idx={idx} urls={urls} setUrls={setUrls} />
       ))}
@@ -187,11 +186,10 @@ function Post() {
         <span css={finishButton}>
           <Button
             style={{
-              backgroundColor: `${btnDisabled ? '#dddddd' : '#ebabab'}`,
+              backgroundColor: '#ebabab',
               color: 'white'
             }}
             onClick={handleFinishClick}
-            disabled={btnDisabled}
           >
             등록
           </Button>

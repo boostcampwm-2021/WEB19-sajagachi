@@ -1,5 +1,4 @@
 import { createQueryString } from '../util';
-import { PostInputType } from '../type';
 
 const getOptions = () => {
   const options: RequestInit = {
@@ -99,7 +98,7 @@ const getParticipationPosts = async (
   const response = await fetch(url, getOptions());
   return await handleResult(response);
 };
-const createPost = async (body: PostInputType) => {
+const createPost = async (body: any) => {
   const postUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/`;
   const response = await fetch(postUrl, postOptions(body));
   return await handleResult(response);
