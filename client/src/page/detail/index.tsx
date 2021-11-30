@@ -11,22 +11,7 @@ import useError from '../../hook/useError';
 import service from '../../util/service';
 import LoadingSpinner from '../../common/loading-spinner';
 
-type UrlType = {
-  postId: number;
-  url: string;
-};
-
-type UserType = {
-  id: number;
-  name: string;
-  img: string;
-  point: number;
-};
-
-type MatchParams = {
-  postId: string;
-};
-type PostType = {
+interface PostType {
   deadline: string;
   title: string;
   content: string;
@@ -37,6 +22,22 @@ type PostType = {
   urls: UrlType[];
   user: UserType;
   isParticipate: boolean;
+}
+
+interface UrlType {
+  postId: number;
+  url: string;
+}
+
+interface UserType {
+  id: number;
+  name: string;
+  img: string;
+  point: number;
+}
+
+type MatchParams = {
+  postId: string;
 };
 
 export default function Detail({ match }: RouteComponentProps<MatchParams>) {
