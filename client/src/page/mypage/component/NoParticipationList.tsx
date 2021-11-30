@@ -8,13 +8,17 @@ type NoParticipationListProps = {
 
 export default function NoParticipationList({ text }: NoParticipationListProps) {
   return (
-    <div>
+    <div css={NoParticipationListStyle}>
       <img src={myPageNoList} alt={'noItem'} css={ImageStyle} />
-      <p style={{ textAlign: 'center' }}>{text}</p>
+      <p>{text}</p>
     </div>
   );
 }
 
+const NoParticipationListStyle = css`
+  text-align: center;
+`;
+
 const ImageStyle = css`
-  width: 100%;
+  width: 230px;
 `;
