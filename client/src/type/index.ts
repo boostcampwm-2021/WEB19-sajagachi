@@ -50,9 +50,8 @@ export type UserInfoType = {
 
 export interface MessageType {
   sender: string;
-  msg?: string;
-  img?: string;
-  time: string;
+  msg: string | null;
+  img: string | null;
   isMe: number;
   created_at: string;
   modalOn?: Function;
