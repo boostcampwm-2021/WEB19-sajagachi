@@ -252,9 +252,9 @@ const createSystemMsg = (msgType: number, userName: string) => {
   }
 };
 
-export const processSystemMsg = (io: Server, type: number, postId: number, userName: string) => {
+export const processSystemMsg = async (io: Server, type: number, postId: number, userName: string) => {
   const msg = createSystemMsg(type, userName);
-  chatService.saveChat(SYSTEM_ID, postId, msg);
+  await chatService.saveChat(SYSTEM_ID, postId, msg);
   io.to(String(postId)).emit('receiveMsg', SYSTEM_ID, SYSTEM_NAME, msg);
 };
 

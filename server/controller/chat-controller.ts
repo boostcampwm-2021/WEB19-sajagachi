@@ -17,7 +17,7 @@ export const getChats = async (req: Request, res: Response, next: Function) => {
     const chats = await chatService.getChats(post_id, limit as string, cursor as string);
     res.json(chats);
   } catch (err: any) {
-    next(ERROR.DB_CONNECT_FAIL);
+    next(ERROR.DB_READ_FAIL);
   }
 };
 
