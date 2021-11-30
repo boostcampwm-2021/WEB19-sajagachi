@@ -6,11 +6,12 @@ import { parsePath } from '../../../util';
 import { ParticipantType } from '../../../type';
 import Confirm from '../../../common/confirm';
 
-type PointState = {
+interface PointState {
   socket: Socket;
+  popError: (msg: string) => void;
   hostId: number;
   participants: ParticipantType[];
-};
+}
 
 function HostPointView(props: PointState) {
   const socket = props.socket;
