@@ -10,7 +10,7 @@ import LoadingSpinner from '../../common/loading-spinner';
 import useError from '../../hook/useError';
 import service from '../../util/service';
 import { getRemainingDay } from '../../util/index';
-
+import { useHistory } from 'react-router';
 interface PostType {
   title: string;
   content: string;
@@ -29,6 +29,7 @@ interface DetailType {
 }
 
 export default function Detail({ match }: RouteComponentProps<DetailType>) {
+  const history = useHistory();
   const [post, setPost] = useState<PostType>(INITIAL_POST_STATE);
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
@@ -73,7 +74,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
       setPost({ ...post });
     } catch (error: any) {
       setIsLoad(true);
-      popError(error.message);
+      history.replace('/error');
     }
   };
 

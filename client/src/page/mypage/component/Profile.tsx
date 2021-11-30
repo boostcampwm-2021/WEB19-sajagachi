@@ -7,6 +7,7 @@ import LogoutButton from './LogoutButton';
 import useLoginUser from '../../../hook/useLoginUser';
 import service from '../../../util/service';
 import useError from '../../../hook/useError';
+import { useHistory } from 'react-router';
 
 type UserType = {
   id: number;
@@ -16,6 +17,7 @@ type UserType = {
 };
 
 export default function Profile() {
+  const history = useHistory();
   const [isChargePointModalOn, setIsChargePointModalOn] = useState(false);
   const [isReturnPointModalOn, setIsReturnPointModalOn] = useState(false);
   const [popError, RenderError] = useError();
@@ -26,7 +28,7 @@ export default function Profile() {
       const userData = await service.getUser(userId);
       setUser(userData);
     } catch (err: any) {
-      popError(err.message);
+      history.replace('/error');
     }
   };
 
