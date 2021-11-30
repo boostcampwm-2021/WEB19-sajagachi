@@ -41,13 +41,11 @@ export default function GroupBuyButton({
       history.push(`/chat/${postId}`);
     } else {
       try {
-        const result = await service.enterChat(postId);
-        if (result === '해당 공구는 정원이 가득 찼습니다.') {
-          alert(result);
-          setButtonState(true);
-        } else history.push(`/chat/${postId}`);
+        await service.enterChat(postId);
+        history.push(`/chat/${postId}`);
       } catch (err: any) {
         popError(err.message);
+        setButtonState(true);
       }
     }
   }, [history]);
