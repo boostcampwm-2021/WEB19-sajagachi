@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { getDB } from '../db/db';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
 import { SYSTEM_MSG_TYPE, processSystemMsg } from '../socket/chat';
@@ -18,6 +19,8 @@ export type ErrorType = {
 };
 
 export const createParticipant = async (req: Request, res: Response, next: Function) => {
+  const queryRunner = (await getDB().get()).createQueryRunner();
+  await queryRunner.startTransaction();
   try {
     const session = req.session;
     if (!session.userId) return next(ERROR.NOT_LOGGED_IN);
@@ -31,9 +34,13 @@ export const createParticipant = async (req: Request, res: Response, next: Funct
     else {
       const createdParticipant = await participantService.saveParticipant(Number(session.userId), +post_id);
       processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, +post_id, String(session.userName));
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
       res.json(createdParticipant);
     }
   } catch (err: any) {
+    await queryRunner.rollbackTransaction();
+    await queryRunner.release();
     next(ERROR.DB_WRITE_FAIL);
   }
 };
