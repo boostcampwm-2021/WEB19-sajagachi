@@ -10,8 +10,7 @@ import service from '../../util/service';
 import FilterOption from './component/FilterOption';
 import ButtonSet from './component/ButtonSet';
 import Select from './component/Select';
-
-const FINISHED_LIST = ['공구중', '공구완료'];
+import useError from '../../hook/useError';
 
 interface SearchModalPropsType {
   setIsSearchModalOn: any;
@@ -26,6 +25,7 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
   const [location, setLocation] = useState<LocationType>(currentLocation);
   const [address, setAddress] = useState('위치 확인 중');
   const [search, setSearch] = useState('');
+  const [popError, RenderError] = useError();
 
   const updateAddress = async (latlng: LocationType) => {
     try {
@@ -36,9 +36,31 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     }
   };
 
-  const handleCancel = () => setIsSearchModalOn(false);
+  const updateCategories = async () => {
+    try {
+      const result = await service.getCategories();
+      setCategories(result.map((x: any) => x.name));
+    } catch (err: any) {
+      popError(err.message);
+    }
+  };
 
-  const handleSubmit = () => {
+  const loadQueryString = () => {
+    const q = decomposeQueryString(window.location.search);
+    setCheckedCategories(checkedCategories => {
+      q.category?.forEach(v => (checkedCategories[v - 1] = true));
+      return checkedCategories;
+    });
+    setCheckedFinished(checkedFinished => {
+      if (q.finished === true) checkedFinished[1] = true;
+      else if (q.finished === false) checkedFinished[0] = true;
+      return checkedFinished;
+    });
+    if (q.lat && q.long) setLocation({ lat: q.lat, lng: q.long });
+    if (q.search) setSearch(q.search);
+  };
+
+  const buildQueryString = () => {
     const query = {
       category: boolToNum(checkedCategories),
       finished: finishedToBool(checkedFinished),
@@ -47,40 +69,27 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
       search: search ? search : undefined
     };
     const queryStr = createQueryString(query);
-    history.push('/?' + queryStr);
+    return '/?' + queryStr;
+  };
+
+  const handleCancel = () => setIsSearchModalOn(false);
+  const handleSubmit = () => {
+    history.push(buildQueryString());
     setIsSearchModalOn(false);
   };
+
+  useEffect(() => {
+    updateCategories().then(loadQueryString);
+  }, []);
 
   useEffect(() => {
     if (location.lat == 0 && location.lng == 0) return;
     updateAddress(location);
   }, [location]);
 
-  useEffect(() => {
-    service.getCategories().then(result => {
-      setCategories(result.map((x: any) => x.name));
-      const query = decomposeQueryString(window.location.search);
-      setCheckedCategories(checkedCategories => {
-        const arr = new Array(result.length).fill(false);
-        query.category?.forEach(val => {
-          arr[val - 1] = true;
-        });
-        return arr;
-      });
-      if (query.lat && query.long) {
-        setLocation({ lat: query.lat, lng: query.long });
-      }
-      if (query.search) setSearch(query.search);
-      setCheckedFinished(checkedFinished => {
-        if (query.finished === true) checkedFinished[1] = true;
-        else if (query.finished === false) checkedFinished[0] = true;
-        return checkedFinished;
-      });
-    });
-  }, []);
-
   return (
     <div css={searchModal}>
+      <RenderError />
       <SearchInput value={search} setSearch={setSearch} />
       <FilterOption title="카테고리">
         <Select options={categories} selected={checkedCategories} setSelected={setCheckedCategories} />
@@ -109,3 +118,5 @@ const searchModal = css`
   z-index: 1;
   padding: 10px;
 `;
+
+const FINISHED_LIST = ['공구중', '공구완료'];
