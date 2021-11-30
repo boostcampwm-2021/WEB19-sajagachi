@@ -9,6 +9,7 @@ import { Chip } from '@mui/material';
 import { boolToNum, createQueryString, decomposeQueryString, finishedToBool, getAddressByGeocode } from '../../util';
 import { LocationType } from '../../type';
 import service from '../../util/service';
+import FilterOption from './component/FilterOption';
 
 const FINISHED_LIST = ['공구중', '공구완료'];
 
@@ -42,6 +43,7 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
       return arr;
     });
   };
+
   const handleFinishedClick = (idx: number) => {
     setCheckedFinished(checkedFinished => {
       const arr = [...checkedFinished];
@@ -63,12 +65,11 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     const queryStr = createQueryString(query);
     history.push('/?' + queryStr);
   };
-  useEffect(() => {
-    setLocation(currentLocation);
-  }, [currentLocation]);
+
   useEffect(() => {
     if (JSON.stringify(location) !== JSON.stringify({ lat: 0, lng: 0 })) searchCoordinateToAddress(location);
   }, [location]);
+
   useEffect(() => {
     service.getCategories().then(result => {
       setCategories(result.map((x: any) => x.name));
@@ -96,41 +97,36 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
     <div>
       <div css={searchModal}>
         <SearchInput value={search} setSearch={setSearch} />
-        <div css={CategoryStyle}>
-          <h3>카테고리</h3>
+        <FilterOption title="카테고리">
+          {categories.map((category, i) => (
+            <Chip
+              label={category}
+              css={ChipStyle(checkedCategories[i])}
+              onClick={() => {
+                handleCategoryClick(i);
+              }}
+              data-idx={i}
+            />
+          ))}
+        </FilterOption>
+        <FilterOption title="공구 상태">
+          {FINISHED_LIST.map((finished, i) => (
+            <Chip
+              label={finished}
+              css={ChipStyle(checkedFinished[i])}
+              onClick={() => {
+                handleFinishedClick(i);
+              }}
+              data-idx={i}
+            />
+          ))}
+        </FilterOption>
+        <FilterOption title="위치">
           <div>
-            {categories.map((category, i) => (
-              <Chip
-                label={category}
-                css={ChipStyle(checkedCategories[i])}
-                onClick={() => {
-                  handleCategoryClick(i);
-                }}
-                data-idx={i}
-              />
-            ))}
+            <p>{address}</p>
+            <MapDrawer setLocation={setLocation} location={location} />
           </div>
-        </div>
-        <div css={StateStyle}>
-          <h3>공구 상태</h3>
-          <div>
-            {FINISHED_LIST.map((finished, i) => (
-              <Chip
-                label={finished}
-                css={ChipStyle(checkedFinished[i])}
-                onClick={() => {
-                  handleFinishedClick(i);
-                }}
-                data-idx={i}
-              />
-            ))}
-          </div>
-        </div>
-        <div css={LocationStyle}>
-          <h3>위치</h3>
-          <p>{address}</p>
-          <MapDrawer setLocation={setLocation} location={location} />
-        </div>
+        </FilterOption>
         <div css={buttonContainerStyle}>
           <Button
             variant="contained"
@@ -171,16 +167,6 @@ const searchModal = css`
   padding: 10px;
 `;
 
-const CategoryStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
 const ChipStyle = (checked: boolean) => {
   return css`
     width: 80px;
@@ -192,26 +178,6 @@ const ChipStyle = (checked: boolean) => {
     }
   `;
 };
-
-const StateStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const LocationStyle = css`
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
 
 const buttonContainerStyle = css`
   text-align: right;
