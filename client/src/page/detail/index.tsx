@@ -42,7 +42,6 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
       eventSource.current?.close();
     };
   }, []);
-
   const setEventSource = (deadline: string) => {
     eventSource.current = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
     const endTime = new Date(deadline);
@@ -52,7 +51,9 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
         const serverTime = new Date(parseInt(e.data, 10));
         if (serverTime >= endTime) {
           deadLineRef.current.setDeadLine('기한 마감');
-          setPost({ ...post, finished: true });
+          setPost((prev: PostType) => {
+            return { ...prev, finished: true };
+          });
           eventSource.current?.close();
           return;
         } else {
@@ -63,17 +64,16 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
       }
     };
   };
-
   const getPostDataAndConnectServer = async () => {
     try {
       const post = await service.getPost(Number(match.params.postId));
       if (!post.finished && post.deadline !== null) setEventSource(post.deadline);
       else setIsNeedServerTime(false);
+      setIsLoad(true);
       setPost({ ...post });
     } catch (error: any) {
-      popError(error.message);
-    } finally {
       setIsLoad(true);
+      popError(error.message);
     }
   };
 
