@@ -26,6 +26,7 @@ export default function GroupBuyButton({
   isNeedServerTime,
   popError
 }: GroupBuyButtonType) {
+  console.log(login);
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
   const checkButtonState = () => {
@@ -35,7 +36,7 @@ export default function GroupBuyButton({
   };
   const [buttonState, setButtonState] = useState(checkButtonState());
 
-  const clickHandler = useCallback(async () => {
+  const clickHandler = async () => {
     if (!login.isSigned) setIsLoginModalOn(true);
     else if (isParticipate) {
       history.push(`/chat/${postId}`);
@@ -48,7 +49,7 @@ export default function GroupBuyButton({
         setButtonState(true);
       }
     }
-  }, [history]);
+  };
 
   const createGroupButtonText = () => {
     if (isNeedServerTime) return '불러오는 중..';

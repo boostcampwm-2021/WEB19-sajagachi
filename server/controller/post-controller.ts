@@ -4,6 +4,7 @@ import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
 import ERROR from '../util/error';
 import session from 'express-session';
+import { getDB } from '../db/db';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
@@ -40,13 +41,19 @@ export const getPost = async (req: Request, res: Response, next: Function) => {
 };
 
 export const savePost = async (req: Request, res: Response, next: Function) => {
+  const queryRunner = (await getDB().get()).createQueryRunner();
+  await queryRunner.startTransaction();
   try {
     if (req.session.userId === undefined) next(ERROR.NOT_LOGGED_IN);
     const postId = await postService.savePost(Number(req.session.userId), req.body);
     await postService.saveUrls(req.body.urls, postId);
     await participantService.saveParticipant(Number(req.session.userId), postId);
+    await queryRunner.commitTransaction();
+    await queryRunner.release();
     res.json(postId);
   } catch (err: any) {
+    await queryRunner.rollbackTransaction();
+    await queryRunner.release();
     next(ERROR.DB_WRITE_FAIL);
   }
 };
