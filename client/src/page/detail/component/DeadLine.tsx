@@ -1,12 +1,12 @@
 import React, { useImperativeHandle, useState, forwardRef } from 'react';
 import { Typography } from '@mui/material';
 
-export type DeadLineHandle = {
+export interface DeadLineHandle {
   setDeadLine: (endTime: string) => void;
-};
+}
 
 function DeadLine(
-  { isNeedServerTime, deadline }: { isNeedServerTime: boolean; deadline: string },
+  { isNeedServerTime, deadline }: { isNeedServerTime: boolean; deadline: string | null },
   ref: React.Ref<unknown> | undefined
 ) {
   const [endTime, setEndTime] = useState(deadline ? '0일 00:00:00' : '기한 없음');

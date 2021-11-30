@@ -6,16 +6,16 @@ import { fetchPost } from '../../../util';
 import { LoginUserType } from '../../../type';
 import service from '../../../util/service';
 
-type GroupBuyButtonType = {
+interface GroupBuyButtonType {
   login: LoginUserType;
   postId: number;
   participantCnt: number;
-  capacity: number;
+  capacity: number | null;
   finished: boolean;
   isParticipate: boolean;
   isNeedServerTime: boolean;
   popError: Function;
-};
+}
 
 export default function GroupBuyButton({
   login,

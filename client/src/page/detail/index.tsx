@@ -12,62 +12,44 @@ import service from '../../util/service';
 import LoadingSpinner from '../../common/loading-spinner';
 
 interface PostType {
-  deadline: string;
   title: string;
   content: string;
   category: { name: string };
-  finished: boolean;
-  capacity: number;
-  participantCnt: number;
+  capacity: number | null;
+  deadline: string | null;
   urls: UrlType[];
+  finished: boolean;
+  participantCnt: number;
   user: UserType;
   isParticipate: boolean;
 }
 
 interface UrlType {
-  postId: number;
   url: string;
 }
 
 interface UserType {
-  id: number;
   name: string;
   img: string;
-  point: number;
 }
 
-type MatchParams = {
+interface DetailType {
   postId: string;
-};
+}
 
-export default function Detail({ match }: RouteComponentProps<MatchParams>) {
+export default function Detail({ match }: RouteComponentProps<DetailType>) {
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
   const deadLineRef = useRef<DeadLineHandle>();
   const loginUser = useLoginUser();
   const [popError, RenderError] = useError();
-  const [post, setPost] = useState<PostType>({
-    title: '',
-    content: '',
-    category: { name: '' },
-    finished: false,
-    capacity: 0,
-    deadline: '',
-    participantCnt: 0,
-    urls: [],
-    user: {
-      id: 0,
-      name: '',
-      img: '',
-      point: 0
-    },
-    isParticipate: false
-  });
+  const [post, setPost] = useState<PostType>(INITIAL_POST_STATE);
 
   useEffect(() => {
     const setEventSourve = async (es: EventSource | null) => {
       try {
         const post = await service.getPost(Number(match.params.postId));
+        console.log(post);
         if (!post.finished && post.deadline !== null) {
           es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
           es.onmessage = function (e: MessageEvent) {
@@ -223,3 +205,19 @@ const StyledBox = styled(Box)(() => ({
   marginRight: 'auto',
   maxWidth: '700px'
 }));
+
+const INITIAL_POST_STATE: PostType = {
+  title: '',
+  content: '',
+  category: { name: '' },
+  urls: [],
+  capacity: null,
+  deadline: null,
+  finished: false,
+  participantCnt: 0,
+  user: {
+    name: '',
+    img: ''
+  },
+  isParticipate: false
+};
