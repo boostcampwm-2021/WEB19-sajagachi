@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, Typography, Chip, Box, Avatar } from '@mui/material';
-import styled from '@emotion/styled';
+import { Card, CardContent } from '@mui/material';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
-import GroupBuyButton from './component/GroupBuyButton';
-import DeadLine, { DeadLineHandle } from './component/DeadLine';
-import LinkPreview from './component/LinkPreview';
-import useLoginUser from '../../hook/useLoginUser';
+import Header from './component/Header';
+import Content from './component/Content';
+import Bottom from './component/Bottom';
+import { DeadLineHandle } from './component/DeadLine';
 import useError from '../../hook/useError';
 import service from '../../util/service';
 import LoadingSpinner from '../../common/loading-spinner';
@@ -41,7 +40,6 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
   const [isLoad, setIsLoad] = useState(false);
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
   const deadLineRef = useRef<DeadLineHandle>();
-  const loginUser = useLoginUser();
   const [popError, RenderError] = useError();
   const [post, setPost] = useState<PostType>(INITIAL_POST_STATE);
 
@@ -49,7 +47,6 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
     const setEventSourve = async (es: EventSource | null) => {
       try {
         const post = await service.getPost(Number(match.params.postId));
-        console.log(post);
         if (!post.finished && post.deadline !== null) {
           es = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
           es.onmessage = function (e: MessageEvent) {
@@ -81,7 +78,6 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
         setPost({ ...post });
         setIsLoad(true);
       } catch (err: any) {
-        console.log('hello');
         setIsLoad(true);
         popError(err.message);
       }
@@ -96,95 +92,44 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
     };
   }, []);
 
+  const {
+    title,
+    content,
+    urls,
+    capacity,
+    deadline,
+    finished,
+    participantCnt,
+    isParticipate,
+    user,
+    category: { name: categoryName }
+  } = post;
   return (
     <>
       <RenderError />
       {isLoad ? (
         <div css={detailContainer}>
-          <Card
-            sx={{
-              borderRadius: 7,
-              bgcolor: '#fefafa',
-              border: '1px solid #fefafa',
-              pb: '4.5rem'
-            }}
-            variant="outlined"
-          >
+          <Card sx={ContainerCardStyle} variant="outlined">
             <CardContent>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <Typography variant="h5">{post.title}</Typography>
-                <Chip label={post.category.name} sx={{ color: 'grey' }} />
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  mt: 2
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    display: 'flex'
-                  }}
-                >
-                  <Avatar src={post.user.img} sx={{ width: 32, height: 32, marginRight: 1 }} />
-                  {post.user.name}
-                </Typography>
-                <DeadLine ref={deadLineRef} isNeedServerTime={isNeedServerTime} deadline={post.deadline} />
-              </Box>
-              <Card
-                sx={{
-                  mt: 2,
-                  minWidth: 275,
-                  minHeight: 275,
-                  bgcolor: '#ffe7e7',
-                  border: '1px solid #fefafa',
-                  borderRadius: 7
-                }}
-                variant="outlined"
-              >
-                <CardContent>
-                  <Typography variant="body2" lineHeight="2.5">
-                    {post.content}
-                  </Typography>
-                </CardContent>
-              </Card>
-              {post.urls.map((url, idx) => {
-                return <LinkPreview key={idx} url={url.url} />;
-              })}
+              <Header
+                title={title}
+                categoryName={categoryName}
+                writer={user}
+                deadline={deadline}
+                isNeedServerTime={isNeedServerTime}
+              />
+              <Content content={content} urls={urls} />
             </CardContent>
           </Card>
-          <StyledBox
-            sx={{
-              position: 'fixed',
-              bottom: 0,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-              visibility: 'visible',
-              right: 0,
-              left: 0,
-              height: '4.5rem'
-            }}
-          >
-            <Box sx={{ display: 'flex', p: 1 }}>
-              <GroupBuyButton
-                login={loginUser}
-                postId={Number(match.params.postId)}
-                participantCnt={post.participantCnt}
-                capacity={post.capacity}
-                finished={post.finished}
-                isParticipate={post.isParticipate}
-                isNeedServerTime={isNeedServerTime}
-                popError={popError}
-              />
-            </Box>
-          </StyledBox>
+          <Bottom
+            postId={Number(match.params.postId)}
+            participantCnt={participantCnt}
+            capacity={capacity}
+            finished={finished}
+            isParticipate={isParticipate}
+            isNeedServerTime={isNeedServerTime}
+            popError={popError}
+          />
         </div>
       ) : (
         <LoadingSpinner />
@@ -198,13 +143,13 @@ const detailContainer = css`
   margin-right: auto;
   max-width: 700px;
 `;
-const StyledBox = styled(Box)(() => ({
-  backgroundColor: '#ffe7e7',
+
+const ContainerCardStyle = {
+  borderRadius: 7,
+  bgcolor: '#fefafa',
   border: '1px solid #fefafa',
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  maxWidth: '700px'
-}));
+  pb: '4.5rem'
+};
 
 const INITIAL_POST_STATE: PostType = {
   title: '',
