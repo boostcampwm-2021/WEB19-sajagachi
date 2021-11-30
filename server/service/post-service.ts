@@ -33,7 +33,7 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
   const db = await getDB().get();
   let sql = `
 	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, post.lat, post.long, category.name as category
-	FROM post
+	FROM post USE INDEX (idx_location)
 	INNER JOIN category
 	ON post.categoryId = category.id
 	WHERE
