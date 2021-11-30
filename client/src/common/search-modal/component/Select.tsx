@@ -22,7 +22,7 @@ export default function Select(props: SelectProps) {
   return (
     <div>
       {props.options.map((e, i) => (
-        <SelectChip selected={props.selected[i]} onClick={() => handleSelect(i)}>
+        <SelectChip key={i} selected={props.selected[i]} onClick={() => handleSelect(i)}>
           {e}
         </SelectChip>
       ))}
