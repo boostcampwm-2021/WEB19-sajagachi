@@ -12,18 +12,25 @@ export const getParticipants = async (req: Request, res: Response, next: Functio
     next(ERROR.DB_READ_FAIL);
   }
 };
+export type ErrorType = {
+  status: number;
+  message: string;
+};
 
 export const createParticipant = async (req: Request, res: Response, next: Function) => {
   try {
-    const participantNum = await participantService.getParticipantNum(req.body.postId);
-    const capacity = await postService.getCapacity(req.body.postId);
-
-    if (capacity === undefined) throw new Error('유효하지 않은 postId 입니다.');
-    if (capacity !== null && participantNum > capacity) throw new Error('해당 공구는 정원이 가득 찼습니다.');
-
-    const createdParticipant = await participantService.saveParticipant(req.body.userId, req.body.postId);
-    processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, req.body.postId, String(req.session.userName));
-    res.json(createdParticipant);
+    const session = req.session;
+    if (!session.userId) return next(ERROR.NOT_LOGGED_IN);
+    const { post_id } = req.params;
+    const participantNum = await participantService.getParticipantNum(+post_id);
+    const capacity = await postService.getCapacity(+post_id);
+    if (capacity === undefined) return next(ERROR.INVALID_POST_ID);
+    if (capacity !== null && participantNum > capacity) res.json('해당 공구는 정원이 가득 찼습니다.');
+    else {
+      const createdParticipant = await participantService.saveParticipant(Number(session.userId), +post_id);
+      processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, +post_id, String(session.userName));
+      res.json(createdParticipant);
+    }
   } catch (err: any) {
     next(ERROR.DB_WRITE_FAIL);
   }

@@ -12,6 +12,7 @@ import LinkPreview from './component/LinkPreview';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import useLoginUser from '../../hook/useLoginUser';
+import useError from '../../hook/useError';
 
 type UrlType = {
   postId: number;
@@ -70,6 +71,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   const [isNeedServerTime, setIsNeedServerTime] = useState(true);
   const deadLineRef = useRef<DeadLineHandle>();
   const loginUser = useLoginUser();
+  const [popError, RenderError] = useError();
   const [post, setPost] = useState<PostType>({
     id: 0,
     userId: 0,
@@ -135,6 +137,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
   }, []);
   return isLoad ? (
     <div css={detailContainer}>
+      <RenderError />
       <Card
         sx={{
           borderRadius: 7,
@@ -215,6 +218,7 @@ export default function Detail({ match }: RouteComponentProps<MatchParams>) {
             finished={post.finished}
             isParticipate={post.isParticipate}
             isNeedServerTime={isNeedServerTime}
+            popError={popError}
           />
         </Box>
       </StyledBox>

@@ -5,22 +5,22 @@ const getOptions = () => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include'
   };
   return options;
 };
 
 const postOptions = () => {
   const options: RequestInit = {
-    method: 'post',
+    method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Cache: 'no-cache',
-      credentials: 'include'
-    }
+      Cache: 'no-cache'
+    },
+    credentials: 'include'
   };
   return options;
 };
@@ -71,6 +71,14 @@ const getChats = async (postId: number, cursor: number | undefined, limit: numbe
   return result;
 };
 
-const service = { getLogin, getParticipants, getTitle, postFile, getChats };
+const enterChat = async (postId: number) => {
+  const enterChatUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
+  const response = await fetch(enterChatUrl, postOptions());
+  const result = await response.json();
+  if (response.status !== 200) throw new Error(result);
+  return result;
+};
+
+const service = { getLogin, getParticipants, getTitle, postFile, getChats, enterChat };
 
 export default service;
