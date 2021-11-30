@@ -43,17 +43,15 @@ function ChatBar(props: ChatBarType) {
         aria-label="go back"
         onClick={backButtonHandler}
         sx={{
-          width: '30px',
-          height: '3.4rem',
-          marginTop: '10px',
-          marginLeft: '10px'
+          width: '2.43rem',
+          height: '2.43rem',
+          marginTop: '15px'
         }}
       >
         <ArrowBackIosNewIcon
           sx={{
-            width: '30px',
-            height: '3.4rem',
-
+            width: '1.9rem',
+            height: '1.9rem',
             color: '#FFFFFF'
           }}
         />

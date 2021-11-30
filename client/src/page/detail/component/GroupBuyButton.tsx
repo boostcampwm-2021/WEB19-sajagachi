@@ -2,18 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
-import { fetchPost } from '../../../util';
 import { LoginUserType } from '../../../type';
+import service from '../../../util/service';
 
-type GroupBuyButtonType = {
+interface GroupBuyButtonType {
   login: LoginUserType;
   postId: number;
   participantCnt: number;
-  capacity: number;
+  capacity: number | null;
   finished: boolean;
   isParticipate: boolean;
   isNeedServerTime: boolean;
-};
+  popError: Function;
+}
 
 export default function GroupBuyButton({
   login,
@@ -22,109 +23,63 @@ export default function GroupBuyButton({
   capacity,
   finished,
   isParticipate,
-  isNeedServerTime
+  isNeedServerTime,
+  popError
 }: GroupBuyButtonType) {
+  console.log(login);
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
-  const [buttonState, setButtonState] = useState(
-    checkButtonState({ isParticipate, finished, participantCnt, capacity })
-  );
+  const checkButtonState = () => {
+    if (isParticipate) return false;
+    else if (finished || (capacity && capacity <= participantCnt)) return true;
+    else return false;
+  };
+  const [buttonState, setButtonState] = useState(checkButtonState());
 
-  const clickHandler = useCallback(async () => {
+  const clickHandler = async () => {
     if (!login.isSigned) setIsLoginModalOn(true);
     else if (isParticipate) {
       history.push(`/chat/${postId}`);
     } else {
-      const postBody = {
-        userId: login.id,
-        postId
-      };
-      const url = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-      const result = await fetchPost(url, postBody);
-      if (result === '해당 공구는 정원이 가득 찼습니다.') {
-        alert(result);
+      try {
+        await service.enterChat(postId);
+        history.push(`/chat/${postId}`);
+      } catch (err: any) {
+        popError(err.message);
         setButtonState(true);
-      } else history.push(`/chat/${postId}`);
+      }
     }
-  }, [history]);
+  };
+
+  const createGroupButtonText = () => {
+    if (isNeedServerTime) return '불러오는 중..';
+    if (finished) return isParticipate ? '공구마감 / 참여중' : '모집 종료';
+    else return `${isParticipate ? '참여중' : '공동 구매'} (${participantCnt} / ${capacity ?? ' - '})`;
+  };
+
   return (
     <>
       <Button
         variant="contained"
-        disabled={
-          isNeedServerTime ||
-          checkButtonState({
-            isParticipate,
-            finished,
-            participantCnt,
-            capacity
-          })
-        }
-        sx={{
-          bgcolor: '#F76A6A',
-          ':hover': {
-            bgcolor: '#F76A6A'
-          },
-          flexGrow: 1,
-          p: 1,
-          m: 1,
-          color: 'white',
-          borderColor: '#F76A6A'
-        }}
+        disabled={isNeedServerTime || checkButtonState()}
+        sx={GroupBuyButtonStyle}
         onClick={clickHandler}
       >
-        {createGroupButtonText({
-          isNeedServerTime,
-          finished,
-          isParticipate,
-          participantCnt,
-          capacity
-        })}
+        {createGroupButtonText()}
       </Button>
       {isLoginModalOn && <LoginModal setIsLoginModalOn={setIsLoginModalOn} />}
     </>
   );
 }
 
-const checkButtonState = ({
-  isParticipate,
-  finished,
-  capacity,
-  participantCnt
-}: {
-  isParticipate: boolean;
-  finished: boolean;
-  capacity: number | null;
-  participantCnt: number;
-}) => {
-  if (isParticipate) {
-    return false;
-  } else if (finished || (capacity && capacity <= participantCnt)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const createGroupButtonText = ({
-  isNeedServerTime,
-  finished,
-  isParticipate,
-  participantCnt,
-  capacity
-}: {
-  isNeedServerTime: boolean;
-  finished: boolean;
-  isParticipate: boolean;
-  participantCnt: number;
-  capacity: number | null;
-}) => {
-  if (isNeedServerTime) {
-    return '불러오는 중..';
-  }
-  if (finished) {
-    return isParticipate ? '공구마감 / 참여중' : '모집 종료';
-  } else {
-    return `${isParticipate ? '참여중' : '공동 구매'} (${participantCnt} / ${capacity ?? ' - '})`;
-  }
+const GroupBuyButtonStyle = {
+  bgcolor: '#F76A6A',
+  ':hover': {
+    bgcolor: '#F76A6A'
+  },
+  flexGrow: 1,
+  p: 1,
+  m: 1,
+  color: 'white',
+  borderColor: '#F76A6A'
 };

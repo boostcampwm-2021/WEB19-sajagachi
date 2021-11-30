@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { parse } from 'html-metadata-parser';
 import { MetaResult, APIOutput } from '../type';
+import ERROR from '../util/error';
 
 export const parsePreviewLinkData = async (req: Request, res: Response, next: Function) => {
   try {
     let url = req.query.url as string;
 
     if (!url) {
-      next({ statusCode: 400, message: 'Invalid URL' });
+      next(ERROR.URL_INVAILD);
     }
 
     url = url.indexOf('://') === -1 ? 'http://' + url : url;
@@ -16,7 +17,7 @@ export const parsePreviewLinkData = async (req: Request, res: Response, next: Fu
       /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(url);
 
     if (!isUrlValid) {
-      next({ statusCode: 400, message: 'Invalid URL' });
+      next(ERROR.URL_INVAILD);
     }
 
     const { hostname } = new URL(url);
@@ -38,7 +39,7 @@ export const parsePreviewLinkData = async (req: Request, res: Response, next: Fu
 
     sendResponse(res, output);
   } catch (error) {
-    next({ statusCode: 500, message: 'Internal server error' });
+    next(ERROR.DATA_LOAD_FAIL);
   }
 };
 

@@ -5,27 +5,40 @@ import userService from '../service/user-service';
 import postService from '../service/post-service';
 import { getDB } from '../db/db';
 import { User } from '../model/entity/User';
+import ERROR from '../util/error';
 
 export const joinRoom = (socket: any, io: Server) => {
   socket.on('joinRoom', async (postId: number) => {
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
+    if (loginUser === undefined) {
+      socket.emit('joinError', ERROR.NOT_LOGGED_IN);
+      return;
+    }
     console.log('user: ' + loginUser.id + ' has entered room: ' + postId);
     socket.join(String(postId));
-    const joinMsg = `user ${loginUser.id} has join room ${postId}`;
-    io.to(String(postId)).emit('afterJoin', joinMsg);
 
-    const participants = await participantService.getParticipants(postId);
-    io.to(String(postId)).emit('updateParticipants', participants);
+    try {
+      const participants = await participantService.getParticipants(postId);
+      io.to(String(postId)).emit('updateParticipants', participants);
+    } catch (err: any) {
+      socket.emit('joinError', ERROR.DB_READ_FAIL);
+    }
   });
 };
 
 export const sendMsg = (socket: any, io: Server) => {
   socket.on('sendMsg', async (postId: number, msg: string) => {
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
-    chatService.saveChat(loginUser.id, postId, msg);
-    io.to(String(postId)).emit('receiveMsg', loginUser.id, loginUser.name, msg);
+    if (loginUser === undefined) {
+      socket.emit('sendError', ERROR.NOT_LOGGED_IN);
+      return;
+    }
+    try {
+      await chatService.saveChat(loginUser.id, postId, msg);
+      io.to(String(postId)).emit('receiveMsg', loginUser.id, loginUser.name, msg);
+    } catch (err: any) {
+      socket.emit('sendError', ERROR.DB_WRITE_FAIL);
+    }
   });
 };
 
@@ -35,32 +48,52 @@ export const sendImg = (io: Server, postId: number, userId: number, userName: st
 
 export const confirmPurchase = (socket: any, io: Server) => {
   socket.on('pointConfirm', async (postId: number, userId: number, sendPoint: number) => {
+    const queryRunner = (await getDB().get()).createQueryRunner();
+    await queryRunner.startTransaction();
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
-    else if (loginUser.point < sendPoint) socket.emit('purchaseError', '잔여 포인트 부족');
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', ERROR.INVALID_USER);
+    else if (loginUser.point < sendPoint) socket.emit('purchaseError', ERROR.NOT_ENOUGH_POINT);
     else {
-      userService.usePoint(loginUser.id, loginUser.point, sendPoint);
-      participantService.updatePoint(postId, loginUser.id, sendPoint);
-      io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
-      processSystemMsg(io, SYSTEM_MSG_TYPE.CONFIRM_PURCHASE, postId, loginUser.name);
+      try {
+        await userService.usePoint(loginUser.id, loginUser.point, sendPoint);
+        await participantService.updatePoint(postId, loginUser.id, sendPoint);
+        processSystemMsg(io, SYSTEM_MSG_TYPE.CONFIRM_PURCHASE, postId, loginUser.name);
+        await queryRunner.commitTransaction();
+        io.to(String(postId)).emit('purchaseConfirm', loginUser.id, sendPoint);
+      } catch (err: any) {
+        await queryRunner.rollbackTransaction();
+        socket.emit('purchaseError', ERROR.DB_WRITE_FAIL);
+      } finally {
+        await queryRunner.release();
+      }
     }
   });
 };
 
 export const cancelPurchase = (socket: any, io: Server) => {
   socket.on('pointCancel', async (postId: number, userId: number) => {
+    const queryRunner = (await getDB().get()).createQueryRunner();
+    await queryRunner.startTransaction();
     const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
-    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', '사용자 정보 에러');
+    if (loginUser === undefined || loginUser.id !== userId) socket.emit('purchaseError', ERROR.INVALID_USER);
     else {
       const participant = await participantService.getParticipant(postId, loginUser.id);
-      if (participant === undefined) socket.emit('purchaseError', '참여 정보 없음');
-      else if (participant.point === null) socket.emit('purchaseError', '제출 이력 없음');
+      if (participant === undefined) socket.emit('purchaseError', ERROR.NOT_PARTICIPANTS);
+      else if (participant.point === null) socket.emit('purchaseError', ERROR.NO_PURCHASE);
       else {
-        participantService.updatePoint(postId, loginUser.id, null);
-        userService.addPoint(loginUser.id, participant.point);
-        io.to(String(postId)).emit('purchaseCancel', loginUser.id);
-        processSystemMsg(io, SYSTEM_MSG_TYPE.CANCEL_PURCHASE, postId, loginUser.name);
+        try {
+          await participantService.updatePoint(postId, loginUser.id, null);
+          await userService.addPoint(loginUser.id, participant.point);
+          processSystemMsg(io, SYSTEM_MSG_TYPE.CANCEL_PURCHASE, postId, loginUser.name);
+          await queryRunner.commitTransaction();
+          io.to(String(postId)).emit('purchaseCancel', loginUser.id);
+        } catch (err: any) {
+          console.log('취소가 안된다고?');
+          await queryRunner.rollbackTransaction();
+          socket.emit('purchaseError', ERROR.DB_WRITE_FAIL);
+        } finally {
+          await queryRunner.release();
+        }
       }
     }
   });
@@ -68,76 +101,106 @@ export const cancelPurchase = (socket: any, io: Server) => {
 
 export const kickUser = (socket: any, io: Server) => {
   socket.on('kickUser', async (postId: number, targetUserId: number) => {
-    const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
+    const queryRunner = (await getDB().get()).createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      const loginUser = await checkSession(socket);
+      if (loginUser === undefined) {
+        socket.emit('kickError', ERROR.NOT_LOGGED_IN);
+        return;
+      }
 
-    const myId = loginUser.id;
-    const hostId = await postService.getHost(+postId);
+      const myId = loginUser.id;
+      const hostId = await postService.getHost(+postId);
 
-    // 권한 체크
-    if (myId !== hostId || hostId === targetUserId) {
-      return; // no authority
+      // 권한 체크
+      if (myId !== hostId || hostId === targetUserId) {
+        socket.emit('kickError', ERROR.INVALID_USER);
+        return; // no authority
+      }
+
+      // 타깃 유저를 찾기
+      const targetUser = await participantService.getParticipant(postId, targetUserId);
+      if (!targetUser) {
+        socket.emit('kickError', ERROR.INVALID_USER);
+        return; // target user not exists
+      }
+      const banUser = await userService.findById(targetUserId);
+      if (!banUser) {
+        socket.emit('kickError', ERROR.INVALID_USER);
+        return; // target user not exists
+      }
+
+      // 타깃 유저에게 포인트 반환
+      const { point } = targetUser;
+      if (point) userService.addPoint(targetUserId, point);
+
+      // 타깃 유저를 참여자 테이블에서 제거
+      await participantService.deleteParticipant(postId, targetUserId);
+
+      // 변경된 참여자 리스트를 클라이언트에 반환
+      const participants = await participantService.getParticipants(postId);
+      processSystemMsg(io, SYSTEM_MSG_TYPE.KICKED, postId, banUser.name);
+      await queryRunner.commitTransaction();
+
+      io.to(String(postId)).emit('updateParticipants', participants);
+
+      // 강제퇴장 당한 클라이언트에게 이벤트 전달
+      io.to(String(postId)).emit('getOut', targetUserId);
+    } catch (err: any) {
+      await queryRunner.rollbackTransaction();
+      socket.emit('kickError', ERROR.DB_WRITE_FAIL);
+    } finally {
+      queryRunner.release();
     }
-
-    // 타깃 유저를 찾기
-    const targetUser = await participantService.getParticipant(postId, targetUserId);
-    if (!targetUser) {
-      return; // target user not exists
-    }
-    const banUser = await userService.findById(targetUserId);
-    if (!banUser) {
-      return; // target user not exists
-    }
-
-    // 타깃 유저에게 포인트 반환
-    const { point } = targetUser;
-    if (point) userService.addPoint(targetUserId, point);
-
-    // 타깃 유저를 참여자 테이블에서 제거
-    await participantService.deleteParticipant(postId, targetUserId);
-
-    // 변경된 참여자 리스트를 클라이언트에 반환
-    const participants = await participantService.getParticipants(postId);
-    io.to(String(postId)).emit('updateParticipants', participants);
-    processSystemMsg(io, SYSTEM_MSG_TYPE.KICKED, postId, banUser.name);
-
-    // 강제퇴장 당한 클라이언트에게 이벤트 전달
-    io.to(String(postId)).emit('getOut', targetUserId);
   });
 };
 
 export const quitRoom = (socket: any, io: Server) => {
   socket.on('quitRoom', async (postId: number) => {
-    const loginUser = await checkSession(socket);
-    if (loginUser === undefined) return;
+    const queryRunner = (await getDB().get()).createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      const loginUser = await checkSession(socket);
+      if (loginUser === undefined) {
+        socket.emit('quitError', ERROR.NOT_LOGGED_IN);
+        return;
+      }
 
-    // 호스트가 나가는 경우를 방지
-    const hostId = await postService.getHost(+postId);
-    if (loginUser.id === hostId) return;
+      // 호스트가 나가는 경우를 방지
+      const hostId = await postService.getHost(+postId);
+      if (loginUser.id === hostId) return;
 
-    const myId = loginUser.id;
+      const myId = loginUser.id;
 
-    // 공동 구매가 끝난 채팅방을 나갈 수 없음
-    const { finished } = await postService.getFinished(+postId);
-    if (finished) return;
+      // 공동 구매가 끝난 채팅방을 나갈 수 없음
+      const { finished } = await postService.getFinished(+postId);
+      if (finished) return;
 
-    // 타깃 유저를 찾기
-    const targetUser = await participantService.getParticipant(postId, myId);
-    if (!targetUser) {
-      return; // target user not exists
+      // 타깃 유저를 찾기
+      const targetUser = await participantService.getParticipant(postId, myId);
+      if (!targetUser) {
+        return; // target user not exists
+      }
+
+      // 타깃 유저에게 포인트 반환
+      const { point } = targetUser;
+      if (point) userService.addPoint(myId, point);
+
+      // 타깃 유저를 참여자 테이블에서 제거
+      await participantService.deleteParticipant(postId, myId);
+
+      // 변경된 참여자 리스트를 클라이언트에 반환
+      const participants = await participantService.getParticipants(postId);
+      io.to(String(postId)).emit('updateParticipants', participants);
+      processSystemMsg(io, SYSTEM_MSG_TYPE.QUIT, postId, loginUser.name);
+      await queryRunner.commitTransaction();
+    } catch (err: any) {
+      await queryRunner.rollbackTransaction();
+      socket.emit('quitError', ERROR.DB_WRITE_FAIL);
+    } finally {
+      queryRunner.release();
     }
-
-    // 타깃 유저에게 포인트 반환
-    const { point } = targetUser;
-    if (point) userService.addPoint(myId, point);
-
-    // 타깃 유저를 참여자 테이블에서 제거
-    await participantService.deleteParticipant(postId, myId);
-
-    // 변경된 참여자 리스트를 클라이언트에 반환
-    const participants = await participantService.getParticipants(postId);
-    io.to(String(postId)).emit('updateParticipants', participants);
-    processSystemMsg(io, SYSTEM_MSG_TYPE.QUIT, postId, loginUser.name);
   });
 };
 
@@ -155,7 +218,7 @@ export const finishRoom = (socket: any, io: Server) => {
       io.to(String(postId)).emit('finishPost');
     } catch (err: any) {
       await queryRunner.rollbackTransaction();
-      socket.emit('finishError', '정상적으로 종료되지 않았습니다.');
+      socket.emit('finishError', ERROR.DB_WRITE_FAIL);
     } finally {
       await queryRunner.release();
     }
@@ -189,9 +252,9 @@ const createSystemMsg = (msgType: number, userName: string) => {
   }
 };
 
-export const processSystemMsg = (io: Server, type: number, postId: number, userName: string) => {
+export const processSystemMsg = async (io: Server, type: number, postId: number, userName: string) => {
   const msg = createSystemMsg(type, userName);
-  chatService.saveChat(SYSTEM_ID, postId, msg);
+  await chatService.saveChat(SYSTEM_ID, postId, msg);
   io.to(String(postId)).emit('receiveMsg', SYSTEM_ID, SYSTEM_NAME, msg);
 };
 

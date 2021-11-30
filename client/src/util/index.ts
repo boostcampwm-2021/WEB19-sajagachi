@@ -93,7 +93,10 @@ export const getAddressByGeocode = (lat: number, lng: number) => {
     if (!naver.maps.Service) reject('map service error');
     const location = new naver.maps.LatLng(lat, lng);
     naver.maps.Service.reverseGeocode({ location }, (status, response) => {
-      if (status !== naver.maps.Service.Status.OK) reject('map service error');
+      if (status !== naver.maps.Service.Status.OK || !response.result.items.length) {
+        reject('map service error');
+        return;
+      }
       resolve(response.result.items[0].address);
     });
   });
@@ -118,4 +121,19 @@ export const getDistance = (lat1: number, lng1: number, lat2: number, lng2: numb
 
   const dist = 2 * R * Math.asin(sqrt);
   return dist;
+};
+
+export const isImage = (filename: string) => {
+  const reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+  if (filename.match(reg) === null) return false;
+  return true;
+};
+
+export const getRemainingDay = (fromTime: Date, toTime: Date) => {
+  const remainingTime = fromTime.getTime() - toTime.getTime();
+  const seconds = ('0' + Math.floor((remainingTime / 1000) % 60)).slice(-2);
+  const minutes = ('0' + Math.floor((remainingTime / 1000 / 60) % 60)).slice(-2);
+  const hours = ('0' + Math.floor((remainingTime / (1000 * 60 * 60)) % 24)).slice(-2);
+  const days = '' + Math.floor(remainingTime / (1000 * 60 * 60) / 24);
+  return { days, hours, minutes, seconds };
 };

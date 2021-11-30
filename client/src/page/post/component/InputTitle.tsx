@@ -18,26 +18,12 @@ const inputTitle = css`
     'Helvetica Neue', sans-serif;
 `;
 
-interface TitleState {
-  title: string;
-  setTitle: (title: string) => void;
+interface TitleStateType {
+  title: React.MutableRefObject<HTMLInputElement | null>;
 }
 
-function InputTitle({ title, setTitle }: TitleState) {
-  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTitle(e.target.value);
-  }
-
-  return (
-    <input
-      type="text"
-      name="title"
-      css={inputTitle}
-      placeholder="Title"
-      onChange={handleTitleChange}
-      value={title}
-    ></input>
-  );
+function InputTitle({ title }: TitleStateType) {
+  return <input type="text" name="title" css={inputTitle} placeholder="Title" ref={title}></input>;
 }
 
 export default React.memo(InputTitle);

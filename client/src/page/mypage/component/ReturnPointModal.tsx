@@ -1,9 +1,55 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { Button } from '@mui/material';
-import { fetchPost } from '../../../util';
 import { useRecoilValue } from 'recoil';
 import { loginUserState } from '../../../store/login';
+import useError from '../../../hook/useError';
+import service from '../../../util/service';
+
+type ReturnPointModalProps = {
+  onClose: () => void;
+  updateUser: () => Promise<void>;
+};
+
+export default function ReturnPointModal(props: ReturnPointModalProps) {
+  const loginUser = useRecoilValue(loginUserState);
+  const [point, setPoint] = useState('');
+  const [popError, RenderError] = useError();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPoint(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    service
+      .updatePoint(loginUser.id, -point)
+      .then(() => {
+        props.updateUser();
+        props.onClose();
+      })
+      .catch(err => popError(err.message));
+  };
+
+  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) props.onClose();
+  };
+
+  return (
+    <div css={PointModalBgStyle} onClick={handleOutsideClick}>
+      <RenderError />
+      <div css={PointModalStyle}>
+        <h1 css={TitleStyle}>포인트 반환</h1>
+        <form onSubmit={handleSubmit}>
+          <input type="number" value={point} onChange={handleChange} css={InputNumberStyle} min="1" step="1" required />
+          <Button type="submit" css={SubmitStyle}>
+            반환
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 const PointModalBgStyle = css`
   position: fixed;
@@ -13,6 +59,7 @@ const PointModalBgStyle = css`
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
+  z-index: 1;
 `;
 
 const PointModalStyle = css`
@@ -64,44 +111,3 @@ const SubmitStyle = css`
     background-color: #fdafab;
   }
 `;
-
-type ReturnPointModalProps = {
-  onClose: () => void;
-  updateUser: () => Promise<void>;
-};
-
-export default function ReturnPointModal(props: ReturnPointModalProps) {
-  const loginUser = useRecoilValue(loginUserState);
-  const [point, setPoint] = useState('');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPoint(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const url = `${process.env.REACT_APP_SERVER_URL}/api/user/${loginUser.id}/point`;
-    fetchPost(url, { point: -point }).then(() => {
-      props.updateUser();
-      props.onClose();
-    });
-  };
-
-  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) props.onClose();
-  };
-
-  return (
-    <div css={PointModalBgStyle} onClick={handleOutsideClick}>
-      <div css={PointModalStyle}>
-        <h1 css={TitleStyle}>포인트 반환</h1>
-        <form onSubmit={handleSubmit}>
-          <input type="number" value={point} onChange={handleChange} css={InputNumberStyle} min="1" step="1" required />
-          <Button type="submit" css={SubmitStyle}>
-            반환
-          </Button>
-        </form>
-      </div>
-    </div>
-  );
-}

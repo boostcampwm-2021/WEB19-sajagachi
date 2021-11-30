@@ -21,6 +21,7 @@ const ItemStyle = css`
   height: 120px;
   margin-bottom: 15px;
   border-radius: 10px;
+  background-color: #ffffff;
   box-shadow: 3px 3px 8px 1px #bbbbbb;
 `;
 

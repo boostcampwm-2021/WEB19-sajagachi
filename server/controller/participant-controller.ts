@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { getDB } from '../db/db';
 import participantService from '../service/participant-service';
 import postService from '../service/post-service';
 import { SYSTEM_MSG_TYPE, processSystemMsg } from '../socket/chat';
@@ -12,19 +13,34 @@ export const getParticipants = async (req: Request, res: Response, next: Functio
     next(ERROR.DB_READ_FAIL);
   }
 };
+export type ErrorType = {
+  status: number;
+  message: string;
+};
 
 export const createParticipant = async (req: Request, res: Response, next: Function) => {
+  const queryRunner = (await getDB().get()).createQueryRunner();
+  await queryRunner.startTransaction();
   try {
-    const participantNum = await participantService.getParticipantNum(req.body.postId);
-    const capacity = await postService.getCapacity(req.body.postId);
-
-    if (capacity === undefined) throw new Error('유효하지 않은 postId 입니다.');
-    if (capacity !== null && participantNum > capacity) throw new Error('해당 공구는 정원이 가득 찼습니다.');
-
-    const createdParticipant = await participantService.saveParticipant(req.body.userId, req.body.postId);
-    processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, req.body.postId, String(req.session.userName));
-    res.json(createdParticipant);
+    const session = req.session;
+    if (!session.userId) return next(ERROR.NOT_LOGGED_IN);
+    const { post_id } = req.params;
+    const result = await postService.getFinished(+post_id);
+    if (result.finished) return next(ERROR.ENTER_FAIL_FINISHED);
+    const participantNum = await participantService.getParticipantNum(+post_id);
+    const capacity = await postService.getCapacity(+post_id);
+    if (capacity === undefined) return next(ERROR.INVALID_POST_ID);
+    if (capacity !== null && participantNum > capacity) return next(ERROR.ENTER_FAIL_FINISHED);
+    else {
+      const createdParticipant = await participantService.saveParticipant(Number(session.userId), +post_id);
+      processSystemMsg(req.app.get('io'), SYSTEM_MSG_TYPE.JOIN, +post_id, String(session.userName));
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+      res.json(createdParticipant);
+    }
   } catch (err: any) {
+    await queryRunner.rollbackTransaction();
+    await queryRunner.release();
     next(ERROR.DB_WRITE_FAIL);
   }
 };

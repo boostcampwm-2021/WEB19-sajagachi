@@ -9,6 +9,7 @@ router.get('/', (req: Request, res: Response) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
+  res.write(`data: ${Date.now().toString()}\n\n`);
 
   const interValID = setInterval(() => {
     res.write(`data: ${Date.now().toString()}\n\n`);

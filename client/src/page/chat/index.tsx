@@ -4,24 +4,18 @@ import ChatBar from './component/ChatBar';
 import ChatInput from './component/ChatInput';
 import ChatList from './component/ChatList';
 import io from 'socket.io-client';
-
-import { fetchGet, getCurrentTime, parsePath } from '../../util';
+import { parsePath } from '../../util';
 import { ParticipantType, UserInfoType } from '../../type';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
 import Alert from '../../common/alert';
-
-const ChatContainer = css`
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-  height: 100%;
-  position: relative;
-`;
+import useError from '../../hook/useError';
+import service from '../../util/service';
 
 function Chat() {
   const history = useHistory();
+  const [popError, RenderError] = useError();
   const postId = Number(parsePath(window.location.pathname).slice(-1)[0]);
   const socketRef = useRef<any>(io(String(process.env.REACT_APP_SERVER_URL), { withCredentials: true }));
   const [userMe, setUserMe] = useState<UserInfoType>();
@@ -30,34 +24,36 @@ function Chat() {
   const [isAlertOn, setIsAlertOn] = useState(false);
   const [title, setTitle] = useState('');
   const updateParticipants = async (postId: number) => {
-    const loginUrl = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-    const userLogin = loginUser.isSigned ? loginUser : await fetchGet(loginUrl);
-    if (!loginUser.isSigned) {
-      if (isNaN(userLogin.id)) {
-        history.push(`/post/${postId}`);
-      } else
-        setLoginUser({
-          id: userLogin.id,
-          name: userLogin.name,
-          isSigned: true
+    try {
+      const userLogin = loginUser.isSigned ? loginUser : await service.getLogin();
+
+      if (!loginUser.isSigned) {
+        if (isNaN(userLogin.id)) {
+          history.push(`/post/${postId}`);
+        } else
+          setLoginUser({
+            id: userLogin.id,
+            name: userLogin.name,
+            isSigned: true
+          });
+      }
+      const result = await service.getParticipants(postId);
+
+      const participantMe = result.find((participant: ParticipantType) => participant.user.id === userLogin.id);
+      if (participantMe === undefined) history.goBack();
+
+      if (participantMe !== undefined) {
+        setChatSocket();
+        const resultTitle = await service.getTitle(postId);
+        setTitle(resultTitle);
+        setUserMe({
+          userId: participantMe.user.id,
+          userName: participantMe.user.name
         });
-    }
-    const participantUrl = `${process.env.REACT_APP_SERVER_URL}/api/chat/${postId}/participant`;
-    const result = await fetchGet(participantUrl);
-
-    const participantMe = result.find((participant: ParticipantType) => participant.user.id === userLogin.id);
-    if (participantMe === undefined) history.goBack();
-
-    if (participantMe !== undefined) {
-      setChatSocket();
-      const titleUrl = `${process.env.REACT_APP_SERVER_URL}/api/post/${postId}/title`;
-      const resultTitle = await fetchGet(titleUrl);
-      setTitle(resultTitle);
-      setUserMe({
-        userId: participantMe.user.id,
-        userName: participantMe.user.name
-      });
-      setParticipants(result);
+        setParticipants(result);
+      }
+    } catch (err: any) {
+      popError(err.message);
     }
   };
 
@@ -67,13 +63,9 @@ function Chat() {
 
   useEffect(() => {
     updateParticipants(postId);
-    socketRef.current.on('afterJoin', (msg: string) => {
-      console.log(msg);
-    });
     socketRef.current.on('updateParticipants', (list: ParticipantType[]) => {
       setParticipants(list);
     });
-
     socketRef.current.on('purchaseConfirm', (confirmUserId: number, sendPoint: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -82,7 +74,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('purchaseCancel', (cancelUserId: number) => {
       setParticipants(prev => {
         const newParticipants = [...prev];
@@ -91,7 +82,6 @@ function Chat() {
         return newParticipants;
       });
     });
-
     socketRef.current.on('getOut', (targetUserId: number) => {
       if (loginUser.id === targetUserId) {
         setIsAlertOn(true);
@@ -106,16 +96,25 @@ function Chat() {
   const handleAlertClose = () => {
     history.goBack();
   };
-
   return (
     <div css={ChatContainer}>
+      <RenderError />
       {participants && <ChatBar title={title} socket={socketRef.current} participants={participants} />}
-      {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} />}
-      {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} />}
+      {userMe && <ChatList postId={postId} user={userMe} socket={socketRef.current} popError={popError} />}
+      {userMe && <ChatInput socket={socketRef.current} postId={postId} user={userMe} popError={popError} />}
       <Alert on={isAlertOn} title="강제 퇴장" onClose={handleAlertClose}>
         호스트가 당신을 내보냈습니다.
       </Alert>
     </div>
   );
 }
+
+const ChatContainer = css`
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  height: 100%;
+  position: relative;
+`;
+
 export default Chat;

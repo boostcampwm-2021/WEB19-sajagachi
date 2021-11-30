@@ -1,32 +1,34 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
-
+import { ERROR } from '../../../util/error-message';
 import IconButton from '@mui/material/IconButton';
+import { isImage } from '../../../util';
+import service from '../../../util/service';
 
 type ChatInputType = {
   socket: any;
   postId: number;
   user: UserInfoType;
+  popError: Function;
 };
 
 function ChatInput(props: ChatInputType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const uploadFile = async (event: any) => {
-    const img = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', img);
-    const options = {
-      method: 'POST',
-      credentials: 'include' as RequestCredentials,
-      body: formData
-    };
-    const res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/chat/upload/${props.postId}`, options);
-    console.log(await res.json());
+    try {
+      const img = event.target.files[0];
+      if (!isImage(img.name)) throw new Error(ERROR.FILE_TYPE);
+      if (img.size > 2 * 1024 * 1024) throw new Error(ERROR.FILE_SIZE);
+      const formData = new FormData();
+      formData.append('file', img);
+      service.postFile(props.postId, formData);
+    } catch (err: any) {
+      props.popError(err.message);
+    }
   };
   const checkEnter = (event: KeyboardEvent) => {
     return event.code === 'Enter' || event.code === 'NumpadEnter';
@@ -52,7 +54,7 @@ function ChatInput(props: ChatInputType) {
 
   return (
     <div css={ChatInputDiv}>
-      <input accept=".png, .jpg" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
+      <input accept="file" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
       <IconButton aria-label="image add" sx={{ width: '40px', height: '40px' }} onClick={imgUpload}>
         <AddCircleIcon
           sx={{
@@ -91,7 +93,6 @@ function ChatInput(props: ChatInputType) {
   );
 }
 const ChatInputStyle = css`
-  /* margin-top: 5px; */
   margin: 5px 5px 0px 5px;
   width: 80%;
   height: 30px;

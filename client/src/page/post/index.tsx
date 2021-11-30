@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { locationState } from '../../store/location';
@@ -17,6 +17,9 @@ import { fetchGet, fetchPost } from '../../util';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
 import LoginModal from '../../common/login-modal';
+import useError from '../../hook/useError';
+import { ERROR } from '../../util/error-message';
+import service from '../../util/service';
 
 const URL_REGX: RegExp = /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
@@ -86,20 +89,16 @@ const capacityDeadline = css`
 function Post() {
   const history = useHistory();
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+
+  const title = useRef<HTMLInputElement>(null);
+  const content = useRef<HTMLTextAreaElement>(null);
+
   const [urls, setUrls] = useState<string[]>(['']);
   const [category, setCategory] = useState<number | null>(null);
   const [capacity, setCapacity] = useState<number>(0);
   const [deadline, setDeadline] = useState<Date | null>(null);
-  const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
+  const [popError, RenderError] = useError();
   const currentLocation = useRecoilValue(locationState);
-  console.log(deadline);
-
-  useEffect(() => {
-    if (title && content && category !== null) setBtnDisabled(false);
-    else setBtnDisabled(true);
-  }, [title, content, category]);
 
   useEffect(() => {
     if (!loginUser.isSigned) {
@@ -112,6 +111,7 @@ function Post() {
             isSigned: true
           });
         } else {
+          popError(ERROR.NOT_LOGGED_IN);
           history.push('/');
         }
       });
@@ -122,25 +122,27 @@ function Post() {
     return <div css={horizonLine}></div>;
   });
 
-  function createPost(validUrls: string[]) {
+  const createPost = async (validUrls: string[]) => {
     const deadlineDate = deadline
       ? new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate() + 1)
       : deadline;
     const body = {
-      userId: loginUser.id,
       categoryId: category,
-      title: title,
-      content: content,
+      title: title.current?.value,
+      content: content.current?.value,
       capacity: capacity,
       deadline: deadlineDate,
       lat: currentLocation.lat,
       long: currentLocation.lng,
       urls: validUrls
     };
-    fetchPost(`${process.env.REACT_APP_SERVER_URL}/api/post/`, body).then(data => {
-      history.push(`/post/${data}`);
-    });
-  }
+    try {
+      const postId = await service.createPost(body);
+      history.replace(`/post/${postId}`);
+    } catch (err: any) {
+      popError(err.message);
+    }
+  };
 
   function handleUrlAddClick(e: React.MouseEvent<HTMLButtonElement>) {
     setUrls([...urls, '']);
@@ -153,8 +155,10 @@ function Post() {
   }
 
   function handleFinishClick(e: React.MouseEvent<HTMLButtonElement>) {
-    if (checkUrlValid()) {
-      alert('올바르지 않은 url 형식입니다');
+    if (!(title.current?.value && content.current?.value && category !== null)) {
+      popError(ERROR.NOT_ENOUGH_INPUT);
+    } else if (checkUrlValid()) {
+      popError(ERROR.INVALID_URL);
     } else {
       const validUrls = new Set(urls.filter(x => x !== ''));
       createPost(Array.from(validUrls));
@@ -163,34 +167,31 @@ function Post() {
 
   return (
     <div css={postContainer}>
-      <InputTitle title={title} setTitle={setTitle} />
+      <RenderError />
+      <InputTitle title={title} />
       <Line />
-      <InputContent content={content} setContent={setContent} />
+      <InputContent content={content} />
       {urls.map((url, idx) => (
         <InputUrl idx={idx} urls={urls} setUrls={setUrls} />
       ))}
       <IconButton sx={{ ml: 'auto', mr: 'auto' }} onClick={handleUrlAddClick}>
         <AddBoxIcon css={urlAddIcon} />
       </IconButton>
-      <CheckCategory category={category} setCategory={setCategory} />
+      <CheckCategory category={category} setCategory={setCategory} popError={popError} />
       <div css={capacityDeadline}>
         <SelectCapacity capacity={capacity} setCapacity={setCapacity} />
         <DateDeadline deadline={deadline} setDeadline={setDeadline} />
       </div>
-      <Tooltip TransitionComponent={Zoom} title="제목, 내용, 카테고리를 입력하셔야 합니다.">
-        <span css={finishButton}>
-          <Button
-            style={{
-              backgroundColor: `${btnDisabled ? '#dddddd' : '#ebabab'}`,
-              color: 'white'
-            }}
-            onClick={handleFinishClick}
-            disabled={btnDisabled}
-          >
-            등록
-          </Button>
-        </span>
-      </Tooltip>
+      <Button
+        style={{
+          backgroundColor: '#ebabab',
+          color: 'white'
+        }}
+        css={finishButton}
+        onClick={handleFinishClick}
+      >
+        등록
+      </Button>
     </div>
   );
 }
