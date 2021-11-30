@@ -25,18 +25,7 @@ export default function Bottom({
 }: BottomType) {
   const loginUser = useLoginUser();
   return (
-    <StyledBox
-      sx={{
-        position: 'fixed',
-        bottom: 0,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        visibility: 'visible',
-        right: 0,
-        left: 0,
-        height: '4.5rem'
-      }}
-    >
+    <StyledBox>
       <Box sx={{ display: 'flex', p: 1 }}>
         <GroupBuyButton
           login={loginUser}
@@ -58,5 +47,13 @@ const StyledBox = styled(Box)(() => ({
   border: '1px solid #fefafa',
   marginLeft: 'auto',
   marginRight: 'auto',
-  maxWidth: '700px'
+  maxWidth: '700px',
+  position: 'fixed',
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+  visibility: 'visible',
+  right: 0,
+  left: 0,
+  bottom: 0,
+  height: '4.5rem'
 }));

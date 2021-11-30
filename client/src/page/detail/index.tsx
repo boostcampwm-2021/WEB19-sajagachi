@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@mui/material';
 import { RouteComponentProps } from 'react-router-dom';
 import { css } from '@emotion/react';
-import Header from './component/Header';
-import Content from './component/Content';
+import Header, { UserType } from './component/Header';
+import Content, { UrlType } from './component/Content';
 import Bottom from './component/Bottom';
 import { DeadLineHandle } from './component/DeadLine';
 import LoadingSpinner from '../../common/loading-spinner';
@@ -22,15 +22,6 @@ interface PostType {
   participantCnt: number;
   user: UserType;
   isParticipate: boolean;
-}
-
-interface UrlType {
-  url: string;
-}
-
-interface UserType {
-  name: string;
-  img: string;
 }
 
 interface DetailType {
