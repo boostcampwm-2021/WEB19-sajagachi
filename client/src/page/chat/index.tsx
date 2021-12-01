@@ -59,7 +59,7 @@ function Chat() {
 
   const setChatSocket = () => {
     socketRef.current.emit('joinRoom', postId);
-    socketRef.current.on('joinError', err => history.replace('/error'));
+    socketRef.current.on('joinError', () => history.replace('/error'));
   };
 
   useEffect(() => {
@@ -90,6 +90,11 @@ function Chat() {
     });
 
     return () => {
+      socketRef.current.off('joinError');
+      socketRef.current.off('updateParticipants');
+      socketRef.current.off('purchaseConfirm');
+      socketRef.current.off('purchaseCancel');
+      socketRef.current.off('getOut');
       socketRef.current.disconnect();
     };
   }, []);
