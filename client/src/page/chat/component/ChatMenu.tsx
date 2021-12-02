@@ -88,7 +88,7 @@ export function ChatMenu(props: propsType) {
     <div css={ChatMenuStyle}>
       <RenderError />
       <Close css={CloseBtnStyle} onClick={() => props.onCloseBtnClicked()} />
-      <UserList socket={props.socket} hostId={hostId} participants={props.participants} />
+      <UserList socket={props.socket} hostId={hostId} participants={props.participants} popError={popError} />
       {
         [
           <FinishedPointView />,
