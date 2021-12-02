@@ -16,7 +16,6 @@ import { Url } from './Url';
 import { WishList } from './WishList';
 
 @Entity()
-@Index('idx_location', ['lat', 'long'])
 export class Post {
   @PrimaryGeneratedColumn()
   id!: number;
