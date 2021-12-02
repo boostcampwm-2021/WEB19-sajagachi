@@ -35,7 +35,7 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
     );
   };
 
-  const { data = [], error, size, setSize } = useSWRInfinite(getKey, fetcher, { initialSize: 0, revalidateAll: true });
+  const { data = [], error, size, setSize } = useSWRInfinite(getKey, fetcher, { initialSize: 0, revalidateAll: false });
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
   const isEmpty = data?.[0]?.result.length === 0;

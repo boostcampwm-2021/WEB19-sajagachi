@@ -33,9 +33,9 @@ const getPosts = async ({ nextCursor, limit, category, finished, search, lat, lo
   const db = await getDB().get();
   let subSql = `
   SELECT id
-  FROM post use index (idx_id_location)
-  WHERE ${nextCursor ? `post.id < ${nextCursor}`: `post.id > 0`} AND
-    post.lat > ${lat} - 0.009094341 AND post.lat > ${lat} + 0.009094341 AND
+  FROM post FORCE INDEX (idx_id_location)
+  WHERE ${nextCursor ? `post.id < ${nextCursor}` : `post.id > 0`} AND
+    post.lat > ${lat} - 0.009094341 AND post.lat < ${lat} + 0.009094341 AND
     post.long > ${long} - 0.0112688753 AND post.long < ${long} + 0.0112688753`;
   let sql = `
 	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, post.lat, post.long, category.name as category
@@ -53,13 +53,8 @@ const getPosts = async ({ nextCursor, limit, category, finished, search, lat, lo
   }
 
   if (search) condition.push(`post.title LIKE "%${search}%"`);
+  if (category) condition.push(`post.categoryId IN (${category})`);
 
-  let categories: string[] = [];
-  if (category) categories = category.split(',');
-  categories = categories.map(category => {
-    return `post.categoryId = ${category}`;
-  });
-  if (categories.length !== 0) condition.push(' (' + categories.join(' OR ') + ') ');
   sql += condition.length ? ' WHERE ' + condition.join(' AND ') : '';
   sql += ` LIMIT ${limit}`;
   const result = await db.manager.query(sql);
