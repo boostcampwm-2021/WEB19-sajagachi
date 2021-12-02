@@ -9,14 +9,24 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
   const location = useRecoilValue(locationState);
 
   const getKey = (pageIndex: number, previousPageData: any) => {
-    if (previousPageData && !previousPageData.length) {
+    if (previousPageData && !previousPageData.result) {
       return null;
     }
     const filter = decomposeQueryString(window.location.search);
+    if (pageIndex === 0)
+      return (
+        `${process.env.REACT_APP_SERVER_URL}/api/post?` +
+        createQueryString({
+          limit: POST_LIMIT_SIZE,
+          lat: location.lat,
+          long: location.lng,
+          ...filter
+        })
+      );
     return (
       `${process.env.REACT_APP_SERVER_URL}/api/post?` +
       createQueryString({
-        offset: pageIndex * POST_LIMIT_SIZE,
+        nextCursor: previousPageData.nextCursor,
         limit: POST_LIMIT_SIZE,
         lat: location.lat,
         long: location.lng,
@@ -28,12 +38,8 @@ const useMainInfinite = ({ fetcher, loader }: { fetcher: any; loader: RefObject<
   const { data = [], error, size, setSize } = useSWRInfinite(getKey, fetcher, { initialSize: 0, revalidateAll: true });
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
-  const isEmpty = data?.[0]?.length === 0;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < POST_LIMIT_SIZE);
-
-  useEffect(() => {
-    if (isReachingEnd && observerRef.current && loader.current) observerRef.current.unobserve(loader.current);
-  }, [isReachingEnd]);
+  const isEmpty = data?.[0]?.result.length === 0;
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.result.length < POST_LIMIT_SIZE);
 
   useEffect(() => {
     if (isReachingEnd && observerRef.current && loader.current) observerRef.current.unobserve(loader.current);

@@ -1,5 +1,5 @@
 export type getPostsOption = {
-  offset: number | undefined;
+  nextCursor: number | undefined;
   limit: number | undefined;
   category: string | undefined;
   finished: boolean | undefined;

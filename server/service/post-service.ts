@@ -28,18 +28,22 @@ const saveUrls = async (urls: string[], postId: number): Promise<void> => {
   }
 };
 
-const getPosts = async ({ offset, limit, category, finished, search, lat, long }: getPostsOption) => {
-  if (!(offset && limit)) throw new Error('offset 과 limit은 지정해주어야 합니다.');
+const getPosts = async ({ nextCursor, limit, category, finished, search, lat, long }: getPostsOption) => {
+  if (!limit) throw new Error('offset 과 limit은 지정해주어야 합니다.');
   const db = await getDB().get();
+  let subSql = `
+  SELECT id
+  FROM post use index (idx_id_location)
+  WHERE ${nextCursor ? `post.id < ${nextCursor}`: `post.id > 0`} AND
+    post.lat > ${lat} - 0.009094341 AND post.lat > ${lat} + 0.009094341 AND
+    post.long > ${long} - 0.0112688753 AND post.long < ${long} + 0.0112688753`;
   let sql = `
 	SELECT post.id, post.title, post.content, post.capacity, post.deadline, post.finished, post.lat, post.long, category.name as category
-	FROM post USE INDEX (idx_location)
-	INNER JOIN category
-	ON post.categoryId = category.id
-	WHERE
-	post.lat BETWEEN ${lat} - 0.009094341 AND ${lat} + 0.009094341 AND
-    post.long BETWEEN ${long} - 0.0112688753 AND ${long} + 0.0112688753
-	`;
+	FROM (${subSql}) AS filtered_post
+  LEFT JOIN post
+  ON filtered_post.id = post.id
+	LEFT JOIN category
+	ON post.categoryId = category.id`;
   const condition = [];
 
   if (finished !== undefined) {
@@ -47,6 +51,7 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
     if (String(finished) === 'false') option = ' NOT' + option;
     condition.push(option);
   }
+
   if (search) condition.push(`post.title LIKE "%${search}%"`);
 
   let categories: string[] = [];
@@ -55,9 +60,8 @@ const getPosts = async ({ offset, limit, category, finished, search, lat, long }
     return `post.categoryId = ${category}`;
   });
   if (categories.length !== 0) condition.push(' (' + categories.join(' OR ') + ') ');
-  sql += condition.length ? ' AND ' + condition.join(' AND ') : '';
-  sql += ' ORDER BY post.id DESC';
-  sql += ` LIMIT ${offset}, ${limit}`;
+  sql += condition.length ? ' WHERE ' + condition.join(' AND ') : '';
+  sql += ` LIMIT ${limit}`;
   const result = await db.manager.query(sql);
   return result;
 };

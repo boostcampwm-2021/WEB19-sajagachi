@@ -9,14 +9,15 @@ import { getDB } from '../db/db';
 export const getPosts = async (req: Request, res: Response, next: Function) => {
   try {
     const posts = await postService.getPosts(req.query as getPostsOption);
-    const result = await Promise.all(
+    const result: any = await Promise.all(
       posts.map(async (post: any) => {
         const participantCnt = await participantService.getParticipantNum(post.id);
         post.participantCnt = participantCnt;
         return post;
       })
     );
-    res.json(result);
+    if (result.length === 0) return res.json({ result });
+    return res.json({ result, nextCursor: result[result.length - 1]['id'] });
   } catch (err: any) {
     next(ERROR.DB_READ_FAIL);
   }

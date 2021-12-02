@@ -24,7 +24,7 @@ export interface LoginUserType {
 }
 
 export interface QueryStringType {
-  offset?: number;
+  nextCursor?: number;
   limit?: number;
   category?: number[];
   finished?: boolean | undefined;
