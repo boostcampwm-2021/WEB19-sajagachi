@@ -1,6 +1,7 @@
 import React from 'react';
-import { Typography, Chip, Box, Avatar } from '@mui/material';
+import { Typography, Box, Avatar } from '@mui/material';
 import DeadLine from './DeadLine';
+import CategoryChip from '../../../common/chip/CategoryChip';
 
 interface HeaderType {
   title: string;
@@ -21,7 +22,7 @@ export default function Header({ title, categoryName, writer, deadline, isNeedSe
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h5">{title}</Typography>
-        <Chip label={categoryName} sx={{ color: 'grey' }} />
+        <CategoryChip label={categoryName} />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
         <Typography variant="body1" sx={{ display: 'flex' }}>

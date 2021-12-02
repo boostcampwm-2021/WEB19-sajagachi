@@ -7,6 +7,7 @@ import Detail from './page/detail';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Chat from './page/chat';
 import MyPage from './page/mypage';
+import Error from './page/error';
 
 const theme = createTheme({
   typography: {
@@ -26,11 +27,11 @@ const App = () => {
             <Route path="/post/:postId" component={Detail} />
             <Route path="/chat" component={Chat} />
             <Route exact path="/mypage" component={MyPage} />
+            <Route exact path="/error" component={Error} />
           </Switch>
         </Router>
       </ThemeProvider>
     </>
   );
 };
-
 export default App;

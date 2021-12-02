@@ -14,7 +14,6 @@ export const joinRoom = (socket: any, io: Server) => {
       socket.emit('joinError', ERROR.NOT_LOGGED_IN);
       return;
     }
-    console.log('user: ' + loginUser.id + ' has entered room: ' + postId);
     socket.join(String(postId));
 
     try {

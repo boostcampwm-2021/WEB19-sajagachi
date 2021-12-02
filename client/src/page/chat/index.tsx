@@ -53,12 +53,13 @@ function Chat() {
         setParticipants(result);
       }
     } catch (err: any) {
-      popError(err.message);
+      history.replace('/error');
     }
   };
 
   const setChatSocket = () => {
     socketRef.current.emit('joinRoom', postId);
+    socketRef.current.on('joinError', () => history.replace('/error'));
   };
 
   useEffect(() => {
@@ -89,6 +90,11 @@ function Chat() {
     });
 
     return () => {
+      socketRef.current.off('joinError');
+      socketRef.current.off('updateParticipants');
+      socketRef.current.off('purchaseConfirm');
+      socketRef.current.off('purchaseCancel');
+      socketRef.current.off('getOut');
       socketRef.current.disconnect();
     };
   }, []);
