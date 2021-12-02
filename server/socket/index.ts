@@ -26,8 +26,6 @@ export const socketInit = (server: any, app: Application, sessionMiddleware: Req
     quitRoom(socket, io);
     finishRoom(socket, io);
 
-    socket.on('disconnect', () => {
-      console.log('socket disconnected!');
-    });
+    socket.on('disconnect', () => {});
   });
 };

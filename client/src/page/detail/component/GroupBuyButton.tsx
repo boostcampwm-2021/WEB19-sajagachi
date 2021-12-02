@@ -26,7 +26,6 @@ export default function GroupBuyButton({
   isNeedServerTime,
   popError
 }: GroupBuyButtonType) {
-  console.log(login);
   const history = useHistory();
   const [isLoginModalOn, setIsLoginModalOn] = useState(false);
   const checkButtonState = () => {
