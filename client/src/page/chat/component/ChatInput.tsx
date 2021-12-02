@@ -24,6 +24,7 @@ function ChatInput(props: ChatInputType) {
       if (img === undefined) return;
       const formData = new FormData();
       formData.append('file', img);
+      event.target.value = '';
       service.postFile(props.postId, formData);
     } catch (err: any) {
       props.popError(err.message);
