@@ -87,7 +87,6 @@ export const cancelPurchase = (socket: any, io: Server) => {
           await queryRunner.commitTransaction();
           io.to(String(postId)).emit('purchaseCancel', loginUser.id);
         } catch (err: any) {
-          console.log('취소가 안된다고?');
           await queryRunner.rollbackTransaction();
           socket.emit('purchaseError', ERROR.DB_WRITE_FAIL);
         } finally {

@@ -21,8 +21,7 @@ function ChatInput(props: ChatInputType) {
   const uploadFile = async (event: any) => {
     try {
       const img = event.target.files[0];
-      if (!isImage(img.name)) throw new Error(ERROR.FILE_TYPE);
-      if (img.size > 6 * 1024 * 1024) throw new Error(ERROR.FILE_SIZE);
+      if (img === undefined) return;
       const formData = new FormData();
       formData.append('file', img);
       service.postFile(props.postId, formData);
@@ -54,7 +53,13 @@ function ChatInput(props: ChatInputType) {
 
   return (
     <div css={ChatInputDiv}>
-      <input accept="file" type="file" onChange={uploadFile} style={{ display: 'none' }} ref={fileInputRef} />
+      <input
+        accept=".jpg,.jpeg,.png,.img,.gif"
+        type="file"
+        onChange={uploadFile}
+        style={{ display: 'none' }}
+        ref={fileInputRef}
+      />
       <IconButton aria-label="image add" sx={{ width: '40px', height: '40px' }} onClick={imgUpload}>
         <AddCircleIcon
           sx={{
