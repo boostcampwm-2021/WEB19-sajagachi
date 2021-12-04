@@ -45,6 +45,10 @@ const ChatBarLayout = css`
 const TitleStyle = css`
   color: #553e3e;
   font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
 `;
 
 export default ChatBar;
