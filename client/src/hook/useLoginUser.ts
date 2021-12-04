@@ -1,24 +1,23 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { loginUserState } from '../store/login';
-import { fetchGet } from '../util';
+import service from '../util/service';
 
 const useLoginUser = () => {
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+  const updateLoginUser = async () => {
+    try {
+      const login = await service.getLogin();
+      setLoginUser({
+        id: login.id,
+        name: login.name,
+        isSigned: true
+      });
+    } catch (err) {}
+  };
 
   useEffect(() => {
-    if (!loginUser.isSigned) {
-      const url = `${process.env.REACT_APP_SERVER_URL}/api/login`;
-      fetchGet(url).then(userLogin => {
-        if (!isNaN(userLogin.id)) {
-          setLoginUser({
-            id: userLogin.id,
-            name: userLogin.name,
-            isSigned: true
-          });
-        }
-      });
-    }
+    loginUser.isSigned || updateLoginUser();
   }, []);
 
   return loginUser;
