@@ -25,7 +25,7 @@ export default function LinkPreview({ url }: { url: string }) {
 
   return (
     <a css={PreviewContainerStyle} target="_blank" href={url} rel="noreferrer">
-      <div style={{ flex: '3', marginRight: '5px' }}>
+      <div style={{ width: 'calc(100% - 64px - 10px)' }}>
         {!isLoading ? (
           <>
             <h4 css={PreviewTitleStyle}>{metadata ? metadata.title : url}</h4>
@@ -34,7 +34,7 @@ export default function LinkPreview({ url }: { url: string }) {
           </>
         ) : (
           <>
-            <Skeleton />
+            <Skeleton width="80%" />
             <Skeleton width="60%" />
           </>
         )}
@@ -42,12 +42,12 @@ export default function LinkPreview({ url }: { url: string }) {
       {!isLoading ? (
         <img
           src={metadata && metadata.image ? metadata.image : noImg}
-          style={{ maxWidth: '30%', maxHeight: 64 }}
+          style={{ width: 70, maxHeight: 70 }}
           alt={metadata && metadata.title}
         />
       ) : (
-        <div style={{ flex: '1' }}>
-          <Skeleton variant="rectangular" height={64} />
+        <div>
+          <Skeleton variant="rectangular" width={70} height={70} />
         </div>
       )}
     </a>
@@ -55,7 +55,9 @@ export default function LinkPreview({ url }: { url: string }) {
 }
 
 const PreviewContainerStyle = css`
+  position: relative;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   border-radius: 5px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 -4px 24px 2px rgba(0, 0, 0, 0.03);
@@ -76,8 +78,7 @@ const PreviewTitleStyle = css`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  margin: 5px 0;
-  max-width: 60vw;
+  margin: 0;
 `;
 
 const PreviewDescStyle = css`
