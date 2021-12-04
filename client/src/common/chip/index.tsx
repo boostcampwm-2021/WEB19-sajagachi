@@ -16,6 +16,6 @@ const ChipStyle = (backgroundColor: string) => ({
   marginBottom: '5px',
   fontSize: '11px',
   padding: '0px',
-  width: '65px',
+  minWidth: '65px',
   height: '28px'
 });
