@@ -189,13 +189,13 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
               <div css={StickyHeader}>
                 <button>{date}</button>
               </div>
-              {chats.map((chat: MessageType) => {
+              {chats.map((chat: MessageType, index: number) => {
                 if (chat.isMe === SENDER_TYPE.SYSTEM) {
-                  return <SystemMessage msgData={chat} />;
+                  return <SystemMessage msgData={chat} key={index} />;
                 } else if (chat.isMe === SENDER_TYPE.ME) {
-                  return <MyChatMessage msgData={chat} />;
+                  return <MyChatMessage msgData={chat} key={index} />;
                 } else {
-                  return <OtherChatMessage msgData={chat} />;
+                  return <OtherChatMessage msgData={chat} key={index} />;
                 }
               })}
             </div>
