@@ -3,7 +3,6 @@ import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
 import ERROR from '../util/error';
-import session from 'express-session';
 import { getDB } from '../db/db';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
