@@ -59,7 +59,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
           return;
         } else {
           const { days, hours, minutes, seconds } = getRemainingDay(endTime, serverTime);
-          deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
+          deadLineRef.current.setDeadLine(`${days}일 ${hours}:${minutes}:${seconds} 남음`);
           return;
         }
       }

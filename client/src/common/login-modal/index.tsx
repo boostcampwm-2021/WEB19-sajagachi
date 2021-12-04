@@ -12,6 +12,7 @@ const modalBackground = css`
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
+  z-index: 2;
 `;
 
 const modal = css`

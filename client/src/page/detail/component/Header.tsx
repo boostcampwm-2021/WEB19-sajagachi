@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, Box, Avatar } from '@mui/material';
 import DeadLine from './DeadLine';
 import CategoryChip from '../../../common/chip/CategoryChip';
+import { css } from '@emotion/react';
 
 interface HeaderType {
   title: string;
@@ -20,8 +21,8 @@ export interface UserType {
 export default function Header({ title, categoryName, writer, deadline, isNeedServerTime, deadLineRef }: HeaderType) {
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography noWrap variant="h5" sx={{ width: '80%' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'stretch' }}>
+        <Typography variant="h6" css={titleStyle}>
           {title}
         </Typography>
         <CategoryChip label={categoryName} />
@@ -36,3 +37,11 @@ export default function Header({ title, categoryName, writer, deadline, isNeedSe
     </>
   );
 }
+
+const titleStyle = css`
+  word-break: break-all;
+  flex-grow: 1;
+  margin: 0;
+  margin-right: 10px;
+  margin-top: -2px;
+`;

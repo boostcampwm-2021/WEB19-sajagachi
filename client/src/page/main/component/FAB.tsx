@@ -10,6 +10,9 @@ const FabStyle = css`
   position: fixed;
   right: 30px;
   bottom: 30px;
+  @media (min-width: 700px) {
+    right: calc(50vw - 350px + 30px);
+  }
 `;
 
 export default function FAB({ loginUser }: { loginUser: LoginUserType }) {
