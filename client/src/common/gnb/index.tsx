@@ -8,7 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import SearchModalDrawer from './component/SearchModalDrawer';
 import { withRouter } from 'react-router-dom';
 import logoImg from '../../asset/logo.svg';
-import BackButton from './component/BackButton';
+import BackButton from '../back-button';
 import LoginModal from '../login-modal';
 import { Avatar, Backdrop } from '@mui/material';
 import LoadingUI from './component/LoadingUI';
@@ -150,17 +150,9 @@ const gnbContainer = css`
   height: 4.4rem;
   display: flex;
   flex-direction: row;
-
+  padding-left: 5px;
+  padding-right: 5px;
   align-items: center;
-`;
-
-const logo = css`
-  width: 40px;
-  height: 40px;
-  font-size: 30px;
-  padding: 0;
-  text-align: center;
-  line-height: 40px;
 `;
 
 const btn = css`
