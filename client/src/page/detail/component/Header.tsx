@@ -21,7 +21,9 @@ export default function Header({ title, categoryName, writer, deadline, isNeedSe
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h5">{title}</Typography>
+        <Typography noWrap variant="h5" sx={{ width: '80%' }}>
+          {title}
+        </Typography>
         <CategoryChip label={categoryName} />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
