@@ -1,14 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import { fetchGet } from '../../util';
-import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import useLoginUser from '../../hook/useLoginUser';
 import LocationIndicator from './component/LocationIndicator';
 import LoadingSpinner from '../../common/loading-spinner';
 import useMainInfinite from '../../hook/useMainInfinite';
+import { useHistory } from 'react-router';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -19,12 +18,14 @@ function Main() {
     fetcher,
     loader
   });
+  const history = useHistory();
 
   if (isLoadingInitialData) return <LoadingSpinner />;
 
+  if (error) history.replace('/error');
+
   return (
     <div css={mainContainer}>
-      {error && <ErrorAlert alert={error} />}
       <LocationIndicator />
       {data &&
         data.map((items, index) => {
@@ -32,7 +33,7 @@ function Main() {
         })}
       {isLoadingMore && <LoadingSpinner />}
       {!isReachingEnd && <div ref={loader} />}
-      {isEmpty && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}
+      {(isEmpty || error) && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}
       <FAB loginUser={loginUser} />
     </div>
   );
