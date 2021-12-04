@@ -79,13 +79,20 @@ const finishPost = async (postId: number, hostId: number) => {
 
 const getParticipationPosts = async (userId: number, limit: string | undefined, cursor: string | null = null) => {
   const db = await getDB().get();
-  const sql = `select p.id, p.title, p.content, p.capacity, p.deadline, p.finished, p.lat, p.long, category.name as category from (select postId from participant where userId = ${userId}) pa left join post p on pa.postId = p.id LEFT JOIN category
-	ON p.categoryId = category.id`;
-  let condition = ' ';
-  if (cursor !== null) condition += `WHERE p.id < ${cursor} `;
-  condition += `ORDER BY p.id DESC `;
-  condition += `LIMIT ${limit}`;
-  const result = await db.manager.query(sql + condition);
+  const sql = `select p.id, p.title, p.content, p.capacity, p.deadline, p.finished, p.lat, p.long, category.name as category
+    from (
+      select postId
+      from participant
+      where userId = ${userId}
+      ${cursor !== null ? `AND postId < ${cursor}` : ''}
+      order by postId DESC
+      limit ${limit}
+    ) pa
+    left join post p
+    on pa.postId = p.id
+    left join category
+    on p.categoryId = category.id`;
+  const result = await db.manager.query(sql);
   return result;
 };
 
