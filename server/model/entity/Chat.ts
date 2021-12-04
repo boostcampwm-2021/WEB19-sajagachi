@@ -13,7 +13,7 @@ export class Chat {
   @Column('int')
   postId!: number;
 
-  @Column('varchar', { nullable: true, length: 200 })
+  @Column('varchar', { nullable: true, length: 1000 })
   msg!: string;
 
   @Column('varchar', { nullable: true, length: 200 })
