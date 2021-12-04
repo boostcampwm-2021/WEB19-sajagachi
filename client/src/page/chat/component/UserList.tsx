@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { MonetizationOn } from '@mui/icons-material';
 import crown from '../../../asset/crown.svg';
@@ -11,13 +11,24 @@ import useLoginUser from '../../../hook/useLoginUser';
 export function UserList({
   socket,
   hostId,
-  participants
+  participants,
+  popError
 }: {
   socket: Socket;
   hostId: number;
   participants: ParticipantType[];
+  popError: (msg: string) => void;
 }) {
   const loginUser = useLoginUser();
+
+  useEffect(() => {
+    socket.on('kickError', err => popError(err.message));
+
+    return () => {
+      socket.off('kickError');
+    };
+  }, []);
+
   return (
     <div css={UserListStyle}>
       <h1>참여자 ({participants.length}명)</h1>

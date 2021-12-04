@@ -10,7 +10,6 @@ import LocationIndicator from './component/LocationIndicator';
 import LoadingSpinner from '../../common/loading-spinner';
 import useMainInfinite from '../../hook/useMainInfinite';
 
-
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 function Main() {
@@ -20,15 +19,17 @@ function Main() {
     fetcher,
     loader
   });
-   
+
   if (isLoadingInitialData) return <LoadingSpinner />;
-  
-  const items = data ? [].concat(...data) : [];
+
   return (
     <div css={mainContainer}>
       {error && <ErrorAlert alert={error} />}
       <LocationIndicator />
-      <PostList items={items} />
+      {data &&
+        data.map((items, index) => {
+          return <PostList items={items.result} key={index} />;
+        })}
       {isLoadingMore && <LoadingSpinner />}
       {!isReachingEnd && <div ref={loader} />}
       {isEmpty && <img src={noItemImg} css={ImageStyle} alt={'noItem'} />}

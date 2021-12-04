@@ -70,7 +70,7 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
   };
 
   useEffect(() => {
-    socket.on('sendError', (errorMsg: string) => popError(errorMsg));
+    socket.on('sendError', err => popError(err.message));
     socket.on('receiveMsg', (user: number, userName: string, msg: string) => {
       const isMe = checkSender(user);
       const bottom =
@@ -126,6 +126,12 @@ export default function ChatList({ postId, user, socket, popError }: ChatListTyp
         });
       }
     });
+
+    return () => {
+      socket.off('sendError');
+      socket.off('receiveMsg');
+      socket.off('sendImg');
+    };
   }, []);
 
   const handleObserver: IntersectionObserverCallback = async (entry, observer) => {
