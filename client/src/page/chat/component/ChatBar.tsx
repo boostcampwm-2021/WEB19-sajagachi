@@ -1,30 +1,10 @@
 import React from 'react';
 import { css } from '@emotion/react';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { ChatMenuDrawer } from './ChatMenuDrawer';
 import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
 import { useHistory } from 'react-router';
-import { IconButton } from '@mui/material';
-const ChatBarLayout = css`
-  display: flex;
-  flex-direction: row;
-  height: 4.4rem;
-  background-color: #ebabab;
-  justify-content: space-between;
-  z-index: 2;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  max-width: 700px;
-  margin: auto;
-`;
-
-const TitleStyle = css`
-  padding-top: 23px;
-  font-size: 18px;
-`;
+import BackButton from '../../../common/back-button';
 
 type ChatBarType = {
   title: string;
@@ -33,34 +13,38 @@ type ChatBarType = {
 };
 
 function ChatBar(props: ChatBarType) {
-  const history = useHistory();
-  const backButtonHandler = () => {
-    history.goBack();
-  };
   return (
     <div css={ChatBarLayout}>
-      <IconButton
-        aria-label="go back"
-        onClick={backButtonHandler}
-        sx={{
-          width: '2.43rem',
-          height: '2.43rem',
-          marginTop: '15px'
-        }}
-      >
-        <ArrowBackIosNewIcon
-          sx={{
-            width: '1.9rem',
-            height: '1.9rem',
-            color: '#FFFFFF'
-          }}
-        />
-      </IconButton>
-      <div css={TitleStyle}>{props.title}</div>
+      <BackButton />
+      <h3 css={TitleStyle}>{props.title}</h3>
 
       <ChatMenuDrawer socket={props.socket} participants={props.participants} />
     </div>
   );
 }
+
+const ChatBarLayout = css`
+  display: flex;
+  flex-direction: row;
+  height: 4.4rem;
+  background-color: #ebabab;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 700px;
+  padding-left: 5px;
+  padding-right: 5px;
+
+  margin: auto;
+`;
+
+const TitleStyle = css`
+  color: #553e3e;
+  font-size: 18px;
+`;
 
 export default ChatBar;

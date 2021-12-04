@@ -31,7 +31,6 @@ export function ChatMenuDrawer(props: propsType) {
       <IconButton
         aria-label="chat menu"
         sx={{
-          marginTop: '15px',
           width: '2.43rem',
           height: '2.43rem'
         }}
