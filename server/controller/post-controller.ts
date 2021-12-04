@@ -49,12 +49,12 @@ export const savePost = async (req: Request, res: Response, next: Function) => {
     await postService.saveUrls(req.body.urls, postId);
     await participantService.saveParticipant(Number(req.session.userId), postId);
     await queryRunner.commitTransaction();
-    await queryRunner.release();
     res.json(postId);
   } catch (err: any) {
     await queryRunner.rollbackTransaction();
-    await queryRunner.release();
     next(ERROR.DB_WRITE_FAIL);
+  } finally {
+    await queryRunner.release();
   }
 };
 
