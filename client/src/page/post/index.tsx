@@ -23,69 +23,6 @@ import service from '../../util/service';
 
 const URL_REGX: RegExp = /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
 
-const postContainer = css`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  padding-top: 2vh;
-`;
-
-const inputCommon = css`
-  border: 0px solid;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 100%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  margin-left: 10vw;
-  margin-right: 10vw;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-    'Helvetica Neue', sans-serif;
-`;
-
-const inputContent = css`
-  ${inputCommon}
-  resize: none;
-  min-height: 200px;
-  margin-top: 13px;
-  overflow: visible;
-`;
-
-const horizonLine = css`
-  background-color: #ebababa0;
-  width: 100%;
-  height: 1px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const urlAddIcon = css`
-  width: 30px;
-  height: 30px;
-  color: #ebabab;
-`;
-
-const finishButton = css`
-  align-self: end;
-  margin: 5vh;
-`;
-
-const capacityDeadline = css`
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-`;
-
 function Post() {
   const history = useHistory();
   const [loginUser, setLoginUser] = useRecoilState(loginUserState);
@@ -197,3 +134,66 @@ function Post() {
 }
 
 export default Post;
+
+const postContainer = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  padding-top: 2vh;
+`;
+
+const inputCommon = css`
+  border: 0px solid;
+  box-sizing: border-box;
+  box-shadow: none;
+  width: 100%;
+  height: 40px;
+  background: transparent;
+  outline: none;
+  color: #000000;
+  font-size: 16px;
+  overflow: hidden;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
+`;
+
+const inputContent = css`
+  ${inputCommon}
+  resize: none;
+  min-height: 200px;
+  margin-top: 13px;
+  overflow: visible;
+`;
+
+const horizonLine = css`
+  background-color: #ebababa0;
+  width: 100%;
+  height: 1px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const urlAddIcon = css`
+  width: 30px;
+  height: 30px;
+  color: #ebabab;
+`;
+
+const finishButton = css`
+  align-self: end;
+  margin: 5vh;
+`;
+
+const capacityDeadline = css`
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+`;

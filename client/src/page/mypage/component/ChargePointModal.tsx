@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import { Button } from '@mui/material';
 import { useRecoilValue } from 'recoil';

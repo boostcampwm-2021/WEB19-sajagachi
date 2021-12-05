@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { css } from '@emotion/react';
 import PostList from '../../common/post-list';
 import FAB from './component/FAB';
-import { fetchGet } from '../../util';
 import ErrorAlert from './component/ErrorAlert';
 import noItemImg from '../../asset/noitem.png';
 import useLoginUser from '../../hook/useLoginUser';

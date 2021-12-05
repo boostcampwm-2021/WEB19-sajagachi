@@ -11,6 +11,7 @@ import useError from '../../hook/useError';
 import service from '../../util/service';
 import { getRemainingDay } from '../../util/index';
 import { useHistory } from 'react-router';
+
 interface PostType {
   title: string;
   content: string;

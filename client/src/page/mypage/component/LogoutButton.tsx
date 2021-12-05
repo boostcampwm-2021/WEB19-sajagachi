@@ -4,18 +4,6 @@ import Confirm from '../../../common/confirm';
 import { fetchPost } from '../../../util';
 import { Logout } from '@mui/icons-material';
 
-const ButtonStyle = css`
-  color: #ff5656;
-  font-weight: bold;
-  background: transparent;
-  border: 0;
-  display: flex;
-  align-items: center;
-  & > * {
-    margin-right: 5px;
-  }
-`;
-
 export default function LogoutButton() {
   const [isConfirmOn, setIsConfirmOn] = useState(false);
 
@@ -36,3 +24,15 @@ export default function LogoutButton() {
     </div>
   );
 }
+
+const ButtonStyle = css`
+  color: #ff5656;
+  font-weight: bold;
+  background: transparent;
+  border: 0;
+  display: flex;
+  align-items: center;
+  & > * {
+    margin-right: 5px;
+  }
+`;

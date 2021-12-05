@@ -1,6 +1,16 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
+function FinishedPointView() {
+  return (
+    <div css={FinishedPointViewStyle}>
+      <h2>거래가 종료되었습니다</h2>
+    </div>
+  );
+}
+
+export default FinishedPointView;
+
 const FinishedPointViewStyle = css`
   width: 95%;
   margin-bottom: 90px;
@@ -13,13 +23,3 @@ const FinishedPointViewStyle = css`
     font-size: 24px;
   }
 `;
-
-function FinishedPointView() {
-  return (
-    <div css={FinishedPointViewStyle}>
-      <h2>거래가 종료되었습니다</h2>
-    </div>
-  );
-}
-
-export default FinishedPointView;

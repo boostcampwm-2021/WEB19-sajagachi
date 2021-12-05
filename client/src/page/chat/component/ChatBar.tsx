@@ -6,25 +6,6 @@ import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
 import { useHistory } from 'react-router';
 import { IconButton } from '@mui/material';
-const ChatBarLayout = css`
-  display: flex;
-  flex-direction: row;
-  height: 4.4rem;
-  background-color: #ebabab;
-  justify-content: space-between;
-  z-index: 2;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  max-width: 700px;
-  margin: auto;
-`;
-
-const TitleStyle = css`
-  padding-top: 23px;
-  font-size: 18px;
-`;
 
 type ChatBarType = {
   title: string;
@@ -64,3 +45,23 @@ function ChatBar(props: ChatBarType) {
 }
 
 export default ChatBar;
+
+const ChatBarLayout = css`
+  display: flex;
+  flex-direction: row;
+  height: 4.4rem;
+  background-color: #ebabab;
+  justify-content: space-between;
+  z-index: 2;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 700px;
+  margin: auto;
+`;
+
+const TitleStyle = css`
+  padding-top: 23px;
+  font-size: 18px;
+`;

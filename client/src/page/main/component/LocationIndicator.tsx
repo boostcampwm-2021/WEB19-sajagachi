@@ -6,37 +6,6 @@ import { locationState } from '../../../store/location';
 import { getAddressByGeocode } from '../../../util';
 import { CircularProgress } from '@mui/material';
 
-const LocationIndicatorStyle = css`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-left: 15px;
-`;
-
-const AddressStyle = css`
-  margin: 10px 0;
-  font-size: 12px;
-`;
-
-const ReloadStyle = css`
-  margin: 10px 5px;
-  font-size: 10px;
-  color: #f76a6a;
-  background: transparent;
-  border: none;
-`;
-
-const ProgressStyle = {
-  color: '#f76a6a',
-  marginLeft: '5px'
-};
-
-const LocationOnIconStyle = css`
-  width: 18px;
-  height: 14px;
-  color: #f76a6a;
-`;
-
 export default function LocationIndicator() {
   const [location, setLocation] = useRecoilState(locationState);
   const [address, setAddress] = useState('위치 확인 중');
@@ -89,3 +58,34 @@ export default function LocationIndicator() {
     </div>
   );
 }
+
+const LocationIndicatorStyle = css`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 15px;
+`;
+
+const AddressStyle = css`
+  margin: 10px 0;
+  font-size: 12px;
+`;
+
+const ReloadStyle = css`
+  margin: 10px 5px;
+  font-size: 10px;
+  color: #f76a6a;
+  background: transparent;
+  border: none;
+`;
+
+const ProgressStyle = {
+  color: '#f76a6a',
+  marginLeft: '5px'
+};
+
+const LocationOnIconStyle = css`
+  width: 18px;
+  height: 14px;
+  color: #f76a6a;
+`;

@@ -5,10 +5,6 @@ import TextField from '@mui/material/TextField';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
-const datepicker = css`
-  width: 100px;
-`;
-
 interface deadlineState {
   deadline: Date | null;
   setDeadline: (deadline: Date | null) => void;
@@ -33,3 +29,7 @@ function DateDeadline({ deadline, setDeadline }: deadlineState) {
 }
 
 export default React.memo(DateDeadline);
+
+const datepicker = css`
+  width: 100px;
+`;

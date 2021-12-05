@@ -2,14 +2,6 @@ import React from 'react';
 import { css } from '@emotion/react';
 import Item from './component/Item';
 
-const ListStyle = css`
-  list-style: none;
-  padding-left: 0;
-  padding: 0 15px;
-  max-width: 800px;
-  margin: 0 auto;
-`;
-
 export default function PostList(props: any) {
   return (
     <ul css={ListStyle}>
@@ -19,3 +11,11 @@ export default function PostList(props: any) {
     </ul>
   );
 }
+
+const ListStyle = css`
+  list-style: none;
+  padding-left: 0;
+  padding: 0 15px;
+  max-width: 800px;
+  margin: 0 auto;
+`;
