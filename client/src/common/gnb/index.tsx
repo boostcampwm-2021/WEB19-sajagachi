@@ -93,6 +93,7 @@ function Gnb() {
         <Link to="/">
           <img
             src={logoImg}
+            alt="로고 이미지"
             style={{
               flex: 2,
               maxHeight: '3.1rem',

@@ -61,8 +61,8 @@ function UserListItem({
 
   return (
     <li css={UserListItemStyle}>
-      {hostId === item.user.id && <img src={crown} css={UserHostCrownStyle} />}
-      <img src={item.user.img} css={UserAvatarStyle} />
+      {hostId === item.user.id && <img src={crown} css={UserHostCrownStyle} alt="왕관" />}
+      <img src={item.user.img} css={UserAvatarStyle} alt="아바타" />
       <p css={UserNameStyle}>{item.user.name}</p>
       {hostId === myId && hostId !== item.user.id && (
         <button css={UserKickBtnStyle} onClick={() => setIsConfirmOn(true)}>

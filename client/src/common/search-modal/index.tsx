@@ -83,7 +83,7 @@ export default function SearchModal({ setIsSearchModalOn, history }: SearchModal
   }, []);
 
   useEffect(() => {
-    if (location.lat == 0 && location.lng == 0) return;
+    if (location.lat === 0 && location.lng === 0) return;
     updateAddress(location);
   }, [location]);
 

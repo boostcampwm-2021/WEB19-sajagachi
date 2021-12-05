@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import Confirm from '../../../common/confirm';
 import { fetchPost } from '../../../util';

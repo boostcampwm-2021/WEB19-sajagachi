@@ -45,7 +45,3 @@ const mainContainer = css`
   margin-right: auto;
   max-width: 700px;
 `;
-
-const ImageStyle = css`
-  width: 100%;
-`;

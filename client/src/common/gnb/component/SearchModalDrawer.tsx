@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import { css } from '@emotion/react';
 import SearchModal from '../../search-modal';

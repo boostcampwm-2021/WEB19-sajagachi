@@ -37,7 +37,7 @@ export default function Profile() {
   if (!user) return <div style={{ height: 300 }}></div>;
   return (
     <div css={ProfileStyle}>
-      <img css={ImageStyle} src={user.img} />
+      <img css={ImageStyle} src={user.img} alt="user 이미지" />
       <h1 css={NameStyle}>{user.name}</h1>
       <LogoutButton />
       <p css={PointStyle}>

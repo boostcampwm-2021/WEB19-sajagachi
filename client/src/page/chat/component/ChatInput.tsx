@@ -3,9 +3,7 @@ import { css } from '@emotion/react';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { UserInfoType } from '../../../type';
-import { ERROR } from '../../../util/error-message';
 import IconButton from '@mui/material/IconButton';
-import { isImage } from '../../../util';
 import service from '../../../util/service';
 
 type ChatInputType = {
