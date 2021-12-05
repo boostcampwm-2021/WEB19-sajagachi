@@ -46,7 +46,7 @@ export default function Profile() {
 
   return (
     <div css={ProfileStyle}>
-      <img css={ImageStyle} src={user.img} />
+      <img css={ImageStyle} src={user.img} alt="user 이미지" />
       <h1 css={NameStyle}>{user.name}</h1>
       <LogoutButton />
       <p css={PointStyle}>

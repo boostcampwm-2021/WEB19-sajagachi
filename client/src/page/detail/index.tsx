@@ -44,6 +44,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
       eventSource.current?.close();
     };
   }, []);
+
   const setEventSource = (deadline: string) => {
     eventSource.current = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
     const endTime = new Date(deadline);

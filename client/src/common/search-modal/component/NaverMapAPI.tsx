@@ -1,4 +1,4 @@
-import React, { MouseEvent, useCallback, useEffect } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
@@ -11,10 +11,11 @@ type mapState = {
 };
 
 function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
-  let map: any = null;
+  const map = useRef<naver.maps.Map | null>(null);
+
   useEffect(() => {
     const initMap = () => {
-      map = new naver.maps.Map('map', {
+      map.current = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(location.lat, location.lng),
         zoom: 16
       });
@@ -24,8 +25,8 @@ function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
 
   const handleLocationButtonClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      const center = map.getCenter();
-      setLocation({ lat: center.lat(), lng: center.lng() });
+      const center = map.current?.getCenter();
+      setLocation({ lat: Number(center?.y), lng: Number(center?.x) });
       setIsMapOn(false);
     },
     [location]

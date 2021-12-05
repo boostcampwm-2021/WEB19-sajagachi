@@ -11,12 +11,9 @@ import DateDeadline from './component/DateDeadline';
 import IconButton from '@mui/material/IconButton';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-import { fetchGet, fetchPost } from '../../util';
+import { fetchGet } from '../../util';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
-import LoginModal from '../../common/login-modal';
 import useError from '../../hook/useError';
 import { ERROR } from '../../util/error-message';
 import service from '../../util/service';
@@ -146,31 +143,6 @@ const postContainer = css`
   padding-left: 5vw;
   padding-right: 5vw;
   padding-top: 2vh;
-`;
-
-const inputCommon = css`
-  border: 0px solid;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 100%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  margin-left: 10vw;
-  margin-right: 10vw;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-    'Helvetica Neue', sans-serif;
-`;
-
-const inputContent = css`
-  ${inputCommon}
-  resize: none;
-  min-height: 200px;
-  margin-top: 13px;
-  overflow: visible;
 `;
 
 const horizonLine = css`
