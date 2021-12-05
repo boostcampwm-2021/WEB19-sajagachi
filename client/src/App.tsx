@@ -1,6 +1,6 @@
 import React from 'react';
 import Gnb from './common/gnb';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import Main from './page/main';
 import Post from './page/post';
 import Detail from './page/detail';
@@ -28,6 +28,9 @@ const App = () => {
             <Route path="/chat" component={Chat} />
             <Route exact path="/mypage" component={MyPage} />
             <Route exact path="/error" component={Error} />
+            <Route path="*">
+              <Redirect to="/error" />
+            </Route>
           </Switch>
         </Router>
       </ThemeProvider>
