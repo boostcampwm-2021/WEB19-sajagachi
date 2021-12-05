@@ -25,6 +25,7 @@ export const getPosts = async (req: Request, res: Response, next: Function) => {
 export const getPost = async (req: Request, res: Response, next: Function) => {
   try {
     const post = await postService.getPost(req.params.postId);
+    if (!post) return next(ERROR.DB_READ_FAIL);
     const userId = req.session.userId;
     let isParticipate: boolean;
     if (userId === undefined) isParticipate = false;
