@@ -1,5 +1,4 @@
 import React from 'react';
-import { css } from '@emotion/react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 type AlertParamType = {

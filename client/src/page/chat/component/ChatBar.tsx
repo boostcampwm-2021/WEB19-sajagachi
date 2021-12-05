@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import { ChatMenuDrawer } from './ChatMenuDrawer';
 import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
-import { useHistory } from 'react-router';
 import BackButton from '../../../common/back-button';
 
 type ChatBarType = {
@@ -23,6 +22,8 @@ function ChatBar(props: ChatBarType) {
   );
 }
 
+export default ChatBar;
+
 const ChatBarLayout = css`
   display: flex;
   flex-direction: row;
@@ -38,7 +39,6 @@ const ChatBarLayout = css`
   max-width: 700px;
   padding-left: 5px;
   padding-right: 5px;
-
   margin: auto;
 `;
 
@@ -50,5 +50,3 @@ const TitleStyle = css`
   overflow: hidden;
   margin: 0;
 `;
-
-export default ChatBar;

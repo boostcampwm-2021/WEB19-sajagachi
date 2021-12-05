@@ -1,6 +1,24 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
+type ImageModalType = {
+  imageUrl: string;
+  setImageModalOn: Function;
+};
+
+function ImageModal({ imageUrl, setImageModalOn }: ImageModalType) {
+  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) setImageModalOn('');
+  };
+  return (
+    <div css={ImageModalContainer} onClick={handleOutsideClick}>
+      <img css={ImageStyle} src={imageUrl} alt="modal_image" />
+    </div>
+  );
+}
+
+export default ImageModal;
+
 const ImageModalContainer = css`
   position: fixed;
   top: 0;
@@ -21,20 +39,3 @@ const ImageStyle = css`
   top: 50%;
   transform: translate(-50%, -50%);
 `;
-type ImageModalType = {
-  imageUrl: string;
-  setImageModalOn: Function;
-};
-
-function ImageModal({ imageUrl, setImageModalOn }: ImageModalType) {
-  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) setImageModalOn('');
-  };
-  return (
-    <div css={ImageModalContainer} onClick={handleOutsideClick}>
-      <img css={ImageStyle} src={imageUrl} alt="modal_image" />
-    </div>
-  );
-}
-
-export default ImageModal;

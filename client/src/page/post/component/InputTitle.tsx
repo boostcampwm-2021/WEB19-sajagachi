@@ -1,6 +1,16 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
+interface TitleStateType {
+  title: React.MutableRefObject<HTMLInputElement | null>;
+}
+
+function InputTitle({ title }: TitleStateType) {
+  return <input type="text" name="title" css={inputTitle} placeholder="Title" ref={title}></input>;
+}
+
+export default React.memo(InputTitle);
+
 const inputTitle = css`
   border: 0px solid;
   box-sizing: border-box;
@@ -17,13 +27,3 @@ const inputTitle = css`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
     'Helvetica Neue', sans-serif;
 `;
-
-interface TitleStateType {
-  title: React.MutableRefObject<HTMLInputElement | null>;
-}
-
-function InputTitle({ title }: TitleStateType) {
-  return <input type="text" name="title" css={inputTitle} placeholder="Title" ref={title}></input>;
-}
-
-export default React.memo(InputTitle);

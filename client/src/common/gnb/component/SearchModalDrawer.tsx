@@ -7,17 +7,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import { RouteComponentProps } from 'react-router';
 import { SwipeableDrawer } from '@mui/material';
 
-const btn = css`
-  width: 2.43rem;
-  height: 2.43rem;
-`;
-
-const btnIcon = css`
-  width: 1.9rem;
-  height: 1.9rem;
-  color: white;
-`;
-
 export default function SearchModalDrawer({ history }: RouteComponentProps) {
   const [isSearchModalOn, setIsSearchModalOn] = useState(false);
 
@@ -50,3 +39,14 @@ export default function SearchModalDrawer({ history }: RouteComponentProps) {
     </>
   );
 }
+
+const btn = css`
+  width: 2.43rem;
+  height: 2.43rem;
+`;
+
+const btnIcon = css`
+  width: 1.9rem;
+  height: 1.9rem;
+  color: white;
+`;

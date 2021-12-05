@@ -4,6 +4,16 @@ import { ItemType } from '../../../type';
 import { Link } from 'react-router-dom';
 import { ItemContent } from './ItemContent';
 
+export default function Item(props: { item: ItemType }) {
+  return (
+    <li css={ItemStyle}>
+      <Link to={`/post/${props.item.id}`} css={LinkStyle}>
+        <ItemContent item={props.item} />
+      </Link>
+    </li>
+  );
+}
+
 const LinkStyle = css`
   &:focus,
   &:hover,
@@ -24,13 +34,3 @@ const ItemStyle = css`
   background-color: #ffffff;
   box-shadow: 3px 3px 8px 1px #bbbbbb;
 `;
-
-export default function Item(props: { item: ItemType }) {
-  return (
-    <li css={ItemStyle}>
-      <Link to={`/post/${props.item.id}`} css={LinkStyle}>
-        <ItemContent item={props.item} />
-      </Link>
-    </li>
-  );
-}
