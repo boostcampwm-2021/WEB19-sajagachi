@@ -1,6 +1,16 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
+interface ContentStateType {
+  content: React.MutableRefObject<HTMLTextAreaElement | null>;
+}
+
+function InputContent({ content }: ContentStateType) {
+  return <textarea name="content" css={inputContent} placeholder="Content" rows={15} ref={content}></textarea>;
+}
+
+export default React.memo(InputContent);
+
 const inputContent = css`
   border: 0px solid;
   box-sizing: border-box;
@@ -19,13 +29,3 @@ const inputContent = css`
   margin-top: 13px;
   overflow: visible;
 `;
-
-interface ContentStateType {
-  content: React.MutableRefObject<HTMLTextAreaElement | null>;
-}
-
-function InputContent({ content }: ContentStateType) {
-  return <textarea name="content" css={inputContent} placeholder="Content" rows={15} ref={content}></textarea>;
-}
-
-export default React.memo(InputContent);

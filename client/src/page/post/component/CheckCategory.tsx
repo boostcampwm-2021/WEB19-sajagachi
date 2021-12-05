@@ -1,32 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import Chip from '@mui/material/Chip';
-import { fetchGet } from '../../../util';
 import service from '../../../util/service';
-
-const CategoryStyle = css`
-  width: 90%;
-  font-family: -apple-system;
-  & > h3 {
-    margin-bottom: 5px;
-  }
-  & > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const ChipStyle = (checked: boolean) => {
-  return css`
-    width: 80px;
-    margin: 3px 3px;
-    ${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
-    &:hover {
-      background-color: #ebe4e4;
-      ${checked ? 'background-color: #ebabab;' : ''}
-    }
-  `;
-};
 
 interface CategoryState {
   category: number | null;
@@ -83,3 +58,27 @@ function CheckCategory({ category, setCategory, popError }: CategoryState) {
 }
 
 export default React.memo(CheckCategory);
+
+const CategoryStyle = css`
+  width: 90%;
+  font-family: -apple-system;
+  & > h3 {
+    margin-bottom: 5px;
+  }
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const ChipStyle = (checked: boolean) => {
+  return css`
+    width: 80px;
+    margin: 3px 3px;
+    ${checked ? 'background-color: #ebabab; color: #ffffff;' : ''}
+    &:hover {
+      background-color: #ebe4e4;
+      ${checked ? 'background-color: #ebabab;' : ''}
+    }
+  `;
+};

@@ -7,16 +7,6 @@ import { Socket } from 'socket.io-client';
 import { ParticipantType } from '../../../type';
 import { IconButton } from '@mui/material';
 
-const BlurredBackground = css`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-`;
-
 type propsType = {
   socket: Socket;
   participants: ParticipantType[];
@@ -31,7 +21,6 @@ export function ChatMenuDrawer(props: propsType) {
       <IconButton
         aria-label="chat menu"
         sx={{
-          marginTop: '15px',
           width: '2.43rem',
           height: '2.43rem'
         }}
@@ -56,3 +45,13 @@ export function ChatMenuDrawer(props: propsType) {
     </>
   );
 }
+
+const BlurredBackground = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+`;

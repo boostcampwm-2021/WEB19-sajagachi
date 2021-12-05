@@ -1,16 +1,19 @@
 import React, { ChangeEvent } from 'react';
 import { css } from '@emotion/react';
 
-const btn = css`
-  width: 48px;
-  height: 48px;
-`;
+function SearchInput({ value, setSearch }: { value: string; setSearch: Function }) {
+  function onChangeHandle(e: ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+  }
 
-const btnIcon = css`
-  width: 32px;
-  height: 32px;
-  color: white;
-`;
+  return (
+    <form css={searchForm} onSubmit={e => e.preventDefault()}>
+      <input type="text" css={InputText} onChange={onChangeHandle} value={value} />
+    </form>
+  );
+}
+
+export default SearchInput;
 
 const searchForm = css`
   position: relative;
@@ -32,17 +35,3 @@ const InputText = css`
   overflow: hidden;
   padding: 10px;
 `;
-
-function SearchInput({ value, setSearch }: { value: string; setSearch: Function }) {
-  function onChangeHandle(e: ChangeEvent<HTMLInputElement>) {
-    setSearch(e.target.value);
-  }
-
-  return (
-    <form css={searchForm} onSubmit={e => e.preventDefault()}>
-      <input type="text" css={InputText} onChange={onChangeHandle} value={value} />
-    </form>
-  );
-}
-
-export default SearchInput;

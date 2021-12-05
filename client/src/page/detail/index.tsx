@@ -11,6 +11,7 @@ import useError from '../../hook/useError';
 import service from '../../util/service';
 import { getRemainingDay } from '../../util/index';
 import { useHistory } from 'react-router';
+
 interface PostType {
   title: string;
   content: string;
@@ -43,6 +44,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
       eventSource.current?.close();
     };
   }, []);
+
   const setEventSource = (deadline: string) => {
     eventSource.current = new EventSource(`${process.env.REACT_APP_SERVER_URL}/sse`);
     const endTime = new Date(deadline);
@@ -59,7 +61,7 @@ export default function Detail({ match }: RouteComponentProps<DetailType>) {
           return;
         } else {
           const { days, hours, minutes, seconds } = getRemainingDay(endTime, serverTime);
-          deadLineRef.current.setDeadLine(days + '일 ' + hours + ':' + minutes + ':' + seconds);
+          deadLineRef.current.setDeadLine(`${days}일 ${hours}:${minutes}:${seconds} 남음`);
           return;
         }
       }

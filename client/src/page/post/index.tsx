@@ -11,80 +11,14 @@ import DateDeadline from './component/DateDeadline';
 import IconButton from '@mui/material/IconButton';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-import { fetchGet, fetchPost } from '../../util';
+import { fetchGet } from '../../util';
 import { loginUserState } from '../../store/login';
 import { useHistory } from 'react-router';
-import LoginModal from '../../common/login-modal';
 import useError from '../../hook/useError';
 import { ERROR } from '../../util/error-message';
 import service from '../../util/service';
 
 const URL_REGX: RegExp = /^(((http(s?))\:\/\/)?)([\da-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:\d+)?(\/\S*)?/;
-
-const postContainer = css`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 700px;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  padding-top: 2vh;
-`;
-
-const inputCommon = css`
-  border: 0px solid;
-  box-sizing: border-box;
-  box-shadow: none;
-  width: 100%;
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  margin-left: 10vw;
-  margin-right: 10vw;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-    'Helvetica Neue', sans-serif;
-`;
-
-const inputContent = css`
-  ${inputCommon}
-  resize: none;
-  min-height: 200px;
-  margin-top: 13px;
-  overflow: visible;
-`;
-
-const horizonLine = css`
-  background-color: #ebababa0;
-  width: 100%;
-  height: 1px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const urlAddIcon = css`
-  width: 30px;
-  height: 30px;
-  color: #ebabab;
-`;
-
-const finishButton = css`
-  align-self: end;
-  margin: 5vh;
-`;
-
-const capacityDeadline = css`
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-`;
 
 function Post() {
   const history = useHistory();
@@ -197,3 +131,41 @@ function Post() {
 }
 
 export default Post;
+
+const postContainer = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  padding-top: 2vh;
+`;
+
+const horizonLine = css`
+  background-color: #ebababa0;
+  width: 100%;
+  height: 1px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const urlAddIcon = css`
+  width: 30px;
+  height: 30px;
+  color: #ebabab;
+`;
+
+const finishButton = css`
+  align-self: end;
+  margin: 5vh;
+`;
+
+const capacityDeadline = css`
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+`;

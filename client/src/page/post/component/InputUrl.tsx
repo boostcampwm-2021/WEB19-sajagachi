@@ -3,37 +3,6 @@ import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 
-const urlContainer = css`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px auto 5px auto;
-  width: 90%;
-  border: 2px solid #f97c634b;
-  border-radius: 16px;
-`;
-
-const inputUrl = css`
-  border: 0px solid;
-  box-shadow: none;
-  width: calc(100% - 26px);
-  height: 40px;
-  background: transparent;
-  outline: none;
-  color: #000000;
-  font-size: 16px;
-  overflow: hidden;
-  padding: 10px;
-  margin: 0px;
-  font-family: -apple-system;
-`;
-
-const deleteButton = css`
-  width: 26px;
-  height: 26px;
-`;
-
 interface UrlState {
   idx: number;
   urls: string[];
@@ -66,3 +35,34 @@ function InputUrl({ idx, urls, setUrls }: UrlState) {
 }
 
 export default React.memo(InputUrl);
+
+const urlContainer = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px auto 5px auto;
+  width: 90%;
+  border: 2px solid #f97c634b;
+  border-radius: 16px;
+`;
+
+const inputUrl = css`
+  border: 0px solid;
+  box-shadow: none;
+  width: calc(100% - 26px);
+  height: 40px;
+  background: transparent;
+  outline: none;
+  color: #000000;
+  font-size: 16px;
+  overflow: hidden;
+  padding: 10px;
+  margin: 0px;
+  font-family: -apple-system;
+`;
+
+const deleteButton = css`
+  width: 26px;
+  height: 26px;
+`;

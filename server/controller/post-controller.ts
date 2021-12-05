@@ -3,7 +3,6 @@ import postService from '../service/post-service';
 import participantService from '../service/participant-service';
 import { getPostsOption } from '../type';
 import ERROR from '../util/error';
-import session from 'express-session';
 import { getDB } from '../db/db';
 
 export const getPosts = async (req: Request, res: Response, next: Function) => {
@@ -49,12 +48,12 @@ export const savePost = async (req: Request, res: Response, next: Function) => {
     await postService.saveUrls(req.body.urls, postId);
     await participantService.saveParticipant(Number(req.session.userId), postId);
     await queryRunner.commitTransaction();
-    await queryRunner.release();
     res.json(postId);
   } catch (err: any) {
     await queryRunner.rollbackTransaction();
-    await queryRunner.release();
     next(ERROR.DB_WRITE_FAIL);
+  } finally {
+    await queryRunner.release();
   }
 };
 

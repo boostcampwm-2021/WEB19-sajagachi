@@ -4,6 +4,35 @@ import githubIcon from '../../asset/github.svg';
 import IconButton from '@mui/material/IconButton';
 import loginTextImg from '../../asset/loginText.png';
 
+type ModalState = {
+  setIsLoginModalOn: (isLoginModalOn: boolean) => void;
+};
+
+function LoginModal({ setIsLoginModalOn }: ModalState) {
+  function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
+    const url = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`;
+    setIsLoginModalOn(false);
+    window.location.assign(url);
+  }
+
+  function handleOutsideClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (e.target === e.currentTarget) setIsLoginModalOn(false);
+  }
+
+  return (
+    <div css={modalBackground} onClick={handleOutsideClick} className="modal_background">
+      <div css={modal}>
+        <img src={loginTextImg} alt="로그인" css={loginText} />
+        <IconButton css={loginButton} onClick={handleLoginBtnClick}>
+          <img src={githubIcon} alt="로그인" css={githubImage}></img>
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+
+export default LoginModal;
+
 const modalBackground = css`
   position: fixed;
   top: 0;
@@ -12,6 +41,7 @@ const modalBackground = css`
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
+  z-index: 2;
 `;
 
 const modal = css`
@@ -44,32 +74,3 @@ const githubImage = css`
   width: 90%;
   height: 90%;
 `;
-
-type ModalState = {
-  setIsLoginModalOn: (isLoginModalOn: boolean) => void;
-};
-
-function LoginModal({ setIsLoginModalOn }: ModalState) {
-  function handleLoginBtnClick(e: React.MouseEvent<HTMLButtonElement>) {
-    const url = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`;
-    setIsLoginModalOn(false);
-    window.location.assign(url);
-  }
-
-  function handleOutsideClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (e.target === e.currentTarget) setIsLoginModalOn(false);
-  }
-
-  return (
-    <div css={modalBackground} onClick={handleOutsideClick} className="modal_background">
-      <div css={modal}>
-        <img src={loginTextImg} alt="로그인" css={loginText} />
-        <IconButton css={loginButton} onClick={handleLoginBtnClick}>
-          <img src={githubIcon} alt="로그인" css={githubImage}></img>
-        </IconButton>
-      </div>
-    </div>
-  );
-}
-
-export default LoginModal;

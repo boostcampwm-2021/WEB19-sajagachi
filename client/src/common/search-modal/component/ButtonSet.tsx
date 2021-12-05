@@ -26,5 +26,8 @@ const ButtonSetStyle = css`
 
 const ButtonStyle = (bgColor: string) => css`
   background-color: ${bgColor};
+  &:hover {
+    background-color: ${bgColor};
+  }
   margin-left: 15px;
 `;

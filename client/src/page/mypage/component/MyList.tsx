@@ -7,8 +7,8 @@ import LoadingSpinner from '../../../common/loading-spinner';
 import PostList from '../../../common/post-list';
 import { ERROR } from '../../../util/error-message';
 import { loginUserState } from '../../../store/login';
-import NoParticipationList from './NoParticipationList';
 import service from '../../../util/service';
+import NoPost from '../../../common/no-post';
 
 const fetcher = (loginUserId: number, limit: number, nextCursor: number | undefined) =>
   service.getParticipationPosts(loginUserId, { limit, nextCursor });
@@ -28,7 +28,7 @@ export default function MyList() {
   return (
     <div style={{ paddingBottom: '10px' }}>
       <h3 style={{ textAlign: 'center' }}>참여한 공동구매</h3>
-      {(isEmpty || error) && <NoParticipationList text={isEmpty ? ERROR.NOT_PARTICIPANT : ERROR.PARTICIPATION_LIST} />}
+      {(isEmpty || error) && <NoPost text={isEmpty ? ERROR.NOT_PARTICIPANT : ERROR.PARTICIPATION_LIST} />}
       {data &&
         data.map((items, index) => {
           return <PostList items={items.result} key={index} />;

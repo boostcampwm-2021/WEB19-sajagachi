@@ -55,5 +55,6 @@ const StyledBox = styled(Box)(() => ({
   right: 0,
   left: 0,
   bottom: 0,
-  height: '4.5rem'
+  height: '4.5rem',
+  zIndex: 2
 }));

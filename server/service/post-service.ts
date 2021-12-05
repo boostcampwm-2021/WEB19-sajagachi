@@ -23,8 +23,13 @@ const savePost = async (userId: number, body: Request['body']): Promise<number> 
 const saveUrls = async (urls: string[], postId: number): Promise<void> => {
   const db = await getDB().get();
   if (urls.length > 0) {
-    const urlValues = urls.map((url: string) => `(${postId}, '${url}')`).join(',');
-    await db.manager.query(`INSERT INTO url VALUES ${urlValues}`);
+    const urlValues = urls.map((url: string) => {
+      const HTTP_REGX: RegExp = /^(http(s?)\:\/\/)/;
+      if (HTTP_REGX.test(url)) return url;
+      else return `http://${url}`;
+    });
+    const urlInsertValues = urlValues.map((url: string) => `(${postId}, '${url}')`).join(',');
+    await db.manager.query(`INSERT INTO url VALUES ${urlInsertValues}`);
   }
 };
 

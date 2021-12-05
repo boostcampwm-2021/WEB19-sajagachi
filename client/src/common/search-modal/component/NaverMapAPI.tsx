@@ -1,8 +1,50 @@
-import React, { MouseEvent, useCallback, useEffect } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import RoomIcon from '@mui/icons-material/Room';
 import Button from '@mui/material/Button';
 import { LocationType } from '../../../type';
+
+type mapState = {
+  setIsMapOn: any;
+  setLocation: (location: LocationType) => void;
+  location: LocationType;
+};
+
+function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
+  const map = useRef<naver.maps.Map | null>(null);
+
+  useEffect(() => {
+    const initMap = () => {
+      map.current = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(location.lat, location.lng),
+        zoom: 16
+      });
+    };
+    initMap();
+  }, [location]);
+
+  const handleLocationButtonClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      const center = map.current?.getCenter();
+      setLocation({ lat: Number(center?.y), lng: Number(center?.x) });
+      setIsMapOn(false);
+    },
+    [location]
+  );
+
+  return (
+    <React.Fragment>
+      <div id="map" style={mapStyle}>
+        <RoomIcon css={centerMarker} />
+        <Button css={locationButton} onClick={handleLocationButtonClick}>
+          위치 지정 완료
+        </Button>
+      </div>
+    </React.Fragment>
+  );
+}
+
+export default NaverMapAPI;
 
 const centerMarker = css`
   position: absolute;
@@ -29,49 +71,8 @@ const locationButton = css`
   }
 `;
 
-type mapState = {
-  setIsMapOn: any;
-  setLocation: (location: LocationType) => void;
-  location: LocationType;
+//지도 사이즈 관련 스타일
+const mapStyle = {
+  width: '100vw',
+  height: 'calc(100vh - 4.4rem)'
 };
-
-function NaverMapAPI({ setIsMapOn, setLocation, location }: mapState) {
-  let map: any = null;
-  useEffect(() => {
-    const initMap = () => {
-      map = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(location.lat, location.lng),
-        zoom: 16
-      });
-    };
-    initMap();
-  }, [location]);
-
-  const handleLocationButtonClick = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      const center = map.getCenter();
-      setLocation({ lat: center.lat(), lng: center.lng() });
-      setIsMapOn(false);
-    },
-    [location]
-  );
-
-  //지도 사이즈 관련 스타일
-  const mapStyle = {
-    width: '100vw',
-    height: 'calc(100vh - 4.4rem)'
-  };
-
-  return (
-    <React.Fragment>
-      <div id="map" style={mapStyle}>
-        <RoomIcon css={centerMarker} />
-        <Button css={locationButton} onClick={handleLocationButtonClick}>
-          위치 지정 완료
-        </Button>
-      </div>
-    </React.Fragment>
-  );
-}
-
-export default NaverMapAPI;

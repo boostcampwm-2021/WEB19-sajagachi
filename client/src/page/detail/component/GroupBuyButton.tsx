@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import LoginModal from '../../../common/login-modal';
@@ -35,6 +35,10 @@ export default function GroupBuyButton({
   };
   const [buttonState, setButtonState] = useState(checkButtonState());
 
+  useEffect(() => {
+    setButtonState(checkButtonState());
+  }, [isParticipate, finished, capacity, participantCnt]);
+
   const clickHandler = async () => {
     if (!login.isSigned) setIsLoginModalOn(true);
     else if (isParticipate) {
@@ -60,7 +64,7 @@ export default function GroupBuyButton({
     <>
       <Button
         variant="contained"
-        disabled={isNeedServerTime || checkButtonState()}
+        disabled={isNeedServerTime || buttonState}
         sx={GroupBuyButtonStyle}
         onClick={clickHandler}
       >

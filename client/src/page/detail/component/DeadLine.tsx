@@ -15,7 +15,15 @@ function DeadLine({ isNeedServerTime, deadline }: DeadLineType, ref: React.Ref<u
   useImperativeHandle(ref, () => ({
     setDeadLine: (endTime: string) => setEndTime(endTime)
   }));
-  return <Typography variant="body2">마감시간| {!isNeedServerTime ? endTime : '계산 중...'}</Typography>;
+  return (
+    <Typography variant="body2" sx={DeadlineStyle}>
+      {!isNeedServerTime ? endTime : '계산 중...'}
+    </Typography>
+  );
 }
+
+const DeadlineStyle = {
+  marginTop: '5px'
+};
 
 export default forwardRef(DeadLine);

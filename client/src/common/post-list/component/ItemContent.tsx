@@ -21,7 +21,7 @@ export function ItemContent(props: { item: ItemType }) {
       <p css={ItemDescStyle(fin)}>{props.item.content.substring(0, 100)}</p>
       <p css={ItemDistStyle(fin)}>
         <LocationOn css={DistIconStyle(fin)} />
-        {dist}m
+        {dist >= 1000 ? calcKm(dist) + 'km' : dist + 'm'}
       </p>
       <div css={ChipContainerStyle}>
         <CategoryChip label={props.item.category} />
@@ -30,6 +30,10 @@ export function ItemContent(props: { item: ItemType }) {
     </div>
   );
 }
+
+const calcKm = (dist: number) => {
+  return (dist / 1000).toFixed(1);
+};
 
 const ItemContainerStyle = css`
   width: 100%;
