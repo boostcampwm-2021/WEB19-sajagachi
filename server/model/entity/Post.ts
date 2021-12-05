@@ -13,7 +13,6 @@ import { Participant } from './Participant';
 import { Category } from './Category';
 import { Chat } from './Chat';
 import { Url } from './Url';
-import { WishList } from './WishList';
 
 @Entity()
 export class Post {
@@ -52,9 +51,6 @@ export class Post {
 
   @ManyToOne(() => User, user => user.posts)
   user!: User;
-
-  @OneToMany(() => WishList, _wishList => _wishList.post)
-  wishList!: WishList[];
 
   @OneToMany(type => Participant, _participant => _participant.post)
   participant!: Participant[];

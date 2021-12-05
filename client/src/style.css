@@ -24,9 +24,20 @@ body {
   height: calc(100vh - 4.4rem);
   padding: 0;
   margin: 0;
+  overflow: overlay;
 }
 
 #root {
   width: 100%;
   height: 100%;
+}
+
+
+*::-webkit-scrollbar {
+  background: transparent;
+  width: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #ebabab55;
+  border-radius: 20px;
 }
