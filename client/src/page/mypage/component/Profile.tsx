@@ -6,7 +6,6 @@ import ReturnPointModal from './ReturnPointModal';
 import LogoutButton from './LogoutButton';
 import useLoginUser from '../../../hook/useLoginUser';
 import service from '../../../util/service';
-import useError from '../../../hook/useError';
 import { useHistory } from 'react-router';
 
 type UserType = {
@@ -20,7 +19,6 @@ export default function Profile() {
   const history = useHistory();
   const [isChargePointModalOn, setIsChargePointModalOn] = useState(false);
   const [isReturnPointModalOn, setIsReturnPointModalOn] = useState(false);
-  const [popError, RenderError] = useError();
   const loginUser = useLoginUser();
   const [user, setUser] = useState<UserType>();
   const updateUser = async (userId: number) => {
@@ -36,14 +34,7 @@ export default function Profile() {
     loginUser.isSigned && updateUser(loginUser.id);
   }, [loginUser]);
 
-  if (!user) {
-    return (
-      <div style={{ height: 300 }}>
-        <RenderError />
-      </div>
-    );
-  }
-
+  if (!user) return <div style={{ height: 300 }}></div>;
   return (
     <div css={ProfileStyle}>
       <img css={ImageStyle} src={user.img} />
