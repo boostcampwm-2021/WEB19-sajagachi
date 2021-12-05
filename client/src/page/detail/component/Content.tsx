@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import LinkPreview from './LinkPreview';
+import { css } from '@emotion/react';
 
 interface ContentType {
   content: string;
@@ -16,7 +17,7 @@ export default function Content({ content, urls }: ContentType) {
     <>
       <Card sx={ContentStyle} variant="outlined">
         <CardContent>
-          <Typography variant="body2" lineHeight="2.5">
+          <Typography variant="body2" lineHeight="2.5" css={ContentTextStyle}>
             {content}
           </Typography>
         </CardContent>
@@ -36,3 +37,8 @@ const ContentStyle = {
   border: '1px solid #fefafa',
   borderRadius: 7
 };
+
+const ContentTextStyle = css`
+  white-space: pre-wrap;
+  word-break: break-all;
+`;
