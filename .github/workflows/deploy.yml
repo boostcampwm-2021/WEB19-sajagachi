@@ -31,5 +31,4 @@ jobs:
             cp -r build/* /var/www/build/
             cd ../server
             npm install
-            npm run build
-            pm2 start npm -- start
+            pm2 start npm -- run deploy
