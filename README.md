@@ -6,6 +6,8 @@
 
 buy 사자 together 같이 라는 의미로, 최근 음식 배달비의 증가, C사의 빠른 배송을 위한 최소 구매 등 1인으로서 서비스를 이용할 때 생기는 부담을 덜어주기 위해 이 프로젝트를 기획하였습니다.
 
+### 기능소개 ([링크](https://www.youtube.com/watch?v=4Ukj7nWa9hg))
+
 ## 참여자
 
 | ![](https://github.com/gintooooonic.png) | ![](https://github.com/gomster96.png) | ![](https://github.com/JaeseokWoo.png) | ![](https://github.com/FloralLife.png) |
